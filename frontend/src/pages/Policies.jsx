@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
 import API from '../api/axios';
 import { useAuth } from '../context/AuthContext';
-import { Plus, Search, CheckCircle, Pencil, X } from 'lucide-react';
+import { Plus, Search, Pencil, X } from 'lucide-react';
+import Toast from '../components/Toast';
 
 const STATUS_COLORS = {
   active:   'bg-emerald-50 text-emerald-700',
@@ -168,7 +169,8 @@ export default function Policies() {
   const [page, setPage] = useState(1);
   const [showModal, setShowModal] = useState(false);
   const [editingPolicy, setEditingPolicy] = useState(null);
-  const [toast, setToast] = useState('');
+  const [toast, setToast] = useState({ msg: '', type: 'success' });
+  const showToast = (msg, type = 'success') => setToast({ msg, type });
   const [expandedId, setExpandedId] = useState(null);
   const perPage = 6;
 
@@ -190,9 +192,8 @@ export default function Policies() {
 
   const handleSaved = () => {
     fetchData();
-    setToast(editingPolicy ? 'Policy updated successfully!' : 'Policy created successfully!');
+    showToast(editingPolicy ? 'Policy updated successfully!' : 'Policy created successfully!');
     setEditingPolicy(null);
-    setTimeout(() => setToast(''), 4000);
   };
 
   const openEdit = (policy) => {
@@ -223,6 +224,8 @@ export default function Policies() {
 
   return (
     <div>
+      <Toast message={toast.msg} type={toast.type} onClose={() => setToast({ msg: '', type: 'success' })} />
+
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-bold text-[#0f172a]">Policy Manager</h1>
         {role !== 'auditor' && (
@@ -233,11 +236,6 @@ export default function Policies() {
         )}
       </div>
 
-      {toast && (
-        <div className="mb-5 flex items-center gap-2 rounded-lg bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-700">
-          <CheckCircle className="h-4 w-4" /> {toast}
-        </div>
-      )}
 
       <div className="mb-5 rounded-xl border border-gray-100 bg-white p-3 shadow-sm">
         <div className="flex items-center gap-2 px-2">

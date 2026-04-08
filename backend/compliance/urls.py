@@ -68,4 +68,12 @@ urlpatterns = [
     path("auth/verify-totp/",        views.VerifyTOTPView.as_view(),        name="verify-totp"),
     path("auth/verify-login-totp/",  views.VerifyLoginTOTPView.as_view(),   name="verify-login-totp"),
     path("auth/reset-password/",     views.ResetPasswordView.as_view(),     name="reset-password"),
+    path("auth/change-password/",    views.ChangePasswordView.as_view(),    name="change-password"),
+
+    # Regenerate admin credentials (new password + TOTP secret)
+    path(
+        "users/<int:pk>/regenerate-credentials/",
+        views.UserManagementViewSet.as_view({"post": "regenerate_credentials"}),
+        name="user-regenerate-credentials",
+    ),
 ]

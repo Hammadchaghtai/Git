@@ -19,3 +19,5 @@ djangorestframework-simplejwt>=5.3,<6.0
 
 # ── Two-Factor Authentication (TOTP) ───────────────
 pyotp>=2.9,<3.0
+qrcode[pil]>=7.4,<8.0
+Pillow>=10.0,<12.0

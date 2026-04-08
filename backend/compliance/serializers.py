@@ -271,10 +271,11 @@ class UserManagementSerializer(serializers.ModelSerializer):
     """For listing/managing users with their profile roles."""
     role = serializers.CharField(source="profile.role", read_only=True)
     is_active = serializers.BooleanField()
+    password_changed_at = serializers.DateTimeField(source="profile.password_changed_at", read_only=True, default=None)
 
     class Meta:
         model = User
-        fields = ["id", "username", "email", "is_active", "role", "date_joined"]
+        fields = ["id", "username", "email", "is_active", "role", "date_joined", "password_changed_at"]
         read_only_fields = ["id", "username", "date_joined"]
 
 

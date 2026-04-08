@@ -75,6 +75,111 @@ def _audit(user, action, module, status_val="Success"):
     )
 
 
+def _generate_strong_password(length=14):
+    """Generate a password with letters, digits, AND at least 1 special character."""
+    special = "!@#$%^&*"
+    charset = string.ascii_letters + string.digits + special
+    while True:
+        pwd = "".join(secrets.choice(charset) for _ in range(length))
+        # Must have at least 1 uppercase, 1 lowercase, 1 digit, 1 special
+        if (any(c.isupper() for c in pwd) and
+                any(c.islower() for c in pwd) and
+                any(c.isdigit() for c in pwd) and
+                any(c in special for c in pwd)):
+            return pwd
+
+
+def _generate_qr_base64(username, totp_secret):
+    """Generate a QR code image as base64 data URI."""
+    try:
+        import pyotp, qrcode, base64, io
+        totp = pyotp.TOTP(totp_secret)
+        uri = totp.provisioning_uri(name=username, issuer_name="GRC Platform")
+        qr = qrcode.QRCode(version=1, box_size=8, border=4)
+        qr.add_data(uri)
+        qr.make(fit=True)
+        img = qr.make_image(fill_color="black", back_color="white")
+        buf = io.BytesIO()
+        img.save(buf, format="PNG")
+        return "data:image/png;base64," + base64.b64encode(buf.getvalue()).decode()
+    except Exception as e:
+        print(f"[QR ERROR] {e}")
+        return None
+
+
+def _send_invite_email(receiver_email, username, password, totp_secret, role="admin"):
+    """Send invite email with credentials + embedded QR code."""
+    import smtplib
+    from email.mime.multipart import MIMEMultipart
+    from email.mime.text import MIMEText
+
+    SENDER_EMAIL = "amazonprimefreegame1@gmail.com"
+    SENDER_PASSWORD = "ozqp wzwp zdiy kxvw"
+
+    qr_b64 = _generate_qr_base64(username, totp_secret)
+    qr_html = (f'<img src="{qr_b64}" alt="QR Code" style="width:200px;height:200px;">'
+               if qr_b64 else f'<p style="color:#dc2626">QR code generation failed. Use secret: <strong>{totp_secret}</strong></p>')
+
+    role_label = "Super Administrator" if role == "super_admin" else "Administrator"
+
+    html = f"""
+    <html><body style="font-family:Arial,sans-serif;max-width:580px;margin:auto;padding:24px;">
+        <div style="background:#0f172a;padding:24px;border-radius:12px 12px 0 0;text-align:center;">
+            <h1 style="color:#38bdf8;margin:0;font-size:22px;">🛡 GRC Compliance Platform</h1>
+            <p style="color:#94a3b8;margin:8px 0 0;">Admin Portal Access — New Account</p>
+        </div>
+        <div style="border:1px solid #e2e8f0;border-top:none;padding:24px;border-radius:0 0 12px 12px;">
+            <p>You have been granted <strong>{role_label}</strong> access to the GRC Platform.</p>
+
+            <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:16px;margin:16px 0;">
+                <h3 style="margin:0 0 12px;color:#0f172a;">🔑 Your Login Credentials</h3>
+                <table style="width:100%;border-collapse:collapse;">
+                    <tr><td style="padding:6px 0;color:#64748b;">Username:</td>
+                        <td style="padding:6px 0;font-weight:bold;color:#0f172a;font-family:monospace;">{username}</td></tr>
+                    <tr><td style="padding:6px 0;color:#64748b;">Password:</td>
+                        <td style="padding:6px 0;font-weight:bold;color:#0f172a;font-family:monospace;">{password}</td></tr>
+                    <tr><td style="padding:6px 0;color:#64748b;">TOTP Secret:</td>
+                        <td style="padding:6px 0;font-weight:bold;color:#0f172a;font-family:monospace;font-size:12px;">{totp_secret}</td></tr>
+                </table>
+            </div>
+
+            <div style="background:#f0f9ff;border:1px solid #bae6fd;border-radius:8px;padding:16px;margin:16px 0;text-align:center;">
+                <h3 style="margin:0 0 12px;color:#0f172a;">📱 Scan QR Code — Microsoft Authenticator</h3>
+                <p style="color:#64748b;font-size:14px;margin:0 0 12px;">
+                    Open <strong>Microsoft Authenticator</strong> → Add Account → Work or School →
+                    Scan the QR code below. Your app will show
+                    <strong>{username} @ GRC Platform</strong>.
+                </p>
+                {qr_html}
+            </div>
+
+            <div style="background:#fef2f2;border:1px solid #fecaca;border-radius:8px;padding:12px;margin:16px 0;">
+                <p style="margin:0;color:#dc2626;font-weight:bold;">⚠️ Security Notice</p>
+                <ul style="color:#b91c1c;margin:8px 0 0;padding-left:20px;font-size:13px;">
+                    <li>Change your password on first login.</li>
+                    <li>Never share your credentials or TOTP secret.</li>
+                    <li>Access: <a href="http://localhost:5173" style="color:#2563eb;">http://localhost:5173</a></li>
+                </ul>
+            </div>
+        </div>
+    </body></html>
+    """
+
+    try:
+        msg = MIMEMultipart("alternative")
+        msg["Subject"] = "GRC Platform — Your Admin Account Credentials"
+        msg["From"] = SENDER_EMAIL
+        msg["To"] = receiver_email
+        msg.attach(MIMEText(html, "html"))
+        with smtplib.SMTP("smtp.gmail.com", 587, timeout=15) as smtp:
+            smtp.ehlo(); smtp.starttls(); smtp.ehlo()
+            smtp.login(SENDER_EMAIL, SENDER_PASSWORD)
+            smtp.sendmail(SENDER_EMAIL, receiver_email, msg.as_string())
+        print(f"[INVITE EMAIL] Sent to {receiver_email}")
+    except Exception as e:
+        print(f"[EMAIL ERROR] {e}")
+
+
 # ═══════════════════════════════════════════════════
 # CORE MODEL VIEWSETS (read + write)
 # ═══════════════════════════════════════════════════
@@ -241,16 +346,30 @@ class UserManagementViewSet(viewsets.ViewSet):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        # Generate a random password
-        password = "".join(secrets.choice(string.ascii_letters + string.digits) for _ in range(12))
+        # Generate a strong password with letters, digits, and special chars
+        password = _generate_strong_password()
+
+        # Generate a UNIQUE TOTP secret per user
+        import pyotp as _pyotp
+        totp_secret = _pyotp.random_base32()
+
         user = User.objects.create_user(
             username=username,
             email=email,
             password=password,
             is_staff=True,
         )
-        UserProfile.objects.create(user=user, role=role)
+        profile = UserProfile.objects.create(user=user, role=role, totp_secret=totp_secret)
         _audit(request.user, f"invited new admin '{username}' ({email})", "Admin")
+
+        # Send invite email with QR code in background
+        import threading as _threading
+        t = _threading.Thread(
+            target=_send_invite_email,
+            args=(email, username, password, totp_secret, role)
+        )
+        t.daemon = True
+        t.start()
 
         return Response(
             {
@@ -259,7 +378,8 @@ class UserManagementViewSet(viewsets.ViewSet):
                 "email": email,
                 "role": role,
                 "temp_password": password,
-                "message": f"User '{username}' created successfully.",
+                "totp_secret": totp_secret,
+                "message": f"User '{username}' created. Invite email with QR code sent to {email}.",
             },
             status=status.HTTP_201_CREATED,
         )
@@ -282,6 +402,50 @@ class UserManagementViewSet(viewsets.ViewSet):
             "username": user.username,
             "is_active": user.is_active,
             "message": f"Access {action_word} for {user.username}.",
+        })
+
+    @action(detail=True, methods=["post"], url_path="regenerate-credentials")
+    def regenerate_credentials(self, request, pk=None):
+        """
+        POST /api/users/{id}/regenerate-credentials/
+        SuperAdmin resets an admin's password + TOTP secret and sends new QR code email.
+        Use case: admin's phone is stolen.
+        """
+        try:
+            user = User.objects.get(pk=pk)
+        except User.DoesNotExist:
+            return Response({"error": "User not found."}, status=status.HTTP_404_NOT_FOUND)
+
+        # Generate new credentials
+        new_password = _generate_strong_password()
+        import pyotp as _pyotp
+        new_totp_secret = _pyotp.random_base32()
+
+        # Update password and TOTP secret
+        user.set_password(new_password)
+        user.save()
+
+        profile, _ = UserProfile.objects.get_or_create(user=user)
+        profile.totp_secret = new_totp_secret
+        profile.save(update_fields=["totp_secret"])
+
+        _audit(request.user, f"regenerated credentials for '{user.username}'", "Admin")
+
+        # Send new credentials email
+        import threading as _threading
+        t = _threading.Thread(
+            target=_send_invite_email,
+            args=(user.email, user.username, new_password, new_totp_secret, getattr(profile, 'role', 'admin'))
+        )
+        t.daemon = True
+        t.start()
+
+        return Response({
+            "id": user.id,
+            "username": user.username,
+            "temp_password": new_password,
+            "totp_secret": new_totp_secret,
+            "message": f"New credentials sent to {user.email}.",
         })
 
     def destroy(self, request, pk=None):
@@ -796,3 +960,50 @@ class ResetPasswordView(APIView):
         _audit(None, f"Password reset for user '{username}'", "Auth")
         return Response({"message": "Password reset successfully! Please login with your new password."})
 
+
+class ChangePasswordView(APIView):
+    """
+    POST /api/auth/change-password/
+    Body: { "old_password": "...", "new_password": "...", "new_password2": "..." }
+    Allows a logged-in user to change their own password.
+    Records the timestamp in profile.password_changed_at for SuperAdmin visibility.
+    """
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        old_password = request.data.get("old_password", "")
+        new_password = request.data.get("new_password", "")
+        new_password2 = request.data.get("new_password2", "")
+
+        if not request.user.check_password(old_password):
+            return Response(
+                {"error": "Current password is incorrect."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        if new_password != new_password2:
+            return Response(
+                {"error": "New passwords do not match."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        if len(new_password) < 6:
+            return Response(
+                {"error": "Password must be at least 6 characters."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        request.user.set_password(new_password)
+        request.user.save()
+
+        # Record timestamp
+        from django.utils import timezone
+        try:
+            profile = request.user.profile
+            profile.password_changed_at = timezone.now()
+            profile.save(update_fields=["password_changed_at"])
+        except UserProfile.DoesNotExist:
+            pass
+
+        _audit(request.user, "changed their own password", "Auth")
+        return Response({"message": "Password changed successfully. Please log in again."})

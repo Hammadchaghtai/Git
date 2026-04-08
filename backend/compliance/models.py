@@ -312,12 +312,18 @@ class UserProfile(models.Model):
         choices=Role.choices,
         default=Role.ADMIN,
     )
-    # TOTP secret for authenticator app (Microsoft/Google Authenticator)
+    # TOTP secret for authenticator app — generated uniquely per user
     totp_secret = models.CharField(
         max_length=64,
         blank=True,
-        default="LNQQV4GJKFA27GFQQWVUELXUX7MECTFI",
+        default="",
         help_text="Base32 TOTP secret for 2FA authenticator app.",
+    )
+    # Track when the user last changed their own password
+    password_changed_at = models.DateTimeField(
+        null=True,
+        blank=True,
+        help_text="Timestamp of the user's last self-initiated password change.",
     )
     created_at = models.DateTimeField(auto_now_add=True)
 

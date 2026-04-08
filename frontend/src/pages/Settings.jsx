@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
-import { Sliders, Bell, User, LogOut, CheckCircle } from 'lucide-react';
+import { Sliders, Bell, User, LogOut } from 'lucide-react';
 import API from '../api/axios';
+import Toast from '../components/Toast';
 
 export default function SettingsPage() {
   const { user, role, logout } = useAuth();
@@ -14,7 +15,8 @@ export default function SettingsPage() {
   const [weeklyReport, setWeeklyReport] = useState(false);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [toast, setToast] = useState('');
+  const [toast, setToast] = useState({ msg: '', type: 'success' });
+  const showToast = (msg, type = 'success') => setToast({ msg, type });
 
   // Fetch current settings on mount
   useEffect(() => {
@@ -40,10 +42,9 @@ export default function SettingsPage() {
         critical_email_alerts: emailAlerts,
         weekly_report: weeklyReport,
       });
-      setToast('Configuration saved successfully!');
-      setTimeout(() => setToast(''), 4000);
+      showToast('Configuration saved successfully!');
     } catch {
-      setToast('Failed to save configuration.');
+      showToast('Failed to save configuration.', 'error');
     } finally {
       setSaving(false);
     }
@@ -66,14 +67,8 @@ export default function SettingsPage() {
 
   return (
     <div>
+      <Toast message={toast.msg} type={toast.type} onClose={() => setToast({ msg: '', type: 'success' })} />
       <h1 className="mb-6 text-2xl font-bold text-[#0f172a]">System Configurations</h1>
-
-      {/* Toast */}
-      {toast && (
-        <div className="mb-5 flex items-center gap-2 rounded-lg bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-700 animate-fadeIn">
-          <CheckCircle className="h-4 w-4" /> {toast}
-        </div>
-      )}
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-5">
         {/* Left — Config Cards */}
