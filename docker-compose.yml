@@ -1,0 +1,90 @@
+services:
+  # ─────────────────────────────────────────────
+  # PostgreSQL Database
+  # ─────────────────────────────────────────────
+  db:
+    image: postgres:18
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: grc_admin
+      POSTGRES_PASSWORD: grc_secret_2026
+      POSTGRES_DB: grc_platform
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U grc_admin -d grc_platform" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # ─────────────────────────────────────────────
+  # Django REST Framework Backend
+  # ─────────────────────────────────────────────
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    # On first run: use "sleep infinity" so you can exec in to init Django.
+    # After Django is initialized, switch to the runserver command below.
+    command: >
+      sh -c "
+        if [ -f manage.py ]; then
+          echo '>>> manage.py found — running migrations + server...'
+          python manage.py migrate --noinput &&
+          python manage.py runserver 0.0.0.0:8000
+        else
+          echo '>>> No manage.py found — waiting for Django init...'
+          echo '>>> Run: docker compose exec backend django-admin startproject core .'
+          sleep infinity
+        fi
+      "
+    volumes:
+      - ./backend:/app
+    ports:
+      - "8000:8000"
+    env_file:
+      - ./backend/.env
+    environment:
+      # Wazuh creds set here because env_file can't handle * in passwords
+      WAZUH_API_HOST: "192.168.100.100"
+      WAZUH_API_USER: "wazuh"
+      WAZUH_API_PASSWORD: "GrI.Fsi1F3u9E4Dp*+JmXTCmXV0cuYyZ"
+    depends_on:
+      db:
+        condition: service_healthy
+
+  # ─────────────────────────────────────────────
+  # React Frontend (Vite)
+  # ─────────────────────────────────────────────
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    depends_on:
+      - backend
+
+  # ─────────────────────────────────────────────
+  # Postgres MCP Server
+  # ─────────────────────────────────────────────
+  mcp-server:
+    image: crystaldba/postgres-mcp:latest
+    command: ["--transport=sse"]
+    ports:
+      - "8001:8000"
+    environment:
+      # Simple 'db' works here because they share the project network
+      DATABASE_URI: postgresql://grc_admin:grc_secret_2026@db:5432/grc_platform
+      ACCESS_MODE: unrestricted
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  pgdata:

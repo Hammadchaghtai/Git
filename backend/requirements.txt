@@ -1,0 +1,21 @@
+# ── Core Framework ──────────────────────────────
+Django>=5.1,<5.2
+djangorestframework>=3.15,<4.0
+
+# ── Database ────────────────────────────────────
+psycopg[binary]>=3.2,<4.0
+
+# ── Wazuh API Integration ──────────────────────
+requests>=2.32,<3.0
+
+# ── Environment Variables ──────────────────────
+python-decouple>=3.8,<4.0
+
+# ── CORS (frontend ↔ backend) ──────────────────
+django-cors-headers>=4.6,<5.0
+
+# ── JWT Authentication ─────────────────────────
+djangorestframework-simplejwt>=5.3,<6.0
+
+# ── Two-Factor Authentication (TOTP) ───────────────
+pyotp>=2.9,<3.0
