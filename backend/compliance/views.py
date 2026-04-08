@@ -89,92 +89,148 @@ def _generate_strong_password(length=14):
             return pwd
 
 
-def _generate_qr_base64(username, totp_secret):
-    """Generate a QR code image as base64 data URI."""
+def _generate_qr_bytes(username, totp_secret):
+    """Generate a QR code image as raw PNG bytes (for email attachment)."""
     try:
-        import pyotp, qrcode, base64, io
+        import pyotp, qrcode, io as _io
         totp = pyotp.TOTP(totp_secret)
         uri = totp.provisioning_uri(name=username, issuer_name="GRC Platform")
         qr = qrcode.QRCode(version=1, box_size=8, border=4)
         qr.add_data(uri)
         qr.make(fit=True)
         img = qr.make_image(fill_color="black", back_color="white")
-        buf = io.BytesIO()
+        buf = _io.BytesIO()
         img.save(buf, format="PNG")
-        return "data:image/png;base64," + base64.b64encode(buf.getvalue()).decode()
+        return buf.getvalue()
     except Exception as e:
         print(f"[QR ERROR] {e}")
         return None
 
 
+def _chunk_secret(secret, chunk=4):
+    """Break long TOTP secret into space-separated groups for mobile readability."""
+    return " ".join(secret[i:i+chunk] for i in range(0, len(secret), chunk))
+
+
 def _send_invite_email(receiver_email, username, password, totp_secret, role="admin"):
-    """Send invite email with credentials + embedded QR code."""
+    """Send invite email with credentials + QR code as CID attachment (works everywhere)."""
     import smtplib
     from email.mime.multipart import MIMEMultipart
     from email.mime.text import MIMEText
+    from email.mime.image import MIMEImage
 
     SENDER_EMAIL = "amazonprimefreegame1@gmail.com"
     SENDER_PASSWORD = "ozqp wzwp zdiy kxvw"
 
-    qr_b64 = _generate_qr_base64(username, totp_secret)
-    qr_html = (f'<img src="{qr_b64}" alt="QR Code" style="width:200px;height:200px;">'
-               if qr_b64 else f'<p style="color:#dc2626">QR code generation failed. Use secret: <strong>{totp_secret}</strong></p>')
-
     role_label = "Super Administrator" if role == "super_admin" else "Administrator"
+    secret_chunked = _chunk_secret(totp_secret)
+    qr_bytes = _generate_qr_bytes(username, totp_secret)
+
+    # Use cid:qrcode if we have the image, otherwise show the secret prominently
+    if qr_bytes:
+        qr_section = """
+        <div style="text-align:center;margin:8px 0;">
+            <img src="cid:qrcode" alt="QR Code" width="200" height="200"
+                 style="display:block;margin:0 auto;border:4px solid #e2e8f0;border-radius:8px;" />
+        </div>"""
+    else:
+        qr_section = f"""
+        <p style="color:#dc2626;font-size:13px;">
+            QR code could not be generated. Use the secret key below to manually add the account.
+        </p>"""
 
     html = f"""
-    <html><body style="font-family:Arial,sans-serif;max-width:580px;margin:auto;padding:24px;">
-        <div style="background:#0f172a;padding:24px;border-radius:12px 12px 0 0;text-align:center;">
-            <h1 style="color:#38bdf8;margin:0;font-size:22px;">🛡 GRC Compliance Platform</h1>
-            <p style="color:#94a3b8;margin:8px 0 0;">Admin Portal Access — New Account</p>
+    <html><body style="font-family:Arial,sans-serif;max-width:600px;margin:auto;padding:16px;">
+
+      <div style="background:#0f172a;padding:24px;border-radius:12px 12px 0 0;text-align:center;">
+        <h1 style="color:#38bdf8;margin:0;font-size:20px;">&#x1F6E1; GRC Compliance Platform</h1>
+        <p style="color:#94a3b8;margin:8px 0 0;font-size:14px;">Admin Portal Access &mdash; New Account</p>
+      </div>
+
+      <div style="border:1px solid #e2e8f0;border-top:none;padding:20px;border-radius:0 0 12px 12px;background:#fff;">
+        <p style="margin:0 0 16px;font-size:14px;">
+          You have been granted <strong>{role_label}</strong> access to the GRC Compliance Platform.
+        </p>
+
+        <!-- ── Credentials ── -->
+        <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:16px;margin-bottom:16px;">
+          <h3 style="margin:0 0 12px;color:#0f172a;font-size:15px;">&#x1F511; Login Credentials</h3>
+          <table style="width:100%;border-collapse:collapse;font-size:14px;">
+            <tr>
+              <td style="padding:7px 8px;color:#64748b;width:40%;vertical-align:top;">Username</td>
+              <td style="padding:7px 8px;font-weight:bold;color:#0f172a;font-family:monospace;word-break:break-all;">{username}</td>
+            </tr>
+            <tr style="background:#f1f5f9;">
+              <td style="padding:7px 8px;color:#64748b;vertical-align:top;">Password</td>
+              <td style="padding:7px 8px;font-weight:bold;color:#0f172a;font-family:monospace;word-break:break-all;">{password}</td>
+            </tr>
+          </table>
         </div>
-        <div style="border:1px solid #e2e8f0;border-top:none;padding:24px;border-radius:0 0 12px 12px;">
-            <p>You have been granted <strong>{role_label}</strong> access to the GRC Platform.</p>
 
-            <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:16px;margin:16px 0;">
-                <h3 style="margin:0 0 12px;color:#0f172a;">🔑 Your Login Credentials</h3>
-                <table style="width:100%;border-collapse:collapse;">
-                    <tr><td style="padding:6px 0;color:#64748b;">Username:</td>
-                        <td style="padding:6px 0;font-weight:bold;color:#0f172a;font-family:monospace;">{username}</td></tr>
-                    <tr><td style="padding:6px 0;color:#64748b;">Password:</td>
-                        <td style="padding:6px 0;font-weight:bold;color:#0f172a;font-family:monospace;">{password}</td></tr>
-                    <tr><td style="padding:6px 0;color:#64748b;">TOTP Secret:</td>
-                        <td style="padding:6px 0;font-weight:bold;color:#0f172a;font-family:monospace;font-size:12px;">{totp_secret}</td></tr>
-                </table>
-            </div>
-
-            <div style="background:#f0f9ff;border:1px solid #bae6fd;border-radius:8px;padding:16px;margin:16px 0;text-align:center;">
-                <h3 style="margin:0 0 12px;color:#0f172a;">📱 Scan QR Code — Microsoft Authenticator</h3>
-                <p style="color:#64748b;font-size:14px;margin:0 0 12px;">
-                    Open <strong>Microsoft Authenticator</strong> → Add Account → Work or School →
-                    Scan the QR code below. Your app will show
-                    <strong>{username} @ GRC Platform</strong>.
-                </p>
-                {qr_html}
-            </div>
-
-            <div style="background:#fef2f2;border:1px solid #fecaca;border-radius:8px;padding:12px;margin:16px 0;">
-                <p style="margin:0;color:#dc2626;font-weight:bold;">⚠️ Security Notice</p>
-                <ul style="color:#b91c1c;margin:8px 0 0;padding-left:20px;font-size:13px;">
-                    <li>Change your password on first login.</li>
-                    <li>Never share your credentials or TOTP secret.</li>
-                    <li>Access: <a href="http://localhost:5173" style="color:#2563eb;">http://localhost:5173</a></li>
-                </ul>
-            </div>
+        <!-- ── QR Code / Authenticator ── -->
+        <div style="background:#f0f9ff;border:1px solid #bae6fd;border-radius:8px;padding:16px;margin-bottom:16px;">
+          <h3 style="margin:0 0 10px;color:#0f172a;font-size:15px;">&#x1F4F1; Set Up Authenticator App</h3>
+          <p style="color:#64748b;font-size:13px;margin:0 0 12px;line-height:1.5;">
+            Open <strong>Google Authenticator</strong> or <strong>Microsoft Authenticator</strong> &rarr;
+            tap <em>Add Account</em> &rarr; <em>Scan QR Code</em>.<br>
+            Your app will display: <strong>{username} @ GRC Platform</strong>
+          </p>
+          {qr_section}
+          <div style="margin-top:14px;background:#e0f2fe;border-radius:6px;padding:10px;">
+            <p style="margin:0 0 6px;font-size:12px;color:#0369a1;font-weight:bold;">
+              &#x1F511; Manual Entry (TOTP Secret Key):
+            </p>
+            <p style="margin:0;font-family:monospace;font-size:13px;font-weight:bold;
+                     color:#0f172a;letter-spacing:1px;word-break:break-all;line-height:1.8;">
+              {secret_chunked}
+            </p>
+            <p style="margin:6px 0 0;font-size:11px;color:#64748b;">
+              Use this if you cannot scan the QR code. Select &ldquo;Enter setup key&rdquo; in the app.
+            </p>
+          </div>
         </div>
+
+        <!-- ── Security Notice ── -->
+        <div style="background:#fef2f2;border:1px solid #fecaca;border-radius:8px;padding:12px;">
+          <p style="margin:0 0 6px;color:#dc2626;font-weight:bold;font-size:13px;">&#x26A0;&#xFE0F; Security Notice</p>
+          <ul style="color:#b91c1c;margin:0;padding-left:18px;font-size:12px;line-height:2;">
+            <li>Change your password on first login.</li>
+            <li>Do <strong>not</strong> share your credentials or TOTP secret with anyone.</li>
+            <li>Portal: <a href="http://localhost:5173" style="color:#2563eb;">http://localhost:5173</a></li>
+          </ul>
+        </div>
+      </div>
+
     </body></html>
     """
 
     try:
-        msg = MIMEMultipart("alternative")
-        msg["Subject"] = "GRC Platform — Your Admin Account Credentials"
-        msg["From"] = SENDER_EMAIL
-        msg["To"] = receiver_email
-        msg.attach(MIMEText(html, "html"))
+        # outer container must be "related" so we can attach CID images
+        msg_root = MIMEMultipart("related")
+        msg_root["Subject"] = "GRC Platform — Your Admin Account Credentials"
+        msg_root["From"] = SENDER_EMAIL
+        msg_root["To"] = receiver_email
+
+        # inner alternative (plain + html)
+        msg_alt = MIMEMultipart("alternative")
+        msg_root.attach(msg_alt)
+        msg_alt.attach(MIMEText(
+            f"GRC Platform — {role_label} Account\nUsername: {username}\nPassword: {password}\nTOTP Secret: {totp_secret}",
+            "plain"
+        ))
+        msg_alt.attach(MIMEText(html, "html"))
+
+        # attach QR image with Content-ID so email clients render it inline
+        if qr_bytes:
+            qr_img = MIMEImage(qr_bytes, "png")
+            qr_img.add_header("Content-ID", "<qrcode>")
+            qr_img.add_header("Content-Disposition", "inline", filename="qrcode.png")
+            msg_root.attach(qr_img)
+
         with smtplib.SMTP("smtp.gmail.com", 587, timeout=15) as smtp:
             smtp.ehlo(); smtp.starttls(); smtp.ehlo()
             smtp.login(SENDER_EMAIL, SENDER_PASSWORD)
-            smtp.sendmail(SENDER_EMAIL, receiver_email, msg.as_string())
+            smtp.sendmail(SENDER_EMAIL, receiver_email, msg_root.as_string())
         print(f"[INVITE EMAIL] Sent to {receiver_email}")
     except Exception as e:
         print(f"[EMAIL ERROR] {e}")
@@ -951,6 +1007,15 @@ class ResetPasswordView(APIView):
         user.set_password(password)
         user.save()
 
+        # Record password change timestamp (same as ChangePasswordView)
+        from django.utils import timezone
+        try:
+            user_profile = UserProfile.objects.get(user=user)
+            user_profile.password_changed_at = timezone.now()
+            user_profile.save(update_fields=["password_changed_at"])
+        except UserProfile.DoesNotExist:
+            pass
+
         # Clean up cache
         cache.delete(f"reset_pending_{email}")
         cache.delete(f"reset_verified_{email}")
@@ -959,6 +1024,7 @@ class ResetPasswordView(APIView):
 
         _audit(None, f"Password reset for user '{username}'", "Auth")
         return Response({"message": "Password reset successfully! Please login with your new password."})
+
 
 
 class ChangePasswordView(APIView):
