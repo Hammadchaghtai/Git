@@ -172,7 +172,7 @@ def _send_invite_email(receiver_email, username, password, totp_secret, role="ad
           <h3 style="margin:0 0 10px;color:#0f172a;font-size:15px;">&#x1F4F1; Set Up Authenticator App</h3>
           <p style="color:#64748b;font-size:13px;margin:0 0 12px;line-height:1.5;">
             Open <strong>Google Authenticator</strong> or <strong>Microsoft Authenticator</strong> &rarr;
-            tap <em>Add Account</em> &rarr; <em>Scan QR Code</em>.<br>
+            tap <em>Add Account</em> &rarr; <em>Work or School/Other</em> &rarr; <em>Scan QR Code</em>.<br>
             Your app will display: <strong>{username} @ GRC Platform</strong>
           </p>
           {qr_section}
