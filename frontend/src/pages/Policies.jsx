@@ -172,7 +172,7 @@ export default function Policies() {
   const [toast, setToast] = useState({ msg: '', type: 'success' });
   const showToast = (msg, type = 'success') => setToast({ msg, type });
   const [expandedId, setExpandedId] = useState(null);
-  const perPage = 6;
+  const perPage = 8;
 
   const fetchData = () => {
     setLoading(true);

@@ -5,7 +5,7 @@ import { useAuth } from '../context/AuthContext';
 
 export default function Login() {
   const navigate = useNavigate();
-  const { login, loginAsAuditor } = useAuth();
+  const { login } = useAuth();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -24,6 +24,7 @@ export default function Login() {
       sessionStorage.setItem('pending_login', JSON.stringify({
         username: result.username,
         role: result.role,
+        needs_setup: result.needs_setup,
       }));
       navigate('/verify-otp');
     } else {
@@ -32,17 +33,12 @@ export default function Login() {
     setLoading(false);
   };
 
-  const handleAuditor = () => {
-    loginAsAuditor();
-    navigate('/', { replace: true });
-  };
-
   return (
     <div
-      className="flex min-h-screen flex-col items-center justify-center"
+      className="flex min-h-screen flex-col items-center justify-center p-4 transition-colors"
       style={{ background: 'linear-gradient(to bottom, #0f172a 50%, #f4f6f9 50%)' }}
     >
-      <div className="w-[400px] rounded-xl bg-white p-10 shadow-xl text-center">
+      <div className="w-full max-w-[400px] rounded-xl bg-white p-10 shadow-xl text-center">
         {/* Shield Icon */}
         <div className="mb-5 flex justify-center">
           <div className="flex h-14 w-14 items-center justify-center rounded-full bg-[#0f172a]">
@@ -50,7 +46,7 @@ export default function Login() {
           </div>
         </div>
 
-        <h2 className="text-xl font-bold text-[#0f172a]">Admin Portal Login</h2>
+        <h2 className="text-xl font-bold text-[#0f172a]">GRC Platform Login</h2>
         <p className="mt-1 text-sm text-gray-400">Securely access the compliance dashboard.</p>
 
         {error && (
@@ -97,35 +93,19 @@ export default function Login() {
             </div>
           </div>
 
-          <button
+        <button
             type="submit"
             disabled={loading}
             className="w-full rounded-lg bg-[#0f172a] py-3 text-sm font-semibold text-white transition-colors hover:bg-[#1e293b] cursor-pointer disabled:opacity-60"
           >
-            {loading ? 'Authenticating...' : 'Login to Admin Portal'}
+            {loading ? 'Authenticating...' : 'Sign In'}
           </button>
         </form>
 
-        <div className="mt-3">
+        <div className="mt-4">
           <Link to="/forgot-password" className="text-sm text-gray-400 hover:text-gray-600 no-underline">
             Forgot Password?
           </Link>
-        </div>
-
-        {/* Auditor Guest Access */}
-        <div className="mt-5 pt-4 border-t border-gray-100">
-          <div className="flex items-center gap-3 mb-3">
-            <div className="flex-1 h-px bg-gray-200" />
-            <span className="text-xs text-gray-400">Guest Access</span>
-            <div className="flex-1 h-px bg-gray-200" />
-          </div>
-          <button
-            onClick={handleAuditor}
-            className="w-full rounded-lg border border-gray-200 bg-gray-50 py-3 text-sm font-medium text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-700 cursor-pointer"
-          >
-            👁️ Continue as Auditor
-          </button>
-          <p className="mt-2 text-xs text-gray-400">Read-only access to view compliance data</p>
         </div>
       </div>
 

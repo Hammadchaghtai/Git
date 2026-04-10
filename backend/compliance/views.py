@@ -236,6 +236,59 @@ def _send_invite_email(receiver_email, username, password, totp_secret, role="ad
         print(f"[EMAIL ERROR] {e}")
 
 
+def _send_reminder_email(receiver_email, username):
+    """Send reminder email requiring password change."""
+    import smtplib
+    from email.mime.multipart import MIMEMultipart
+    from email.mime.text import MIMEText
+
+    SENDER_EMAIL = "amazonprimefreegame1@gmail.com"
+    SENDER_PASSWORD = "ozqp wzwp zdiy kxvw"
+
+    html = f"""
+    <html><body style="font-family:Arial,sans-serif;max-width:600px;margin:auto;padding:16px;">
+      <div style="background:#0f172a;padding:24px;border-radius:12px 12px 0 0;text-align:center;">
+        <h1 style="color:#38bdf8;margin:0;font-size:20px;">&#x1F6E1; GRC Compliance Platform</h1>
+        <p style="color:#94a3b8;margin:8px 0 0;font-size:14px;">Action Required &mdash; Password Expired</p>
+      </div>
+      <div style="border:1px solid #e2e8f0;border-top:none;padding:20px;border-radius:0 0 12px 12px;background:#fff;">
+        <p style="margin:0 0 16px;font-size:14px;">
+          Hello <strong>{username}</strong>,
+        </p>
+        <p style="margin:0 0 16px;font-size:14px;color:#334155;">
+          A Super Administrator has requested that you immediately log in and change your password.
+          Your account is currently flagged as having a default or expired password.
+        </p>
+        <div style="background:#fef2f2;border:1px solid #fecaca;border-radius:8px;padding:12px;margin:20px 0;">
+          <p style="margin:0 0 6px;color:#dc2626;font-weight:bold;font-size:13px;">&#x26A0;&#xFE0F; Mandatory Step</p>
+          <ul style="color:#b91c1c;margin:0;padding-left:18px;font-size:12px;line-height:2;">
+            <li>Login to the portal: <a href="http://localhost:5173" style="color:#2563eb;">http://localhost:5173</a></li>
+            <li>Go to <strong>Settings &gt; My Identity & Security</strong>.</li>
+            <li>Enter a new strong password complying with our security policy.</li>
+          </ul>
+        </div>
+      </div>
+    </body></html>
+    """
+
+    try:
+        msg_root = MIMEMultipart("alternative")
+        msg_root["Subject"] = "ACTION REQUIRED: Change Your GRC Portal Password"
+        msg_root["From"] = SENDER_EMAIL
+        msg_root["To"] = receiver_email
+
+        msg_root.attach(MIMEText(f"Hello {username}, a Super Admin has requested that you change your password.", "plain"))
+        msg_root.attach(MIMEText(html, "html"))
+
+        with smtplib.SMTP("smtp.gmail.com", 587, timeout=15) as smtp:
+            smtp.ehlo(); smtp.starttls(); smtp.ehlo()
+            smtp.login(SENDER_EMAIL, SENDER_PASSWORD)
+            smtp.sendmail(SENDER_EMAIL, receiver_email, msg_root.as_string())
+        print(f"[REMINDER EMAIL] Sent to {receiver_email}")
+    except Exception as e:
+        print(f"[REMINDER EMAIL ERROR] {e}")
+
+
 # ═══════════════════════════════════════════════════
 # CORE MODEL VIEWSETS (read + write)
 # ═══════════════════════════════════════════════════
@@ -395,6 +448,7 @@ class UserManagementViewSet(viewsets.ViewSet):
         email = ser.validated_data["email"]
         username = ser.validated_data.get("username") or email.split("@")[0].lower().replace(".", "_")
         role = ser.validated_data.get("role", "admin")
+        account_expiry_date = ser.validated_data.get("account_expiry_date", None)
 
         if User.objects.filter(username=username).exists():
             return Response(
@@ -415,7 +469,12 @@ class UserManagementViewSet(viewsets.ViewSet):
             password=password,
             is_staff=True,
         )
-        profile = UserProfile.objects.create(user=user, role=role, totp_secret=totp_secret)
+        profile = UserProfile.objects.create(
+            user=user, 
+            role=role, 
+            totp_secret=totp_secret,
+            account_expiry_date=account_expiry_date
+        )
         _audit(request.user, f"invited new admin '{username}' ({email})", "Admin")
 
         # Send invite email with QR code in background
@@ -472,12 +531,19 @@ class UserManagementViewSet(viewsets.ViewSet):
         except User.DoesNotExist:
             return Response({"error": "User not found."}, status=status.HTTP_404_NOT_FOUND)
 
+        new_email = request.data.get("email")
+        if new_email and new_email != user.email:
+            # check if exists
+            if User.objects.filter(email=new_email).exclude(pk=pk).exists():
+                return Response({"error": "Email is already taken."}, status=status.HTTP_400_BAD_REQUEST)
+            user.email = new_email
+            # intentionally don't save yet, it will save below
+
         # Generate new credentials
         new_password = _generate_strong_password()
         import pyotp as _pyotp
         new_totp_secret = _pyotp.random_base32()
 
-        # Update password and TOTP secret
         user.set_password(new_password)
         user.save()
 
@@ -499,10 +565,33 @@ class UserManagementViewSet(viewsets.ViewSet):
         return Response({
             "id": user.id,
             "username": user.username,
+            "email": user.email,
             "temp_password": new_password,
             "totp_secret": new_totp_secret,
             "message": f"New credentials sent to {user.email}.",
         })
+
+    @action(detail=True, methods=["post"], url_path="send-reminder")
+    def send_reminder(self, request, pk=None):
+        try:
+            user = User.objects.get(pk=pk)
+        except User.DoesNotExist:
+            return Response({"error": "User not found."}, status=status.HTTP_404_NOT_FOUND)
+            
+        _audit(request.user, f"sent password reminder to '{user.username}'", "Admin")
+        
+        # Fire thread to send email securely
+        import threading as _threading
+        t = _threading.Thread(
+            target=_send_reminder_email,
+            args=(user.email, user.username)
+        )
+        t.daemon = True
+        t.start()
+        
+        return Response({
+            "message": f"Reminder email successfully queued for {user.email}."
+        }, status=status.HTTP_200_OK)
 
     def destroy(self, request, pk=None):
         try:
@@ -620,6 +709,17 @@ class DashboardSummaryView(APIView):
             .values("id", "agent_id", "scan_date", "overall_score")
         )
 
+        # ── 6. Total Admins ────────────────────────
+        total_admins = User.objects.filter(is_active=True).count()
+
+        # ── 7. Recent Activity (Mini Audit Log) ──
+        recent_activity = list(
+            AuditLog.objects
+            .filter(module__icontains="Policy")
+            .order_by("-timestamp")[:10]
+            .values("id", "user__username", "action", "module", "timestamp", "status")
+        )
+
         return Response(
             {
                 "total_agents_scanned": total_agents,
@@ -629,6 +729,8 @@ class DashboardSummaryView(APIView):
                 "framework_scores": framework_scores,
                 "top_failed_controls": top_failed_controls,
                 "recent_scans": recent_scans,
+                "total_admins": total_admins,
+                "recent_activity": recent_activity,
             },
             status=status.HTTP_200_OK,
         )
@@ -681,12 +783,20 @@ class MeView(APIView):
         try:
             profile = user.profile
             role = profile.role
+            password_changed_at = profile.password_changed_at
+            display_name = profile.display_name
+            profile_pic = profile.profile_picture.url if profile.profile_picture else None
+            needs_setup = password_changed_at is None
         except UserProfile.DoesNotExist:
             if user.is_superuser:
                 profile = UserProfile.objects.create(user=user, role="super_admin")
                 role = "super_admin"
             else:
                 role = "admin"
+            password_changed_at = None
+            display_name = ""
+            profile_pic = None
+            needs_setup = True
 
         return Response(
             {
@@ -695,9 +805,42 @@ class MeView(APIView):
                 "email": user.email,
                 "role": role,
                 "is_superuser": user.is_superuser,
+                "display_name": display_name,
+                "profile_picture": profile_pic,
+                "password_changed_at": password_changed_at,
+                "needs_setup": needs_setup,
             },
             status=status.HTTP_200_OK,
         )
+
+
+class UpdateProfileView(APIView):
+    """
+    PATCH /api/auth/update-profile/
+    Allows an authenticated user to update their own profile details.
+    """
+    permission_classes = [IsAuthenticated]
+
+    def patch(self, request):
+        try:
+            profile = request.user.profile
+        except UserProfile.DoesNotExist:
+            profile = UserProfile.objects.create(user=request.user, role="admin")
+
+        if "display_name" in request.data:
+            profile.display_name = request.data["display_name"]
+        if "phone_number" in request.data:
+            profile.phone_number = request.data["phone_number"]
+        if "designation" in request.data:
+            profile.designation = request.data["designation"]
+        if "timezone" in request.data:
+            profile.timezone = request.data["timezone"]
+            
+        if "profile_picture" in request.FILES:
+            profile.profile_picture = request.FILES["profile_picture"]
+            
+        profile.save()
+        return Response({"message": "Profile updated successfully."}, status=status.HTTP_200_OK)
 
 
 # ═══════════════════════════════════════════════════
@@ -1004,6 +1147,14 @@ class ResetPasswordView(APIView):
         except User.DoesNotExist:
             return Response({"error": "User not found."}, status=status.HTTP_404_NOT_FOUND)
 
+        if password != password2:
+            return Response({"error": "Passwords do not match."}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Basic complexity backend validation
+        import re
+        if len(password) < 8 or not re.search(r'[A-Z]', password) or not re.search(r'[a-z]', password) or not re.search(r'\d', password) or not re.search(r'[@$!%*?&]', password):
+            return Response({"error": "Password does not meet complexity requirements."}, status=status.HTTP_400_BAD_REQUEST)
+
         user.set_password(password)
         user.save()
 
@@ -1025,6 +1176,49 @@ class ResetPasswordView(APIView):
         _audit(None, f"Password reset for user '{username}'", "Auth")
         return Response({"message": "Password reset successfully! Please login with your new password."})
 
+
+class ProfileSetupView(APIView):
+    """
+    Called when a user logs in for the first time or post-reset and is forced to set 
+    their profile information and a new password.
+    """
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        user = request.user
+        data = request.data
+        new_password = data.get("new_password")
+        display_name = data.get("display_name", "")
+        designation = data.get("designation", "")
+        phone_number = data.get("phone_number", "")
+        timezone = data.get("timezone", "UTC")
+
+        if not new_password:
+            return Response({"error": "New password is required."}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Basic complexity backend validation
+        import re
+        if len(new_password) < 8 or not re.search(r'[A-Z]', new_password) or not re.search(r'[a-z]', new_password) or not re.search(r'\d', new_password) or not re.search(r'[@$!%*?&]', new_password):
+            return Response({"error": "Password does not meet complexity requirements."}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Update Password
+        user.set_password(new_password)
+        user.save()
+
+        # Update Profile
+        try:
+            profile = user.profile
+        except:
+            profile = UserProfile.objects.create(user=user, role="admin")
+        
+        profile.display_name = display_name
+        profile.designation = designation
+        profile.phone_number = phone_number
+        from django.utils.timezone import now
+        profile.password_changed_at = now()
+        profile.save()
+
+        return Response({"message": "Profile setup completed successfully."}, status=status.HTTP_200_OK)
 
 
 class ChangePasswordView(APIView):

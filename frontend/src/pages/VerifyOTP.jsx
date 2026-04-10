@@ -33,7 +33,11 @@ export default function VerifyOTP() {
       localStorage.setItem('grc_access_token', res.data.access);
       localStorage.setItem('grc_refresh_token', res.data.refresh);
 
-      completeLogin(res.data.username, res.data.role);
+      completeLogin({
+        username: res.data.username, 
+        role: res.data.role, 
+        needs_setup: pending.needs_setup
+      });
       sessionStorage.removeItem('pending_login');
       navigate('/', { replace: true });
     } catch (err) {

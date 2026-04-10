@@ -52,6 +52,13 @@ urlpatterns = [
         views.MeView.as_view(),
         name="auth-me",
     ),
+    
+    # Update user profile
+    path(
+        "auth/update-profile/",
+        views.UpdateProfileView.as_view(),
+        name="auth-update-profile",
+    ),
 
     # Toggle user active status
     path(
@@ -69,6 +76,7 @@ urlpatterns = [
     path("auth/verify-login-totp/",  views.VerifyLoginTOTPView.as_view(),   name="verify-login-totp"),
     path("auth/reset-password/",     views.ResetPasswordView.as_view(),     name="reset-password"),
     path("auth/change-password/",    views.ChangePasswordView.as_view(),    name="change-password"),
+    path("auth/profile-setup/",      views.ProfileSetupView.as_view(),      name="profile-setup"),
 
     # Regenerate admin credentials (new password + TOTP secret)
     path(

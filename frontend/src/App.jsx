@@ -13,12 +13,22 @@ import ComplianceChecks from './pages/ComplianceChecks';
 import Reports        from './pages/Reports';
 import Settings       from './pages/Settings';
 import ManageAdmins   from './pages/ManageAdmins';
+import ProfileSetup   from './pages/ProfileSetup';
 
 /* ── Route guard: redirect to /login if not authenticated ── */
 function ProtectedRoute({ children, requiredRole }) {
-  const { isAuthenticated, role } = useAuth();
+  const { isAuthenticated, role, needsSetup } = useAuth();
   if (!isAuthenticated) return <Navigate to="/login" replace />;
+  if (needsSetup) return <Navigate to="/profile-setup" replace />;
   if (requiredRole && role !== requiredRole) return <Navigate to="/" replace />;
+  return children;
+}
+
+/* ── Route guard: specifically for Profile Setup ── */
+function SetupRoute({ children }) {
+  const { isAuthenticated, needsSetup } = useAuth();
+  if (!isAuthenticated) return <Navigate to="/login" replace />;
+  if (!needsSetup) return <Navigate to="/" replace />;
   return children;
 }
 
@@ -34,13 +44,16 @@ export default function App() {
     <AuthProvider>
       <BrowserRouter>
         <Routes>
-          {/* Public / Auth routes */}
-          <Route path="/login"           element={<GuestRoute><Login /></GuestRoute>} />
-          <Route path="/verify-otp"      element={<VerifyOTP />} />
-          <Route path="/forgot-password" element={<GuestRoute><ForgotPassword /></GuestRoute>} />
+        {/* Public / Auth routes */}
+        <Route path="/login"           element={<GuestRoute><Login /></GuestRoute>} />
+        <Route path="/verify-otp"      element={<VerifyOTP />} />
+        <Route path="/forgot-password" element={<GuestRoute><ForgotPassword /></GuestRoute>} />
+        
+        {/* Profile Setup Route */}
+        <Route path="/profile-setup"   element={<SetupRoute><ProfileSetup /></SetupRoute>} />
 
-          {/* Protected routes inside DashboardLayout */}
-          <Route element={<ProtectedRoute><DashboardLayout /></ProtectedRoute>}>
+        {/* Protected routes inside DashboardLayout */}
+        <Route element={<ProtectedRoute><DashboardLayout /></ProtectedRoute>}>
             <Route index           element={<Dashboard />} />
             <Route path="scans"    element={<Scans />} />
             <Route path="frameworks" element={<Frameworks />} />

@@ -272,10 +272,18 @@ class UserManagementSerializer(serializers.ModelSerializer):
     role = serializers.CharField(source="profile.role", read_only=True)
     is_active = serializers.BooleanField()
     password_changed_at = serializers.DateTimeField(source="profile.password_changed_at", read_only=True, default=None)
+    account_expiry_date = serializers.DateTimeField(source="profile.account_expiry_date", read_only=True, default=None)
+    display_name = serializers.CharField(source="profile.display_name", read_only=True, default="")
+    phone_number = serializers.CharField(source="profile.phone_number", read_only=True, default="")
+    designation = serializers.CharField(source="profile.designation", read_only=True, default="")
 
     class Meta:
         model = User
-        fields = ["id", "username", "email", "is_active", "role", "date_joined", "password_changed_at"]
+        fields = [
+            "id", "username", "email", "is_active", "role", 
+            "date_joined", "password_changed_at", "account_expiry_date",
+            "display_name", "phone_number", "designation"
+        ]
         read_only_fields = ["id", "username", "date_joined"]
 
 
@@ -287,3 +295,4 @@ class CreateUserSerializer(serializers.Serializer):
         choices=UserProfile.Role.choices,
         default="admin",
     )
+    account_expiry_date = serializers.DateTimeField(required=False, allow_null=True)

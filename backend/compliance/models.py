@@ -325,6 +325,20 @@ class UserProfile(models.Model):
         blank=True,
         help_text="Timestamp of the user's last self-initiated password change.",
     )
+    # Enhanced Profile Fields
+    display_name = models.CharField(max_length=100, blank=True, default="", help_text="User's real name")
+    phone_number = models.CharField(max_length=20, blank=True, default="", help_text="Contact number for emergency / manage admins")
+    designation = models.CharField(max_length=100, blank=True, default="", help_text="Job title or department")
+    timezone = models.CharField(max_length=50, default="UTC", help_text="User timezone preference")
+    profile_picture = models.ImageField(upload_to="profile_pics/", blank=True, null=True, help_text="User avatar")
+    
+    # Time-Bound Access (Mainly for Auditors)
+    account_expiry_date = models.DateTimeField(
+        null=True,
+        blank=True,
+        help_text="If set, the account will be automatically deactivated after this date.",
+    )
+    
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:

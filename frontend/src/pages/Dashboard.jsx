@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import API from '../api/axios';
 import {
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer,
   PieChart, Pie, Cell,
 } from 'recharts';
 import {
-  ShieldAlert, ShieldCheck, Activity, AlertTriangle,
+  ShieldAlert, ShieldCheck, Activity, AlertTriangle, Users, Clock
 } from 'lucide-react';
 
 const COLORS = {
@@ -89,11 +90,14 @@ export default function Dashboard() {
       <h1 className="mb-6 text-2xl font-bold text-[#0f172a]">Executive Dashboard</h1>
 
       {/* ── Stat Cards Row ──────────────────── */}
-      <div className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5">
         <StatCard icon={Activity} label="Agents Scanned" value={total_agents_scanned} color="text-sky-500" bgColor="bg-sky-50" />
         <StatCard icon={ShieldCheck} label="Compliance Score" value={`${overall_compliance_score}%`} color="text-emerald-500" bgColor="bg-emerald-50" />
         <StatCard icon={ShieldAlert} label="Frameworks Tracked" value={framework_scores.length} color="text-violet-500" bgColor="bg-violet-50" />
         <StatCard icon={AlertTriangle} label="Failed Controls" value={top_failed_controls.length} color="text-amber-500" bgColor="bg-amber-50" />
+        <Link to="/manage-admins" className="block transform transition-transform hover:scale-105 active:scale-95">
+          <StatCard icon={Users} label="Total Admins" value={data.total_admins} color="text-pink-500" bgColor="bg-pink-50" />
+        </Link>
       </div>
 
       {/* ── Charts Row ──────────────────────── */}
@@ -207,32 +211,56 @@ export default function Dashboard() {
         )}
       </div>
 
-      {/* ── Recent Scans ────────────────────── */}
-      {recent_scans.length > 0 && (
-        <div className="mt-6 rounded-xl border border-gray-100 bg-white p-6 shadow-sm">
-          <h3 className="mb-4 text-sm font-semibold text-gray-600">Recent Scans</h3>
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-5">
-            {recent_scans.map((scan) => (
-              <div
-                key={scan.id}
-                className="flex flex-col items-center rounded-lg border border-gray-100 p-4"
-              >
-                <span className="text-xs text-gray-400">Agent {scan.agent_id}</span>
-                <span
-                  className={`mt-1 text-xl font-bold ${
-                    scan.overall_score >= 70 ? 'text-emerald-500' : 'text-amber-500'
-                  }`}
-                >
-                  {scan.overall_score}%
-                </span>
-                <span className="mt-1 text-[10px] text-gray-300">
-                  {new Date(scan.scan_date).toLocaleDateString()}
-                </span>
-              </div>
-            ))}
+      {/* ── Bottom Row (Recent Scans + Activity Log) ───────── */}
+      <div className="mt-6 grid grid-cols-1 lg:grid-cols-2 gap-6">
+        
+        {/* Recent Scans */}
+        {recent_scans.length > 0 && (
+          <div className="rounded-xl border border-gray-100 bg-white p-6 shadow-sm">
+            <h3 className="mb-4 text-sm font-semibold text-gray-600">Recent Scans</h3>
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+              {recent_scans.slice(0, 3).map((scan) => (
+                <div key={scan.id} className="flex flex-col items-center justify-center rounded-lg border border-gray-100 p-4 text-center">
+                  <span className="text-xs text-gray-400">Agent {scan.agent_id}</span>
+                  <span className={`mt-1 text-xl font-bold ${scan.overall_score >= 70 ? 'text-emerald-500' : 'text-amber-500'}`}>
+                    {scan.overall_score}%
+                  </span>
+                  <span className="mt-1 text-[10px] text-gray-300 flex items-center gap-1">
+                     <Clock className="w-3 h-3" /> {new Date(scan.scan_date).toLocaleDateString()}
+                  </span>
+                </div>
+              ))}
+            </div>
           </div>
-        </div>
-      )}
+        )}
+
+        {/* Mini Audit Log */}
+        {data.recent_activity?.length > 0 && (
+          <div className="rounded-xl border border-gray-100 bg-white p-6 shadow-sm">
+            <div className="mb-4 flex items-center justify-between">
+              <h3 className="text-sm font-semibold text-gray-600">Recent Activity</h3>
+              <Link to="/audit-logs" className="text-xs font-semibold text-sky-500 hover:text-sky-600 cursor-pointer">View All →</Link>
+            </div>
+            <div className="space-y-4">
+              {data.recent_activity.slice(0, 4).map((log) => (
+                <div key={log.id} className="flex items-start gap-4 border-b border-slate-50 last:border-0 pb-3 last:pb-0">
+                  <div className="mt-1 h-2 w-2 flex-shrink-0 rounded-full bg-sky-500" />
+                  <div>
+                    <p className="text-sm text-slate-700">
+                      <span className="font-semibold text-slate-900">{log.user__username}</span> {log.action}
+                    </p>
+                    <p className="mt-0.5 flex gap-2 text-xs font-medium text-slate-400">
+                      <span className="rounded bg-slate-100 px-1.5">{log.module}</span>
+                      <span>{new Date(log.timestamp).toLocaleString(undefined, { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}</span>
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+
     </div>
   );
 }

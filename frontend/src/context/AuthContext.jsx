@@ -20,6 +20,7 @@ export function AuthProvider({ children }) {
             username: res.data.username,
             email: res.data.email,
             role: res.data.role,
+            needs_setup: res.data.needs_setup,
           };
           setUser(userData);
           localStorage.setItem('grc_user', JSON.stringify(userData));
@@ -44,7 +45,7 @@ export function AuthProvider({ children }) {
 
   /**
    * Step 1: Send credentials to /api/auth/token/ to get JWT tokens.
-   * Returns { success, role, username } on success.
+   * Returns { success, role, username, needs_setup } on success.
    */
   const login = async (username, password) => {
     try {
@@ -58,6 +59,7 @@ export function AuthProvider({ children }) {
         success: true,
         username: meRes.data.username,
         role: meRes.data.role,
+        needs_setup: meRes.data.needs_setup,
       };
     } catch {
       return { success: false };
@@ -67,16 +69,8 @@ export function AuthProvider({ children }) {
   /**
    * Step 2: After OTP verification, actually set the session in React state.
    */
-  const completeLogin = (username, role) => {
-    setUser({ username, role });
-  };
-
-  /** Auditor guest access — no password needed, no JWT token */
-  const loginAsAuditor = () => {
-    // Clear any stale tokens
-    localStorage.removeItem('grc_access_token');
-    localStorage.removeItem('grc_refresh_token');
-    setUser({ username: 'auditor', role: 'auditor' });
+  const completeLogin = (userData) => {
+    setUser(userData);
   };
 
   const logout = () => {
@@ -86,14 +80,19 @@ export function AuthProvider({ children }) {
     localStorage.removeItem('grc_refresh_token');
   };
 
+  const updateUser = (updates) => {
+     setUser(prev => ({...prev, ...updates}));
+  };
+
   const value = {
     user,
     loading,
     isAuthenticated: !!user,
     role: user?.role || null,
+    needsSetup: user?.needs_setup || false,
     login,
     completeLogin,
-    loginAsAuditor,
+    updateUser,
     logout,
   };
 

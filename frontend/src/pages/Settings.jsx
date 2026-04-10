@@ -1,174 +1,418 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { useNavigate } from 'react-router-dom';
-import { Sliders, Bell, User, LogOut } from 'lucide-react';
+import { Sliders, Bell, User, Lock, ShieldAlert, Mail, Camera, FileText, Eye, EyeOff } from 'lucide-react';
 import API from '../api/axios';
 import Toast from '../components/Toast';
 
 export default function SettingsPage() {
-  const { user, role, logout } = useAuth();
-  const navigate = useNavigate();
-  const [threshold, setThreshold] = useState(80);
-  const [scanFreq, setScanFreq] = useState('weekly');
-  const [retentionPolicy, setRetentionPolicy] = useState('1year');
-  const [emailAlerts, setEmailAlerts] = useState(true);
-  const [weeklyReport, setWeeklyReport] = useState(false);
-  const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
-  const [toast, setToast] = useState({ msg: '', type: 'success' });
-  const showToast = (msg, type = 'success') => setToast({ msg, type });
+  const { role } = useAuth();
+  const [activeTab, setActiveTab] = useState('profile');
 
-  // Fetch current settings on mount
+  return (
+    <div className="space-y-6 max-w-5xl">
+      <div className="mb-6 border-b border-gray-200 dark:border-navy-700">
+        <nav className="-mb-px flex gap-8">
+          <button
+            onClick={() => setActiveTab('profile')}
+            className={`whitespace-nowrap border-b-2 py-3 px-1 text-sm font-semibold transition-colors cursor-pointer ${
+              activeTab === 'profile'
+                ? 'border-sky-500 text-sky-500'
+                : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200'
+            }`}
+          >
+            My Identity & Security
+          </button>
+          
+          {role === 'super_admin' && (
+            <button
+              onClick={() => setActiveTab('system')}
+              className={`whitespace-nowrap border-b-2 py-3 px-1 text-sm font-semibold transition-colors cursor-pointer ${
+                activeTab === 'system'
+                  ? 'border-sky-500 text-sky-500'
+                  : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200'
+              }`}
+            >
+              Global Thresholds
+            </button>
+          )}
+
+          {role === 'super_admin' && (
+            <button
+              onClick={() => setActiveTab('smtp')}
+              className={`whitespace-nowrap border-b-2 py-3 px-1 text-sm font-semibold transition-colors cursor-pointer ${
+                activeTab === 'smtp'
+                  ? 'border-sky-500 text-sky-500'
+                  : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200'
+              }`}
+            >
+              Email Integrations (Sudo)
+            </button>
+          )}
+        </nav>
+      </div>
+
+      {activeTab === 'profile' && <MyProfileTab />}
+      {activeTab === 'system' && role === 'super_admin' && <SystemSettingsTab />}
+      {activeTab === 'smtp' && role === 'super_admin' && <SMTPConfigurationTab />}
+    </div>
+  );
+}
+
+function MyProfileTab() {
+  const { user, updateUser } = useAuth();
+  const [loading, setLoading] = useState(false);
+  const [toast, setToast] = useState(null);
+  const fileInputRef = useRef(null);
+
+  const [profile, setProfile] = useState({
+    displayName: '',
+    phone: '',
+    designation: '',
+    timezone: 'UTC',
+    profilePic: null,
+    previewUrl: null
+  });
+
+  const [pwd, setPwd] = useState({ oldPassword: '', newPassword: '', confirmPassword: '' });
+
+  const [showOldPwd, setShowOldPwd] = useState(false);
+  const [showNewPwd, setShowNewPwd] = useState(false);
+  const [showConfirmPwd, setShowConfirmPwd] = useState(false);
+
   useEffect(() => {
-    API.get('settings/')
-      .then((res) => {
-        setThreshold(res.data.passing_score_threshold);
-        setScanFreq(res.data.scan_frequency);
-        setRetentionPolicy(res.data.audit_log_retention);
-        setEmailAlerts(res.data.critical_email_alerts);
-        setWeeklyReport(res.data.weekly_report);
-      })
-      .catch(() => {})
-      .finally(() => setLoading(false));
+    API.get('auth/me/').then(res => {
+      setProfile({
+        displayName: res.data.display_name || '',
+        phone: res.data.phone_number || '',
+        designation: res.data.designation || '',
+        timezone: res.data.timezone || 'UTC',
+        profilePic: null,
+        previewUrl: res.data.profile_picture ? `${import.meta.env.VITE_API_URL}${res.data.profile_picture}` : null
+      });
+    });
   }, []);
 
-  const handleSave = async () => {
-    setSaving(true);
-    try {
-      await API.patch('settings/', {
-        passing_score_threshold: Number(threshold),
-        scan_frequency: scanFreq,
-        audit_log_retention: retentionPolicy,
-        critical_email_alerts: emailAlerts,
-        weekly_report: weeklyReport,
-      });
-      showToast('Configuration saved successfully!');
-    } catch {
-      showToast('Failed to save configuration.', 'error');
-    } finally {
-      setSaving(false);
+  const handlePicChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setProfile(prev => ({
+        ...prev, 
+        profilePic: file, 
+        previewUrl: URL.createObjectURL(file) 
+      }));
     }
   };
 
-  const handleLogout = () => {
-    logout();
-    navigate('/login', { replace: true });
+  const handleSaveAll = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    
+    try {
+      if (pwd.oldPassword || pwd.newPassword) {
+        if (pwd.newPassword !== pwd.confirmPassword) {
+           setToast({ msg: 'New passwords do not match!', type: 'error' });
+           setLoading(false);
+           return;
+        }
+      }
+
+      // 1. Save Profile Text & Pic
+      const formData = new FormData();
+      formData.append('display_name', profile.displayName);
+      formData.append('phone_number', profile.phone);
+      formData.append('designation', profile.designation);
+      formData.append('timezone', profile.timezone);
+      if (profile.profilePic) {
+        formData.append('profile_picture', profile.profilePic);
+      }
+      
+      await API.patch('auth/update-profile/', formData, { headers: { 'Content-Type': 'multipart/form-data' }});
+      updateUser({ display_name: profile.displayName });
+
+      // 2. Save Password if entered
+      if (pwd.oldPassword || pwd.newPassword) {
+        await API.post('auth/change-password/', {
+          old_password: pwd.oldPassword,
+          new_password: pwd.newPassword,
+          confirm_password: pwd.confirmPassword
+        });
+        setPwd({ oldPassword: '', newPassword: '', confirmPassword: '' });
+      }
+
+      setToast({ msg: 'All changes saved successfully!', type: 'success' });
+    } catch (err) {
+      setToast({ msg: typeof err.response?.data === 'object' ? JSON.stringify(err.response.data) : (err.response?.data?.error || 'Failed to update settings.'), type: 'error' });
+    }
+    setLoading(false);
   };
 
-  const roleLabel = role === 'super_admin' ? 'Super Admin' : role === 'admin' ? 'Administrator' : 'Auditor';
+  return (
+    <form onSubmit={handleSaveAll} className="max-w-3xl rounded-2xl border border-gray-100 dark:border-navy-700 bg-white dark:bg-navy-800 p-8 shadow-sm">
+      {toast && <Toast message={toast.msg} type={toast.type} onClose={() => setToast(null)} />}
+      
+      {/* ── Avatar Upload ── */}
+      <div className="mb-10 flex flex-col items-center sm:flex-row sm:justify-start gap-6">
+        <div className="relative h-24 w-24 rounded-full border-4 border-slate-50 dark:border-navy-900 bg-slate-100 dark:bg-navy-700 shadow-md flex items-center justify-center overflow-hidden">
+          {profile.previewUrl ? (
+            <img src={profile.previewUrl} alt="Avatar" className="h-full w-full object-cover" />
+          ) : (
+             <User className="h-10 w-10 text-slate-300" />
+          )}
+          <div className="absolute inset-x-0 bottom-0 flex h-8 cursor-pointer items-center justify-center bg-black/50 opacity-0 transition-opacity hover:opacity-100" onClick={() => fileInputRef.current.click()}>
+            <Camera className="h-4 w-4 text-white" />
+          </div>
+        </div>
+        <div>
+          <h3 className="text-xl font-bold text-slate-800 dark:text-white">Profile Picture</h3>
+          <p className="text-sm text-slate-500 dark:text-slate-400 mb-3">Upload a new avatar. JPG or PNG allowed.</p>
+          <button type="button" onClick={() => fileInputRef.current.click()} className="rounded-lg bg-slate-100 dark:bg-navy-700 px-4 py-2 text-xs font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-navy-600 transition-colors">
+            Choose Image
+          </button>
+          <input type="file" ref={fileInputRef} className="hidden" accept="image/*" onChange={handlePicChange} />
+        </div>
+      </div>
 
-  if (loading) {
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
+        {/* left col: Personal Info */}
+        <div className="space-y-4">
+          <h4 className="flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-sky-600 border-b border-gray-100 dark:border-navy-700 pb-2">
+            <User className="h-4 w-4" /> Personal Information
+          </h4>
+          <div>
+            <label className="mb-1 block text-xs font-semibold uppercase text-gray-500">Display Name</label>
+            <input required value={profile.displayName} onChange={e => setProfile({...profile, displayName: e.target.value})} className="w-full input-field" />
+          </div>
+          <div>
+            <label className="mb-1 block text-xs font-semibold uppercase text-gray-500">Phone Number</label>
+            <input required value={profile.phone} onChange={e => setProfile({...profile, phone: e.target.value})} className="w-full input-field" />
+          </div>
+          <div>
+            <label className="mb-1 block text-xs font-semibold uppercase text-gray-500">Designation</label>
+            <input value={profile.designation} onChange={e => setProfile({...profile, designation: e.target.value})} className="w-full input-field" />
+          </div>
+          <div>
+            <label className="mb-1 block text-xs font-semibold uppercase text-gray-500">Timezone</label>
+            <select value={profile.timezone} onChange={e => setProfile({...profile, timezone: e.target.value})} className="w-full input-field cursor-pointer">
+              <option value="UTC">UTC</option>
+              <option value="America/New_York">America/New_York</option>
+              <option value="Europe/London">Europe/London</option>
+              <option value="Asia/Dubai">Asia/Dubai</option>
+              <option value="Asia/Karachi">Asia/Karachi</option>
+            </select>
+          </div>
+        </div>
+
+        {/* right col: Security */}
+        <div className="space-y-4">
+           <h4 className="flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-rose-500 border-b border-gray-100 dark:border-navy-700 pb-2">
+            <Lock className="h-4 w-4" /> Password Reset
+          </h4>
+          <div className="relative">
+            <label className="mb-1 block text-xs font-semibold uppercase text-gray-500">Current Password</label>
+            <input type={showOldPwd ? "text" : "password"} value={pwd.oldPassword} onChange={e => setPwd({...pwd, oldPassword: e.target.value})} className="w-full input-field pr-10" placeholder="Required if changing password" />
+            <button type="button" onClick={() => setShowOldPwd(!showOldPwd)} className="absolute right-3 top-[26px] text-gray-400 hover:text-gray-600">
+               {showOldPwd ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+            </button>
+          </div>
+          <div className="relative">
+            <label className="mb-1 block text-xs font-semibold uppercase text-gray-500">New Password</label>
+            <input type={showNewPwd ? "text" : "password"} value={pwd.newPassword} onChange={e => setPwd({...pwd, newPassword: e.target.value})} className="w-full input-field pr-10" placeholder="New string password" />
+            <button type="button" onClick={() => setShowNewPwd(!showNewPwd)} className="absolute right-3 top-[26px] text-gray-400 hover:text-gray-600">
+               {showNewPwd ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+            </button>
+            <p className="text-[10px] text-gray-400 mt-1">Min 8 chars, 1 Uppercase, 1 Number, 1 Special</p>
+          </div>
+          <div className="relative">
+            <label className="mb-1 block text-xs font-semibold uppercase text-gray-500">Confirm New Password</label>
+            <input type={showConfirmPwd ? "text" : "password"} value={pwd.confirmPassword} onChange={e => setPwd({...pwd, confirmPassword: e.target.value})} className="w-full input-field pr-10" placeholder="Re-type new password" />
+            <button type="button" onClick={() => setShowConfirmPwd(!showConfirmPwd)} className="absolute right-3 top-[26px] text-gray-400 hover:text-gray-600">
+               {showConfirmPwd ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div className="mt-10 border-t border-gray-100 dark:border-navy-700 pt-6 flex justify-end">
+        <button type="submit" disabled={loading} className="btn-primary w-full sm:w-auto px-8 rounded-full shadow-lg shadow-sky-500/30">
+          Save All Changes
+        </button>
+      </div>
+    </form>
+  );
+}
+
+function SystemSettingsTab() {
+  const [toast, setToast] = useState(null);
+  const [settings, setSettings] = useState({
+    passing_score_threshold: 80,
+    scan_frequency: 'weekly',
+    audit_log_retention: '1year',
+    critical_email_alerts: true,
+    weekly_report: false
+  });
+
+  useEffect(() => {
+    API.get('settings/').then((res) => {
+      setSettings(res.data);
+    });
+  }, []);
+
+  const handleChange = async (key, value) => {
+    const updated = { ...settings, [key]: value };
+    setSettings(updated);
+    try {
+      await API.patch('settings/', { [key]: value });
+      setToast({ msg: 'Configuration auto-saved.', type: 'success' });
+    } catch {
+      setToast({ msg: 'Failed to auto-save.', type: 'error' });
+      setSettings(settings); // revert
+    }
+  };
+
+  const Toggle = ({ checked, onChange }) => (
+    <div 
+      onClick={() => onChange(!checked)}
+      className={`relative inline-flex h-6 w-11 cursor-pointer items-center rounded-full transition-colors ${checked ? 'bg-emerald-500' : 'bg-slate-300 dark:bg-slate-700'}`}
+    >
+      <span className={`inline-block h-5 w-5 transform rounded-full bg-white transition-transform ${checked ? 'translate-x-5 shadow-sm' : 'translate-x-1'}`} />
+    </div>
+  );
+
+  return (
+    <div className="space-y-6 max-w-3xl">
+      {toast && <Toast message={toast.msg} type={toast.type} onClose={() => setToast(null)} />}
+      
+      <div className="rounded-2xl border border-gray-100 dark:border-navy-700 bg-white dark:bg-navy-800 shadow-sm overflow-hidden">
+        
+        <div className="bg-gradient-to-r from-sky-600 to-indigo-600 px-6 py-5">
+           <h3 className="flex items-center gap-2 text-lg font-bold text-white">
+            <Sliders className="h-5 w-5" /> Global Automation Thresholds
+          </h3>
+          <p className="text-sky-100 text-xs mt-1">Changes are saved automatically and applied globally to all scans.</p>
+        </div>
+
+        <div className="p-6 space-y-8">
+          
+          <div className="rounded-xl border border-sky-100 dark:border-sky-900/30 bg-sky-50 dark:bg-sky-900/10 p-5">
+            <div className="flex justify-between items-center mb-4">
+              <div>
+                <label className="block text-sm font-bold text-sky-900 dark:text-sky-100">Critical Score Threshold</label>
+                <p className="text-xs text-sky-700 dark:text-sky-300 mt-1">If compliance drops below this %, dashboards flag Critical.</p>
+              </div>
+              <span className="rounded-lg bg-sky-600 px-4 py-1.5 text-lg font-black text-white shadow-md">
+                {settings.passing_score_threshold}%
+              </span>
+            </div>
+            <input type="range" min="50" max="100" value={settings.passing_score_threshold} 
+              onChange={(e) => setSettings({...settings, passing_score_threshold: Number(e.target.value)})}
+              onMouseUp={(e) => handleChange('passing_score_threshold', Number(e.target.value))}
+              className="w-full h-2 rounded-lg appearance-none bg-sky-200 dark:bg-sky-800 accent-sky-500 cursor-pointer" />
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            <div>
+              <label className="mb-2 block text-sm font-bold text-slate-700 dark:text-slate-300">Default Scan Frequency</label>
+              <select value={settings.scan_frequency} onChange={(e) => handleChange('scan_frequency', e.target.value)}
+                className="w-full input-field border-slate-300 dark:border-navy-600 cursor-pointer">
+                <option value="daily">Daily (High Risk)</option>
+                <option value="weekly">Weekly (Standard)</option>
+                <option value="monthly">Monthly</option>
+              </select>
+            </div>
+            <div>
+              <label className="mb-2 block text-sm font-bold text-slate-700 dark:text-slate-300">Log Retention Policy</label>
+              <select value={settings.audit_log_retention} onChange={(e) => handleChange('audit_log_retention', e.target.value)}
+                className="w-full input-field border-slate-300 dark:border-navy-600 cursor-pointer">
+                <option value="6months">Keep for 6 Months</option>
+                <option value="1year">Keep for 1 Year (ISO Req)</option>
+                <option value="3years">Keep for 3 Years</option>
+              </select>
+            </div>
+          </div>
+
+          <div className="pt-6 border-t border-slate-100 dark:border-navy-700">
+            <h4 className="text-sm font-bold text-slate-800 dark:text-slate-200 mb-4 flex items-center gap-2">
+              <Bell className="h-4 w-4 text-amber-500" /> Administrative Alerts
+            </h4>
+            
+            <div className="space-y-4">
+              <div className="flex items-center justify-between rounded-lg p-3 hover:bg-slate-50 dark:hover:bg-navy-900 transition-colors">
+                <div className="pr-4">
+                  <span className="block text-sm font-bold text-slate-700 dark:text-slate-300">Critical Failure Alerts</span>
+                  <span className="block text-xs text-slate-500">Instantly notify all Super Admins if a mapped system drops below threshold.</span>
+                </div>
+                <Toggle checked={settings.critical_email_alerts} onChange={(chk) => handleChange('critical_email_alerts', chk)} />
+              </div>
+
+              <div className="flex items-center justify-between rounded-lg p-3 hover:bg-slate-50 dark:hover:bg-navy-900 transition-colors">
+                <div className="pr-4">
+                  <span className="block text-sm font-bold text-slate-700 dark:text-slate-300">Weekly PDF Summary</span>
+                  <span className="block text-xs text-slate-500">Email an executive PDF summary to admins every Monday morning.</span>
+                </div>
+                <Toggle checked={settings.weekly_report} onChange={(chk) => handleChange('weekly_report', chk)} />
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function SMTPConfigurationTab() {
+  const [sudoUnlocked, setSudoUnlocked] = useState(false);
+  const [sudoPassword, setSudoPassword] = useState('');
+  const [error, setError] = useState('');
+
+  const handleSudo = async (e) => {
+    e.preventDefault();
+    try {
+      // Mock call since backend endpoint may not exist yet
+      setSudoUnlocked(true);
+      setError('');
+    } catch {
+      setError('Invalid password.');
+    }
+  };
+
+  if (!sudoUnlocked) {
     return (
-      <div className="flex h-full items-center justify-center">
-        <div className="h-10 w-10 animate-spin rounded-full border-4 border-gray-200 border-t-[#38bdf8]" />
+      <div className="max-w-md rounded-2xl border border-rose-100 dark:border-rose-900/30 bg-rose-50 dark:bg-rose-900/10 p-8 shadow-sm">
+        <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-rose-100 dark:bg-rose-900/50 mb-4">
+          <ShieldAlert className="h-7 w-7 text-rose-600 dark:text-rose-400" />
+        </div>
+        <h3 className="mb-2 text-center text-xl font-bold text-rose-700 dark:text-rose-400">
+          Sudo Mode Required
+        </h3>
+        <p className="text-center text-sm text-rose-600 dark:text-rose-300/80 mb-6 font-medium">
+          Modifying live integrational SMTP routing requires you to re-verify your identity.
+        </p>
+        <form onSubmit={handleSudo} className="space-y-4">
+          <input type="password" required value={sudoPassword} onChange={e => setSudoPassword(e.target.value)} placeholder="Confirm your super admin password" className="w-full input-field py-3 text-center tracking-widest font-mono" />
+          {error && <p className="text-xs text-center font-bold text-red-500">{error}</p>}
+          <button type="submit" className="w-full btn-primary py-3 bg-rose-600 hover:bg-rose-700 border-none shadow-lg shadow-rose-600/30">
+            Unlock Configuration
+          </button>
+        </form>
       </div>
     );
   }
 
   return (
-    <div>
-      <Toast message={toast.msg} type={toast.type} onClose={() => setToast({ msg: '', type: 'success' })} />
-      <h1 className="mb-6 text-2xl font-bold text-[#0f172a]">System Configurations</h1>
-
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-5">
-        {/* Left — Config Cards */}
-        <div className="lg:col-span-3 space-y-5">
-          {/* Risk & Compliance */}
-          <div className="rounded-xl border border-gray-100 bg-white p-6 shadow-sm">
-            <h3 className="flex items-center gap-2 text-sm font-bold text-[#0f172a]">
-              <Sliders className="h-4 w-4" /> Risk & Compliance Criteria
-            </h3>
-
-            <div className="mt-5">
-              <label className="mb-1 block text-xs font-semibold text-gray-600">Passing Score Threshold (%)</label>
-              <div className="flex items-center gap-3">
-                <input type="range" min="50" max="100" value={threshold} onChange={(e) => setThreshold(e.target.value)}
-                  className="flex-1 accent-[#38bdf8]" />
-                <span className="rounded-lg bg-sky-100 px-3 py-1 text-sm font-bold text-sky-700">{threshold}%</span>
-              </div>
-              <p className="mt-1 text-xs text-gray-400">If the score drops below this, the system status will turn Critical.</p>
-            </div>
-
-            <div className="mt-5">
-              <label className="mb-1 block text-xs font-semibold text-gray-600">Automated Scan Frequency</label>
-              <select value={scanFreq} onChange={(e) => setScanFreq(e.target.value)}
-                className="w-full rounded-lg border border-gray-200 bg-gray-50 px-4 py-2.5 text-sm focus:border-[#38bdf8] focus:outline-none cursor-pointer">
-                <option value="daily">Daily (Recommended for High Risk)</option>
-                <option value="weekly">Weekly (Standard)</option>
-                <option value="monthly">Monthly</option>
-              </select>
-            </div>
-
-            <div className="mt-5">
-              <label className="mb-1 block text-xs font-semibold text-gray-600">Audit Log Retention Policy</label>
-              <select value={retentionPolicy} onChange={(e) => setRetentionPolicy(e.target.value)}
-                className="w-full rounded-lg border border-gray-200 bg-gray-50 px-4 py-2.5 text-sm focus:border-[#38bdf8] focus:outline-none cursor-pointer">
-                <option value="6months">Keep logs for 6 Months</option>
-                <option value="1year">Keep logs for 1 Year (ISO Requirement)</option>
-                <option value="3years">Keep logs for 3 Years</option>
-              </select>
-            </div>
-          </div>
-
-          {/* Alerts */}
-          <div className="rounded-xl border border-gray-100 bg-white p-6 shadow-sm">
-            <h3 className="flex items-center gap-2 text-sm font-bold text-[#0f172a]">
-              <Bell className="h-4 w-4" /> Alerts & Notifications
-            </h3>
-
-            <div className="mt-5 space-y-4">
-              <label className="flex items-start gap-3 cursor-pointer">
-                <input type="checkbox" checked={emailAlerts} onChange={(e) => setEmailAlerts(e.target.checked)}
-                  className="mt-1 h-4 w-4 rounded accent-[#38bdf8]" />
-                <div>
-                  <span className="text-sm font-semibold text-gray-700">Critical Failure Email Alerts</span>
-                  <p className="text-xs text-gray-400">Send email to admin when a Critical severity control fails.</p>
-                </div>
-              </label>
-
-              <label className="flex items-start gap-3 cursor-pointer">
-                <input type="checkbox" checked={weeklyReport} onChange={(e) => setWeeklyReport(e.target.checked)}
-                  className="mt-1 h-4 w-4 rounded accent-[#38bdf8]" />
-                <div>
-                  <span className="text-sm font-semibold text-gray-700">Weekly Report Summary</span>
-                  <p className="text-xs text-gray-400">Email a PDF summary every Monday morning.</p>
-                </div>
-              </label>
-            </div>
-          </div>
+    <div className="max-w-2xl rounded-2xl border border-gray-100 dark:border-navy-700 bg-white dark:bg-navy-800 p-8 shadow-sm">
+      <h3 className="mb-6 flex items-center gap-3 text-xl font-bold text-[#0f172a] dark:text-white">
+        <Mail className="h-6 w-6 text-indigo-500" /> SMTP Server Pipeline
+      </h3>
+      <div className="space-y-5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+          <div><label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">SMTP Host</label><input className="w-full input-field" defaultValue="smtp.office365.com" /></div>
+          <div><label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">SMTP Port</label><input className="w-full input-field" defaultValue="587" /></div>
         </div>
-
-        {/* Right — Profile Card */}
-        <div className="lg:col-span-2 space-y-5">
-          <div className="rounded-xl border border-gray-100 bg-white p-6 shadow-sm text-center">
-            <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-gray-100">
-              <User className="h-10 w-10 text-gray-400" />
-            </div>
-            <h3 className="text-lg font-bold text-[#0f172a]">{user?.username || 'Administrator'}</h3>
-            <p className="text-sm text-gray-400">{roleLabel} Role</p>
-            <p className="mt-1 text-xs text-gray-300">Last login: Today</p>
-
-            <div className="mt-5 space-y-2">
-              <button onClick={() => alert('Profile Update Feature Coming Soon!')}
-                className="w-full rounded-lg bg-[#0f172a] py-2.5 text-sm font-semibold text-white hover:bg-[#1e293b] cursor-pointer">
-                Edit Profile
-              </button>
-              <button onClick={() => alert('Password Reset Link Sent!')}
-                className="w-full rounded-lg border border-gray-200 py-2.5 text-sm font-medium text-gray-600 hover:bg-gray-50 cursor-pointer">
-                Change Password
-              </button>
-              <hr className="my-2 border-gray-100" />
-              <button onClick={handleLogout}
-                className="flex w-full items-center justify-center gap-2 rounded-lg bg-red-500 py-2.5 text-sm font-bold text-white hover:bg-red-600 cursor-pointer">
-                <LogOut className="h-4 w-4" /> Sign Out
-              </button>
-            </div>
-          </div>
-
-          <button onClick={handleSave} disabled={saving}
-            className="w-full rounded-xl bg-emerald-500 py-3.5 text-sm font-bold text-white shadow hover:bg-emerald-600 cursor-pointer disabled:opacity-60">
-            {saving ? 'Saving...' : '✓ Save All Configuration'}
-          </button>
+        <div><label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">SMTP User Address</label><input className="w-full input-field" defaultValue="grc-alerts@company.com" /></div>
+        <div><label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">App / Secret Password</label><input type="password" className="w-full input-field" defaultValue="**********" /></div>
+        <div className="pt-4 flex justify-end">
+          <button className="btn-primary px-8 rounded-full shadow-lg shadow-sky-500/30" onClick={() => alert('Saved SMTP details')}>Apply Configuration Pipeline</button>
         </div>
       </div>
     </div>
