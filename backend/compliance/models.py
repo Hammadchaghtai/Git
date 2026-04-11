@@ -448,3 +448,60 @@ class SystemSettings(models.Model):
 
     def __str__(self) -> str:
         return f"System Settings (threshold={self.passing_score_threshold}%)"
+
+
+# ═══════════════════════════════════════════════════
+# 8. SMTP SETTINGS (SINGLETON)
+# ═══════════════════════════════════════════════════
+
+class SMTPSettings(models.Model):
+    """
+    Singleton SMTP configuration row for the GRC platform.
+    Stores the email server credentials used for all outbound
+    notifications (invites, reminders, OTPs).
+    Only one row should ever exist (enforced by save()).
+    """
+
+    host = models.CharField(
+        max_length=255,
+        default="smtp.gmail.com",
+        help_text="SMTP server hostname, e.g. 'smtp.gmail.com'.",
+    )
+    port = models.PositiveIntegerField(
+        default=587,
+        help_text="SMTP server port, e.g. 587 for STARTTLS.",
+    )
+    username = models.CharField(
+        max_length=255,
+        blank=True,
+        default="",
+        help_text="SMTP login username / email address.",
+    )
+    password = models.CharField(
+        max_length=255,
+        blank=True,
+        default="",
+        help_text="SMTP login password or app-specific password.",
+    )
+    use_tls = models.BooleanField(
+        default=True,
+        help_text="Whether to use STARTTLS when connecting.",
+    )
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = "SMTP Settings"
+        verbose_name_plural = "SMTP Settings"
+
+    def save(self, *args, **kwargs):
+        # Enforce singleton: always use pk=1
+        self.pk = 1
+        super().save(*args, **kwargs)
+
+    @classmethod
+    def load(cls):
+        obj, _ = cls.objects.get_or_create(pk=1)
+        return obj
+
+    def __str__(self) -> str:
+        return f"SMTP Settings ({self.host}:{self.port})"

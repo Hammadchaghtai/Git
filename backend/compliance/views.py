@@ -10,6 +10,7 @@ Audit logging on all write operations.
 """
 
 import io
+import re
 import traceback
 import secrets
 import string
@@ -19,6 +20,7 @@ from django.core.management import call_command
 from django.db.models import Avg, Count
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
+from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated, AllowAny, BasePermission
@@ -34,6 +36,7 @@ from .models import (
     AuditLog,
     UserProfile,
     SystemSettings,
+    SMTPSettings,
 )
 from .serializers import (
     ComplianceScanSerializer,
@@ -48,6 +51,7 @@ from .serializers import (
     SystemSettingsSerializer,
     UserManagementSerializer,
     CreateUserSerializer,
+    SMTPSettingsSerializer,
 )
 
 
@@ -89,6 +93,18 @@ def _generate_strong_password(length=14):
             return pwd
 
 
+def _get_smtp_config():
+    """Dynamically fetch SMTP credentials from the SMTPSettings singleton."""
+    smtp = SMTPSettings.load()
+    return {
+        "host": smtp.host or "smtp.gmail.com",
+        "port": smtp.port or 587,
+        "username": smtp.username,
+        "password": smtp.password,
+        "use_tls": smtp.use_tls,
+    }
+
+
 def _generate_qr_bytes(username, totp_secret):
     """Generate a QR code image as raw PNG bytes (for email attachment)."""
     try:
@@ -119,8 +135,7 @@ def _send_invite_email(receiver_email, username, password, totp_secret, role="ad
     from email.mime.text import MIMEText
     from email.mime.image import MIMEImage
 
-    SENDER_EMAIL = "amazonprimefreegame1@gmail.com"
-    SENDER_PASSWORD = "ozqp wzwp zdiy kxvw"
+    smtp_cfg = _get_smtp_config()
 
     role_label = "Super Administrator" if role == "super_admin" else "Administrator"
     secret_chunked = _chunk_secret(totp_secret)
@@ -208,7 +223,7 @@ def _send_invite_email(receiver_email, username, password, totp_secret, role="ad
         # outer container must be "related" so we can attach CID images
         msg_root = MIMEMultipart("related")
         msg_root["Subject"] = "GRC Platform — Your Admin Account Credentials"
-        msg_root["From"] = SENDER_EMAIL
+        msg_root["From"] = smtp_cfg["username"]
         msg_root["To"] = receiver_email
 
         # inner alternative (plain + html)
@@ -227,10 +242,12 @@ def _send_invite_email(receiver_email, username, password, totp_secret, role="ad
             qr_img.add_header("Content-Disposition", "inline", filename="qrcode.png")
             msg_root.attach(qr_img)
 
-        with smtplib.SMTP("smtp.gmail.com", 587, timeout=15) as smtp:
-            smtp.ehlo(); smtp.starttls(); smtp.ehlo()
-            smtp.login(SENDER_EMAIL, SENDER_PASSWORD)
-            smtp.sendmail(SENDER_EMAIL, receiver_email, msg_root.as_string())
+        with smtplib.SMTP(smtp_cfg["host"], smtp_cfg["port"], timeout=15) as smtp:
+            smtp.ehlo()
+            if smtp_cfg["use_tls"]:
+                smtp.starttls(); smtp.ehlo()
+            smtp.login(smtp_cfg["username"], smtp_cfg["password"])
+            smtp.sendmail(smtp_cfg["username"], receiver_email, msg_root.as_string())
         print(f"[INVITE EMAIL] Sent to {receiver_email}")
     except Exception as e:
         print(f"[EMAIL ERROR] {e}")
@@ -242,8 +259,7 @@ def _send_reminder_email(receiver_email, username):
     from email.mime.multipart import MIMEMultipart
     from email.mime.text import MIMEText
 
-    SENDER_EMAIL = "amazonprimefreegame1@gmail.com"
-    SENDER_PASSWORD = "ozqp wzwp zdiy kxvw"
+    smtp_cfg = _get_smtp_config()
 
     html = f"""
     <html><body style="font-family:Arial,sans-serif;max-width:600px;margin:auto;padding:16px;">
@@ -263,7 +279,7 @@ def _send_reminder_email(receiver_email, username):
           <p style="margin:0 0 6px;color:#dc2626;font-weight:bold;font-size:13px;">&#x26A0;&#xFE0F; Mandatory Step</p>
           <ul style="color:#b91c1c;margin:0;padding-left:18px;font-size:12px;line-height:2;">
             <li>Login to the portal: <a href="http://localhost:5173" style="color:#2563eb;">http://localhost:5173</a></li>
-            <li>Go to <strong>Settings &gt; My Identity & Security</strong>.</li>
+            <li>Go to <strong>Settings &gt; My Identity &amp; Security</strong>.</li>
             <li>Enter a new strong password complying with our security policy.</li>
           </ul>
         </div>
@@ -274,16 +290,18 @@ def _send_reminder_email(receiver_email, username):
     try:
         msg_root = MIMEMultipart("alternative")
         msg_root["Subject"] = "ACTION REQUIRED: Change Your GRC Portal Password"
-        msg_root["From"] = SENDER_EMAIL
+        msg_root["From"] = smtp_cfg["username"]
         msg_root["To"] = receiver_email
 
         msg_root.attach(MIMEText(f"Hello {username}, a Super Admin has requested that you change your password.", "plain"))
         msg_root.attach(MIMEText(html, "html"))
 
-        with smtplib.SMTP("smtp.gmail.com", 587, timeout=15) as smtp:
-            smtp.ehlo(); smtp.starttls(); smtp.ehlo()
-            smtp.login(SENDER_EMAIL, SENDER_PASSWORD)
-            smtp.sendmail(SENDER_EMAIL, receiver_email, msg_root.as_string())
+        with smtplib.SMTP(smtp_cfg["host"], smtp_cfg["port"], timeout=15) as smtp:
+            smtp.ehlo()
+            if smtp_cfg["use_tls"]:
+                smtp.starttls(); smtp.ehlo()
+            smtp.login(smtp_cfg["username"], smtp_cfg["password"])
+            smtp.sendmail(smtp_cfg["username"], receiver_email, msg_root.as_string())
         print(f"[REMINDER EMAIL] Sent to {receiver_email}")
     except Exception as e:
         print(f"[REMINDER EMAIL ERROR] {e}")
@@ -566,9 +584,7 @@ class UserManagementViewSet(viewsets.ViewSet):
             "id": user.id,
             "username": user.username,
             "email": user.email,
-            "temp_password": new_password,
-            "totp_secret": new_totp_secret,
-            "message": f"New credentials sent to {user.email}.",
+            "message": f"Credentials regenerated and sent to {user.email}.",
         })
 
     @action(detail=True, methods=["post"], url_path="send-reminder")
@@ -818,8 +834,12 @@ class UpdateProfileView(APIView):
     """
     PATCH /api/auth/update-profile/
     Allows an authenticated user to update their own profile details.
+    Supports multipart/form-data for avatar uploads.
     """
     permission_classes = [IsAuthenticated]
+    parser_classes = [MultiPartParser, FormParser, JSONParser]
+
+    MAX_AVATAR_SIZE = 5 * 1024 * 1024  # 5 MB
 
     def patch(self, request):
         try:
@@ -835,10 +855,28 @@ class UpdateProfileView(APIView):
             profile.designation = request.data["designation"]
         if "timezone" in request.data:
             profile.timezone = request.data["timezone"]
-            
+
         if "profile_picture" in request.FILES:
-            profile.profile_picture = request.FILES["profile_picture"]
-            
+            pic = request.FILES["profile_picture"]
+            # ── Size check ──
+            if pic.size > self.MAX_AVATAR_SIZE:
+                return Response(
+                    {"error": "Profile picture must be under 5 MB."},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+            # ── Image validity check using PIL ──
+            try:
+                from PIL import Image as PILImage
+                img = PILImage.open(pic)
+                img.verify()  # raises if not a valid image
+                pic.seek(0)   # reset after verify
+            except Exception:
+                return Response(
+                    {"error": "Uploaded file is not a valid image."},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+            profile.profile_picture = pic
+
         profile.save()
         return Response({"message": "Profile updated successfully."}, status=status.HTTP_200_OK)
 
@@ -857,17 +895,14 @@ from email.mime.text import MIMEText
 from django.contrib.auth.models import User
 from django.core.cache import cache
 
-SENDER_EMAIL = "amazonprimefreegame1@gmail.com"
-SENDER_PASSWORD = "ozqp wzwp zdiy kxvw"
-DEFAULT_TOTP_SECRET = "LNQQV4GJKFA27GFQQWVUELXUX7MECTFI"
-
 
 def _send_email_otp(receiver_email, otp):
     """Send OTP via Gmail SMTP in a background thread."""
     try:
+        smtp_cfg = _get_smtp_config()
         msg = MIMEMultipart("alternative")
         msg["Subject"] = "Password Reset OTP - GRC Platform"
-        msg["From"] = SENDER_EMAIL
+        msg["From"] = smtp_cfg["username"]
         msg["To"] = receiver_email
         html = f"""
         <html><body style="font-family:sans-serif;padding:20px;">
@@ -882,10 +917,12 @@ def _send_email_otp(receiver_email, otp):
         </body></html>
         """
         msg.attach(MIMEText(html, "html"))
-        with smtplib.SMTP("smtp.gmail.com", 587, timeout=10) as smtp:
-            smtp.ehlo(); smtp.starttls(); smtp.ehlo()
-            smtp.login(SENDER_EMAIL, SENDER_PASSWORD)
-            smtp.sendmail(SENDER_EMAIL, receiver_email, msg.as_string())
+        with smtplib.SMTP(smtp_cfg["host"], smtp_cfg["port"], timeout=10) as smtp:
+            smtp.ehlo()
+            if smtp_cfg["use_tls"]:
+                smtp.starttls(); smtp.ehlo()
+            smtp.login(smtp_cfg["username"], smtp_cfg["password"])
+            smtp.sendmail(smtp_cfg["username"], receiver_email, msg.as_string())
     except Exception as e:
         print(f"[EMAIL ERROR] {e}")
 
@@ -1051,7 +1088,9 @@ class VerifyTOTPView(APIView):
 
         try:
             user = User.objects.get(username=username)
-            totp_secret = getattr(user.profile, "totp_secret", DEFAULT_TOTP_SECRET) or DEFAULT_TOTP_SECRET
+            totp_secret = getattr(user.profile, "totp_secret", "") or ""
+            if not totp_secret:
+                return Response({"error": "2FA not configured for this account."}, status=status.HTTP_400_BAD_REQUEST)
         except (User.DoesNotExist, UserProfile.DoesNotExist):
             return Response({"error": "User not found."}, status=status.HTTP_404_NOT_FOUND)
 
@@ -1081,7 +1120,9 @@ class VerifyLoginTOTPView(APIView):
 
         try:
             user = User.objects.get(username=username)
-            totp_secret = getattr(user.profile, "totp_secret", DEFAULT_TOTP_SECRET) or DEFAULT_TOTP_SECRET
+            totp_secret = getattr(user.profile, "totp_secret", "") or ""
+            if not totp_secret:
+                return Response({"error": "2FA not configured for this account."}, status=status.HTTP_400_BAD_REQUEST)
         except (User.DoesNotExist, UserProfile.DoesNotExist):
             return Response({"error": "User not found."}, status=status.HTTP_404_NOT_FOUND)
 
@@ -1233,7 +1274,7 @@ class ChangePasswordView(APIView):
     def post(self, request):
         old_password = request.data.get("old_password", "")
         new_password = request.data.get("new_password", "")
-        new_password2 = request.data.get("new_password2", "")
+        confirm_password = request.data.get("confirm_password", "")
 
         if not request.user.check_password(old_password):
             return Response(
@@ -1241,15 +1282,20 @@ class ChangePasswordView(APIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        if new_password != new_password2:
+        if new_password != confirm_password:
             return Response(
                 {"error": "New passwords do not match."},
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        if len(new_password) < 6:
+        # Complexity: min 8 chars, uppercase, lowercase, digit, special
+        if (len(new_password) < 8
+                or not re.search(r'[A-Z]', new_password)
+                or not re.search(r'[a-z]', new_password)
+                or not re.search(r'\d', new_password)
+                or not re.search(r'[@$!%*?&]', new_password)):
             return Response(
-                {"error": "Password must be at least 6 characters."},
+                {"error": "Password must be at least 8 characters with uppercase, lowercase, digit, and special character (@$!%*?&)."},
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
@@ -1267,3 +1313,60 @@ class ChangePasswordView(APIView):
 
         _audit(request.user, "changed their own password", "Auth")
         return Response({"message": "Password changed successfully. Please log in again."})
+
+
+# ═══════════════════════════════════════════════════
+# SMTP SETTINGS (Super Admin only)
+# ═══════════════════════════════════════════════════
+
+
+class SMTPSettingsView(APIView):
+    """
+    GET  /api/smtp-settings/  → returns current SMTP config (password masked)
+    PATCH /api/smtp-settings/ → updates SMTP config
+    """
+    permission_classes = [IsSuperAdmin]
+
+    def get(self, request):
+        smtp = SMTPSettings.load()
+        return Response(SMTPSettingsSerializer(smtp).data)
+
+    def patch(self, request):
+        smtp = SMTPSettings.load()
+        serializer = SMTPSettingsSerializer(smtp, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        _audit(request.user, "updated SMTP configuration", "Settings")
+        return Response(serializer.data)
+
+
+class SudoVerifyView(APIView):
+    """
+    POST /api/auth/sudo-verify/
+    Body: { "password": "..." }
+    Verifies the current user's password for sudo-sensitive actions.
+    """
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        password = request.data.get("password", "")
+        if request.user.check_password(password):
+            return Response({"valid": True})
+        return Response(
+            {"valid": False, "error": "Invalid password."},
+            status=status.HTTP_403_FORBIDDEN,
+        )
+
+
+class CustomTokenObtainPairView(APIView):
+    """
+    POST /api/auth/token/
+    Custom login view that checks account_expiry_date before issuing tokens.
+    """
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        from .serializers import CustomTokenObtainPairSerializer
+        serializer = CustomTokenObtainPairSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        return Response(serializer.validated_data, status=status.HTTP_200_OK)

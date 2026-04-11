@@ -204,6 +204,7 @@ function InviteModal({ open, onClose, onInvited }) {
               <input type="datetime-local" min={getMinDateTime()} value={expiryDate} onChange={e => setExpiryDate(e.target.value)}
                 className="w-full input-field border-sky-200" required />
               <p className="text-[10px] text-sky-600 mt-1 flex items-center gap-1"><Clock className="w-3 h-3" /> Account will auto-revoke precisely at this time.</p>
+              <p className="text-[10px] text-gray-400 mt-0.5 italic">(Saved in UTC, currently adjusting for your local timezone)</p>
             </div>
           )}
 
@@ -222,12 +223,11 @@ function InviteModal({ open, onClose, onInvited }) {
 
 /* ── View Details Slide-out Panel ─────────────────── */
 function ViewDetailsPanel({ user, onClose, showToast }) {
-  if (!user) return null;
   const [timeLeft, setTimeLeft] = useState('');
   const [sendingReminder, setSendingReminder] = useState(false);
 
   useEffect(() => {
-    if (!user.account_expiry_date) return;
+    if (!user || !user.account_expiry_date) return;
     const interval = setInterval(() => {
       const diff = new Date(user.account_expiry_date) - new Date();
       if (diff <= 0) {
@@ -242,6 +242,8 @@ function ViewDetailsPanel({ user, onClose, showToast }) {
     }, 1000);
     return () => clearInterval(interval);
   }, [user]);
+
+  if (!user) return null;
 
   const handleSendReminder = async () => {
     setSendingReminder(true);

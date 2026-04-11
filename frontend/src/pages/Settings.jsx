@@ -90,11 +90,24 @@ function MyProfileTab() {
         previewUrl: res.data.profile_picture ? `${import.meta.env.VITE_API_URL}${res.data.profile_picture}` : null
       });
     });
+    // Revoke any object URL on unmount
+    return () => {
+      setProfile(prev => {
+        if (prev.previewUrl && prev.previewUrl.startsWith('blob:')) {
+          URL.revokeObjectURL(prev.previewUrl);
+        }
+        return prev;
+      });
+    };
   }, []);
 
   const handlePicChange = (e) => {
     const file = e.target.files[0];
     if (file) {
+      // Revoke previous blob URL to prevent memory leak
+      if (profile.previewUrl && profile.previewUrl.startsWith('blob:')) {
+        URL.revokeObjectURL(profile.previewUrl);
+      }
       setProfile(prev => ({
         ...prev, 
         profilePic: file, 
@@ -364,21 +377,64 @@ function SMTPConfigurationTab() {
   const [sudoUnlocked, setSudoUnlocked] = useState(false);
   const [sudoPassword, setSudoPassword] = useState('');
   const [error, setError] = useState('');
+  const [toast, setToast] = useState(null);
+  const [saving, setSaving] = useState(false);
+  const [smtpConfig, setSmtpConfig] = useState({
+    host: 'smtp.gmail.com',
+    port: 587,
+    username: '',
+    password: '',
+    use_tls: true,
+  });
+  const [passwordConfigured, setPasswordConfigured] = useState(false);
+
+  const fetchSMTP = async () => {
+    try {
+      const res = await API.get('smtp-settings/');
+      setSmtpConfig({
+        host: res.data.host || '',
+        port: res.data.port || 587,
+        username: res.data.username || '',
+        password: '',
+        use_tls: res.data.use_tls ?? true,
+      });
+      setPasswordConfigured(res.data.password_configured || false);
+    } catch {}
+  };
 
   const handleSudo = async (e) => {
     e.preventDefault();
+    setError('');
     try {
-      // Mock call since backend endpoint may not exist yet
-      setSudoUnlocked(true);
-      setError('');
+      const res = await API.post('auth/sudo-verify/', { password: sudoPassword });
+      if (res.data.valid) {
+        setSudoUnlocked(true);
+        fetchSMTP();
+      }
     } catch {
-      setError('Invalid password.');
+      setError('Invalid password. Access denied.');
     }
+  };
+
+  const handleSaveSMTP = async () => {
+    setSaving(true);
+    try {
+      const payload = { ...smtpConfig };
+      // Only send password if user typed a new one
+      if (!payload.password) delete payload.password;
+      await API.patch('smtp-settings/', payload);
+      setToast({ msg: 'SMTP configuration saved successfully.', type: 'success' });
+      setPasswordConfigured(true);
+    } catch {
+      setToast({ msg: 'Failed to save SMTP configuration.', type: 'error' });
+    }
+    setSaving(false);
   };
 
   if (!sudoUnlocked) {
     return (
       <div className="max-w-md rounded-2xl border border-rose-100 dark:border-rose-900/30 bg-rose-50 dark:bg-rose-900/10 p-8 shadow-sm">
+        {toast && <Toast message={toast.msg} type={toast.type} onClose={() => setToast(null)} />}
         <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-rose-100 dark:bg-rose-900/50 mb-4">
           <ShieldAlert className="h-7 w-7 text-rose-600 dark:text-rose-400" />
         </div>
@@ -401,18 +457,46 @@ function SMTPConfigurationTab() {
 
   return (
     <div className="max-w-2xl rounded-2xl border border-gray-100 dark:border-navy-700 bg-white dark:bg-navy-800 p-8 shadow-sm">
+      {toast && <Toast message={toast.msg} type={toast.type} onClose={() => setToast(null)} />}
       <h3 className="mb-6 flex items-center gap-3 text-xl font-bold text-[#0f172a] dark:text-white">
         <Mail className="h-6 w-6 text-indigo-500" /> SMTP Server Pipeline
       </h3>
       <div className="space-y-5">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-          <div><label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">SMTP Host</label><input className="w-full input-field" defaultValue="smtp.office365.com" /></div>
-          <div><label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">SMTP Port</label><input className="w-full input-field" defaultValue="587" /></div>
+          <div>
+            <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">SMTP Host</label>
+            <input className="w-full input-field" value={smtpConfig.host} onChange={e => setSmtpConfig({...smtpConfig, host: e.target.value})} />
+          </div>
+          <div>
+            <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">SMTP Port</label>
+            <input className="w-full input-field" type="number" value={smtpConfig.port} onChange={e => setSmtpConfig({...smtpConfig, port: Number(e.target.value)})} />
+          </div>
         </div>
-        <div><label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">SMTP User Address</label><input className="w-full input-field" defaultValue="grc-alerts@company.com" /></div>
-        <div><label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">App / Secret Password</label><input type="password" className="w-full input-field" defaultValue="**********" /></div>
+        <div>
+          <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">SMTP User Address</label>
+          <input className="w-full input-field" value={smtpConfig.username} onChange={e => setSmtpConfig({...smtpConfig, username: e.target.value})} />
+        </div>
+        <div>
+          <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">App / Secret Password</label>
+          <input type="password" className="w-full input-field" value={smtpConfig.password} onChange={e => setSmtpConfig({...smtpConfig, password: e.target.value})} placeholder={passwordConfigured ? '••••••••••  (leave blank to keep current)' : 'Enter SMTP password'} />
+        </div>
+        <div className="flex items-center gap-3 rounded-lg p-3 hover:bg-slate-50 dark:hover:bg-navy-900 transition-colors">
+          <div className="pr-4">
+            <span className="block text-sm font-bold text-slate-700 dark:text-slate-300">Use TLS (STARTTLS)</span>
+            <span className="block text-xs text-slate-500">Required for most providers (Gmail, Outlook, etc.)</span>
+          </div>
+          <div 
+            onClick={() => setSmtpConfig({...smtpConfig, use_tls: !smtpConfig.use_tls})}
+            className={`relative inline-flex h-6 w-11 cursor-pointer items-center rounded-full transition-colors ${smtpConfig.use_tls ? 'bg-emerald-500' : 'bg-slate-300 dark:bg-slate-700'}`}
+          >
+            <span className={`inline-block h-5 w-5 transform rounded-full bg-white transition-transform ${smtpConfig.use_tls ? 'translate-x-5 shadow-sm' : 'translate-x-1'}`} />
+          </div>
+        </div>
         <div className="pt-4 flex justify-end">
-          <button className="btn-primary px-8 rounded-full shadow-lg shadow-sky-500/30" onClick={() => alert('Saved SMTP details')}>Apply Configuration Pipeline</button>
+          <button disabled={saving} onClick={handleSaveSMTP} className="btn-primary px-8 rounded-full shadow-lg shadow-sky-500/30 flex items-center gap-2 disabled:opacity-60">
+            {saving ? <div className="w-4 h-4 rounded-full border-2 border-white/20 border-t-white animate-spin" /> : null}
+            {saving ? 'Saving...' : 'Apply Configuration Pipeline'}
+          </button>
         </div>
       </div>
     </div>

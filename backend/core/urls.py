@@ -8,9 +8,9 @@ custom /api/auth/me/ endpoint for fetching the current user's profile.
 from django.contrib import admin
 from django.urls import include, path
 from rest_framework_simplejwt.views import (
-    TokenObtainPairView,
     TokenRefreshView,
 )
+from compliance.views import CustomTokenObtainPairView
 
 urlpatterns = [
     path("admin/", admin.site.urls),
@@ -18,8 +18,8 @@ urlpatterns = [
     # ── Compliance API ──
     path("api/", include("compliance.urls")),
 
-    # ── JWT Auth ──
-    path("api/auth/token/", TokenObtainPairView.as_view(), name="token_obtain"),
+    # ── JWT Auth (custom — enforces account expiry) ──
+    path("api/auth/token/", CustomTokenObtainPairView.as_view(), name="token_obtain"),
     path("api/auth/token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
 
     # ── Custom auth endpoints (me, etc.) live in compliance.urls ──

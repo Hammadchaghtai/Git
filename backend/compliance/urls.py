@@ -84,4 +84,25 @@ urlpatterns = [
         views.UserManagementViewSet.as_view({"post": "regenerate_credentials"}),
         name="user-regenerate-credentials",
     ),
+
+    # Send reminder to user
+    path(
+        "users/<int:pk>/send-reminder/",
+        views.UserManagementViewSet.as_view({"post": "send_reminder"}),
+        name="user-send-reminder",
+    ),
+
+    # SMTP Settings (Super Admin)
+    path(
+        "smtp-settings/",
+        views.SMTPSettingsView.as_view(),
+        name="smtp-settings",
+    ),
+
+    # Sudo Verify (re-auth for sensitive actions)
+    path(
+        "auth/sudo-verify/",
+        views.SudoVerifyView.as_view(),
+        name="sudo-verify",
+    ),
 ]

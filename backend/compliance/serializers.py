@@ -21,6 +21,7 @@ from .models import (
     UserProfile,
     AuditLog,
     SystemSettings,
+    SMTPSettings,
 )
 
 
@@ -296,3 +297,99 @@ class CreateUserSerializer(serializers.Serializer):
         default="admin",
     )
     account_expiry_date = serializers.DateTimeField(required=False, allow_null=True)
+
+
+# ═══════════════════════════════════════════════════
+# SMTP SETTINGS
+# ═══════════════════════════════════════════════════
+
+
+class SMTPSettingsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SMTPSettings
+        fields = [
+            "host",
+            "port",
+            "username",
+            "password",
+            "use_tls",
+            "updated_at",
+        ]
+        extra_kwargs = {
+            "password": {"write_only": True},
+        }
+
+    def to_representation(self, instance):
+        """Mask the password in read responses."""
+        data = super().to_representation(instance)
+        # Password is write_only, but show a placeholder if it's configured
+        data["password_configured"] = bool(instance.password)
+        return data
+
+
+# ═══════════════════════════════════════════════════
+# CUSTOM JWT LOGIN (Account Expiry Enforcement)
+# ═══════════════════════════════════════════════════
+
+
+class CustomTokenObtainPairSerializer(serializers.Serializer):
+    """
+    Wraps the default JWT token-obtain flow and injects an
+    account_expiry_date check before returning tokens.
+    """
+    username = serializers.CharField()
+    password = serializers.CharField(write_only=True)
+
+    def validate(self, attrs):
+        from django.contrib.auth import authenticate
+        from django.utils import timezone
+        from rest_framework.exceptions import AuthenticationFailed
+
+        user = authenticate(
+            username=attrs["username"],
+            password=attrs["password"],
+        )
+        if user is None:
+            raise AuthenticationFailed("Invalid username or password.")
+
+        if not user.is_active:
+            raise AuthenticationFailed("This account has been deactivated.")
+
+        # ── Account Expiry Check ──
+        try:
+            profile = user.profile
+            if profile.account_expiry_date and profile.account_expiry_date < timezone.now():
+                # Auto-deactivate the user for good measure
+                user.is_active = False
+                user.save(update_fields=["is_active"])
+                raise AuthenticationFailed("Account has expired. Contact your Super Administrator.")
+        except UserProfile.DoesNotExist:
+            pass
+
+        # ── Check if 2FA is required ──
+        try:
+            totp_secret = user.profile.totp_secret
+        except UserProfile.DoesNotExist:
+            totp_secret = ""
+
+        if totp_secret:
+            # Don't issue tokens yet — frontend must route to TOTP verification
+            return {
+                "requires_2fa": True,
+                "username": user.username,
+            }
+
+        # No 2FA configured — issue tokens directly
+        from rest_framework_simplejwt.tokens import RefreshToken
+        refresh = RefreshToken.for_user(user)
+        try:
+            role = user.profile.role
+        except UserProfile.DoesNotExist:
+            role = "admin"
+
+        return {
+            "access": str(refresh.access_token),
+            "refresh": str(refresh),
+            "username": user.username,
+            "role": role,
+        }

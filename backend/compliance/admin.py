@@ -19,6 +19,7 @@ from .models import (
     UserProfile,
     AuditLog,
     SystemSettings,
+    SMTPSettings,
 )
 
 
@@ -142,6 +143,18 @@ class SystemSettingsAdmin(admin.ModelAdmin):
     def has_add_permission(self, request):
         # Prevent creating more than one settings row
         return not SystemSettings.objects.exists()
+
+    def has_delete_permission(self, request, obj=None):
+        return False
+
+
+@admin.register(SMTPSettings)
+class SMTPSettingsAdmin(admin.ModelAdmin):
+    list_display = ("host", "port", "username", "use_tls", "updated_at")
+
+    def has_add_permission(self, request):
+        # Prevent creating more than one settings row
+        return not SMTPSettings.objects.exists()
 
     def has_delete_permission(self, request, obj=None):
         return False
