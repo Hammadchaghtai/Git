@@ -46,10 +46,22 @@ export function AuthProvider({ children }) {
   /**
    * Step 1: Send credentials to /api/auth/token/ to get JWT tokens.
    * Returns { success, role, username, needs_setup } on success.
+   * Returns { success, requires_2fa, username } when 2FA is needed.
    */
   const login = async (username, password) => {
     try {
       const res = await API.post('auth/token/', { username, password });
+
+      // ── 2FA required: backend didn't issue tokens yet ──
+      if (res.data.requires_2fa) {
+        return {
+          success: true,
+          requires_2fa: true,
+          username: res.data.username,
+        };
+      }
+
+      // ── No 2FA: tokens issued directly ──
       localStorage.setItem('grc_access_token', res.data.access);
       localStorage.setItem('grc_refresh_token', res.data.refresh);
 
@@ -57,6 +69,7 @@ export function AuthProvider({ children }) {
       const meRes = await API.get('auth/me/');
       return {
         success: true,
+        requires_2fa: false,
         username: meRes.data.username,
         role: meRes.data.role,
         needs_setup: meRes.data.needs_setup,

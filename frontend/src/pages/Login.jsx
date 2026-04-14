@@ -20,11 +20,12 @@ export default function Login() {
     const result = await login(username, password);
 
     if (result.success) {
-      // Store pending login info for OTP step
+      // Store pending login info for the OTP verification step
       sessionStorage.setItem('pending_login', JSON.stringify({
         username: result.username,
-        role: result.role,
-        needs_setup: result.needs_setup,
+        role: result.role || null,
+        needs_setup: result.needs_setup || false,
+        requires_2fa: result.requires_2fa ?? true,
       }));
       navigate('/verify-otp');
     } else {
