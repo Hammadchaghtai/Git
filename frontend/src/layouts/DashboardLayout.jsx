@@ -151,7 +151,7 @@ export default function DashboardLayout() {
             👁️ Auditor View — Read-Only Access
           </div>
         )}
-        <main className="flex-1 overflow-y-auto bg-[#f4f6f9] dark:bg-black text-[#0f172a] dark:text-white p-8">
+        <main className="flex-1 overflow-y-auto bg-[#f4f6f9] dark:bg-slate-900 text-[#0f172a] dark:text-slate-200 p-8">
           <Outlet />
         </main>
       </div>

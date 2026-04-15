@@ -14,6 +14,7 @@ export default function Reports() {
   const [auditLogs, setAuditLogs] = useState([]);
   const [loadingLogs, setLoadingLogs] = useState(true);
   const [generating, setGenerating] = useState(false);
+  const [generatingAudit, setGeneratingAudit] = useState(false);
 
   useEffect(() => {
     API.get('frameworks/').then((res) => {
@@ -136,6 +137,75 @@ export default function Reports() {
     }
   };
 
+  const handleDownloadAudit = async () => {
+    setGeneratingAudit(true);
+    try {
+      const { jsPDF } = await import('jspdf');
+      await import('jspdf-autotable');
+
+      const doc = new jsPDF();
+      const now = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+
+      // ── Header ──
+      doc.setFillColor(15, 23, 42);
+      doc.rect(0, 0, 210, 35, 'F');
+      doc.setTextColor(56, 189, 248);
+      doc.setFontSize(20);
+      doc.setFont(undefined, 'bold');
+      doc.text('Audit Trail Report', 14, 17);
+      doc.setFontSize(10);
+      doc.setFont(undefined, 'normal');
+      doc.setTextColor(148, 163, 184);
+      doc.text(`Generated: ${now}  |  Total Entries: ${auditLogs.length}`, 14, 27);
+
+      // ── Summary ──
+      let y = 45;
+      doc.setTextColor(15, 23, 42);
+      doc.setFontSize(14);
+      doc.setFont(undefined, 'bold');
+      doc.text('Audit Log Entries', 14, y);
+      y += 3;
+
+      doc.autoTable({
+        startY: y,
+        head: [['User', 'Action', 'Module', 'Status', 'Timestamp']],
+        body: auditLogs.map((log) => [
+          log.user || 'System',
+          log.action.length > 50 ? log.action.slice(0, 50) + '...' : log.action,
+          log.module,
+          log.status,
+          new Date(log.timestamp).toLocaleString(),
+        ]),
+        theme: 'striped',
+        headStyles: { fillColor: [15, 23, 42], textColor: [56, 189, 248], fontSize: 9 },
+        styles: { fontSize: 8, cellPadding: 3 },
+        columnStyles: {
+          0: { cellWidth: 28 },
+          1: { cellWidth: 62 },
+          2: { cellWidth: 28 },
+          3: { cellWidth: 22 },
+          4: { cellWidth: 40 },
+        },
+      });
+
+      // ── Footer ──
+      const pageCount = doc.internal.getNumberOfPages();
+      for (let i = 1; i <= pageCount; i++) {
+        doc.setPage(i);
+        doc.setFontSize(8);
+        doc.setTextColor(148, 163, 184);
+        doc.text(`GRC Compliance Platform  ·  Audit Trail  ·  Page ${i} of ${pageCount}`, 14, 290);
+      }
+
+      doc.save(`GRC_Audit_Trail_${new Date().toISOString().slice(0, 10)}.pdf`);
+    } catch (err) {
+      console.error('Audit PDF generation failed:', err);
+      alert('Failed to generate Audit PDF. Please try again.');
+    } finally {
+      setGeneratingAudit(false);
+    }
+  };
+
   return (
     <div>
       <h1 className="mb-6 text-2xl font-bold text-[#0f172a]">Reports & Audit</h1>
@@ -161,6 +231,15 @@ export default function Reports() {
               <><Loader2 className="h-4 w-4 animate-spin" /> Generating PDF...</>
             ) : (
               <><Download className="h-4 w-4" /> Download PDF Report</>
+            )}
+          </button>
+
+          <button onClick={handleDownloadAudit} disabled={generatingAudit || auditLogs.length === 0}
+            className="mt-3 flex w-full items-center justify-center gap-2 rounded-lg border-2 border-[#0f172a] py-3 text-sm font-semibold text-[#0f172a] hover:bg-[#0f172a] hover:text-white cursor-pointer disabled:opacity-60 transition-colors">
+            {generatingAudit ? (
+              <><Loader2 className="h-4 w-4 animate-spin" /> Generating PDF...</>
+            ) : (
+              <><Download className="h-4 w-4" /> Download Audit Log (PDF)</>
             )}
           </button>
         </div>

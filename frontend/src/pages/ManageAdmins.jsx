@@ -404,8 +404,7 @@ export default function ManageAdmins() {
 
   const handleRegenerated = (data) => {
      fetchUsers();
-     setCredData(data);
-     showToast(`New credentials generated precisely`);
+     showToast(data.message || `New credentials securely emailed to ${data.email}`);
   };
 
   if (loading) {

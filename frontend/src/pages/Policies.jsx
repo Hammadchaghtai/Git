@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import API from '../api/axios';
 import { useAuth } from '../context/AuthContext';
-import { Plus, Search, Pencil, X } from 'lucide-react';
+import { Plus, Search, Pencil, Trash2, X } from 'lucide-react';
 import Toast from '../components/Toast';
 
 const STATUS_COLORS = {
@@ -206,6 +206,27 @@ export default function Policies() {
     setShowModal(true);
   };
 
+  const handleDelete = async (policy) => {
+    if (!confirm(`Delete policy "${policy.title}"? This cannot be undone.`)) return;
+    try {
+      await API.delete(`policies/${policy.id}/`);
+      fetchData();
+      showToast(`Policy "${policy.title}" deleted successfully.`);
+    } catch {
+      showToast('Failed to delete policy.', 'error');
+    }
+  };
+
+  const handleStatusChange = async (policy, newStatus) => {
+    try {
+      await API.patch(`policies/${policy.id}/`, { status: newStatus });
+      fetchData();
+      showToast(`Status updated to "${newStatus.charAt(0).toUpperCase() + newStatus.slice(1)}"`);
+    } catch {
+      showToast('Failed to update status.', 'error');
+    }
+  };
+
   if (loading) {
     return (
       <div className="flex h-full items-center justify-center">
@@ -273,16 +294,35 @@ export default function Policies() {
                       {new Date(p.updated_at || p.created_at).toLocaleDateString()}
                     </td>
                     <td className="py-3.5 pr-4">
-                      <span className={`rounded-full px-3 py-1 text-xs font-semibold ${STATUS_COLORS[p.status] || STATUS_COLORS.active}`}>
-                        {p.status ? p.status.charAt(0).toUpperCase() + p.status.slice(1) : 'Active'}
-                      </span>
+                      {role !== 'auditor' ? (
+                        <select
+                          value={p.status || 'active'}
+                          onChange={(e) => { e.stopPropagation(); handleStatusChange(p, e.target.value); }}
+                          onClick={(e) => e.stopPropagation()}
+                          className={`appearance-none rounded-full px-3 py-1 text-xs font-semibold border-0 cursor-pointer outline-none bg-transparent ${STATUS_COLORS[p.status] || STATUS_COLORS.active}`}
+                        >
+                          <option value="active">Active</option>
+                          <option value="draft">Draft</option>
+                          <option value="disabled">Disabled</option>
+                        </select>
+                      ) : (
+                        <span className={`rounded-full px-3 py-1 text-xs font-semibold ${STATUS_COLORS[p.status] || STATUS_COLORS.active}`}>
+                          {p.status ? p.status.charAt(0).toUpperCase() + p.status.slice(1) : 'Active'}
+                        </span>
+                      )}
                     </td>
                     {role !== 'auditor' && (
                       <td className="py-3.5 pr-5 text-right">
-                        <button onClick={(e) => { e.stopPropagation(); openEdit(p); }}
-                          className="flex items-center gap-1 rounded-lg border border-gray-200 px-2.5 py-1.5 text-xs font-medium text-gray-600 hover:bg-gray-100 cursor-pointer ml-auto">
-                          <Pencil className="h-3.5 w-3.5" /> Edit
-                        </button>
+                        <div className="flex items-center justify-end gap-1.5">
+                          <button onClick={(e) => { e.stopPropagation(); openEdit(p); }}
+                            className="flex items-center gap-1 rounded-lg border border-gray-200 px-2.5 py-1.5 text-xs font-medium text-gray-600 hover:bg-gray-100 cursor-pointer">
+                            <Pencil className="h-3.5 w-3.5" /> Edit
+                          </button>
+                          <button onClick={(e) => { e.stopPropagation(); handleDelete(p); }}
+                            className="flex items-center gap-1 rounded-lg border border-red-200 px-2.5 py-1.5 text-xs font-medium text-red-500 hover:bg-red-50 cursor-pointer transition-colors">
+                            <Trash2 className="h-3.5 w-3.5" />
+                          </button>
+                        </div>
                       </td>
                     )}
                   </tr>

@@ -95,7 +95,7 @@ export default function Dashboard() {
         <StatCard icon={ShieldCheck} label="Compliance Score" value={`${overall_compliance_score}%`} color="text-emerald-500" bgColor="bg-emerald-50" />
         <StatCard icon={ShieldAlert} label="Frameworks Tracked" value={framework_scores.length} color="text-violet-500" bgColor="bg-violet-50" />
         <StatCard icon={AlertTriangle} label="Failed Controls" value={top_failed_controls.length} color="text-amber-500" bgColor="bg-amber-50" />
-        <Link to="/manage-admins" className="block transform transition-transform hover:scale-105 active:scale-95">
+        <Link to="/manage-admins" className="block no-underline">
           <StatCard icon={Users} label="Total Admins" value={data.total_admins} color="text-pink-500" bgColor="bg-pink-50" />
         </Link>
       </div>
@@ -239,7 +239,7 @@ export default function Dashboard() {
           <div className="rounded-xl border border-gray-100 bg-white p-6 shadow-sm">
             <div className="mb-4 flex items-center justify-between">
               <h3 className="text-sm font-semibold text-gray-600">Recent Activity</h3>
-              <Link to="/audit-logs" className="text-xs font-semibold text-sky-500 hover:text-sky-600 cursor-pointer">View All →</Link>
+              <Link to="/reports" className="text-xs font-semibold text-sky-500 hover:text-sky-600 cursor-pointer no-underline">View All →</Link>
             </div>
             <div className="space-y-4">
               {data.recent_activity.slice(0, 4).map((log) => (
