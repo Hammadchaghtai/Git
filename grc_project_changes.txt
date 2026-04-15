@@ -1,7 +1,7 @@
 ========================================================
 GRC PLATFORM - COMPREHENSIVE CHANGES LOG & CONTEXT
 ========================================================
-
+ 
 This document outlines all tracking and modifications done to the GRC platform ecosystem over the recent development cycles. It encapsulates the full context of what has natively been achieved locally before matching against the upstream GitHub repository.
 
 ---
