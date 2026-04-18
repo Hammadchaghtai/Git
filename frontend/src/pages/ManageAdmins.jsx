@@ -350,7 +350,7 @@ export default function ManageAdmins() {
 
   const showToast = useCallback((msg, type = 'success') => setToast({ msg, type }), []);
 
-  const fetchUsers = () => {
+  const fetchUsers = useCallback(() => {
     setLoading(true);
     API.get('users/')
       .then((res) => {
@@ -359,16 +359,16 @@ export default function ManageAdmins() {
       })
       .catch(() => {})
       .finally(() => setLoading(false));
-  };
+  }, []);
 
-  useEffect(() => { fetchUsers(); }, []);
+  useEffect(() => { fetchUsers(); }, [fetchUsers]);
 
-  const handleInvited = (data) => {
+  const handleInvited = useCallback((data) => {
     fetchUsers();
     setCredData(data);
-  };
+  }, [fetchUsers]);
 
-  const handleToggleActive = async (user) => {
+  const handleToggleActive = useCallback(async (user) => {
     const action = user.is_active ? 'Revoke' : 'Restore';
     if (!confirm(`${action} access for ${user.username}?`)) return;
     try {
@@ -379,9 +379,9 @@ export default function ManageAdmins() {
     } catch {
       showToast(`Failed to ${action.toLowerCase()} access.`, 'error');
     }
-  };
+  }, [fetchUsers, showToast, viewingUser]);
 
-  const handleDelete = async (user) => {
+  const handleDelete = useCallback(async (user) => {
     if (!confirm(`Permanently delete ${user.username}? This cannot be undone!`)) return;
     try {
       await API.delete(`users/${user.id}/`);
@@ -391,21 +391,21 @@ export default function ManageAdmins() {
     } catch {
       showToast('Failed to delete user.', 'error');
     }
-  };
+  }, [fetchUsers, showToast, viewingUser]);
 
-  const handleSendReminderGrid = async (user) => {
+  const handleSendReminderGrid = useCallback(async (user) => {
     try {
       await API.post(`users/${user.id}/send-reminder/`);
       showToast(`Reminder email queued for ${user.email}`);
     } catch {
       showToast('Failed to queue reminder.', 'error');
     }
-  };
+  }, [showToast]);
 
-  const handleRegenerated = (data) => {
+  const handleRegenerated = useCallback((data) => {
      fetchUsers();
      showToast(data.message || `New credentials securely emailed to ${data.email}`);
-  };
+  }, [fetchUsers, showToast]);
 
   if (loading) {
     return (

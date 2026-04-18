@@ -10,7 +10,6 @@ import {
 const SUPER_ADMIN_NAV = [
   { to: '/',           icon: LayoutDashboard, label: 'Dashboard' },
   { to: '/policies',   icon: FileText,        label: 'Policy Manager' },
-  { to: '/checks',     icon: ShieldCheck,     label: 'Compliance Checks' },
   { to: '/scans',      icon: ScanLine,        label: 'Scan Results' },
   { to: '/reports',    icon: BarChart3,       label: 'Reports' },
   { to: '/manage-admins', icon: Users,        label: 'Manage Admins', badge: 'SUPER' },
@@ -21,7 +20,6 @@ const SUPER_ADMIN_NAV = [
 const ADMIN_NAV = [
   { to: '/',           icon: LayoutDashboard, label: 'Dashboard' },
   { to: '/policies',   icon: FileText,        label: 'Policy Manager' },
-  { to: '/checks',     icon: ShieldCheck,     label: 'Compliance Checks' },
   { to: '/scans',      icon: ScanLine,        label: 'Scan Results' },
   { to: '/reports',    icon: BarChart3,       label: 'Reports' },
   { to: '/frameworks', icon: ShieldCheck,     label: 'Frameworks' },
@@ -31,7 +29,6 @@ const ADMIN_NAV = [
 const AUDITOR_NAV = [
   { to: '/',           icon: LayoutDashboard, label: 'Dashboard' },
   { to: '/policies',   icon: FileText,        label: 'Policies', badge: 'VIEW' },
-  { to: '/checks',     icon: ShieldCheck,     label: 'Compliance Checks' },
   { to: '/scans',      icon: ScanLine,        label: 'Scan Results' },
   { to: '/reports',    icon: BarChart3,       label: 'Reports' },
   { to: '/frameworks', icon: ShieldCheck,     label: 'Frameworks' },

@@ -51,6 +51,13 @@ API.interceptors.response.use(
           localStorage.removeItem('grc_user');
           window.location.href = '/login';
         }
+      } else {
+        // No refresh token available — session invalid, force logout
+        localStorage.removeItem('grc_access_token');
+        localStorage.removeItem('grc_refresh_token');
+        localStorage.removeItem('grc_user');
+        window.location.href = '/login';
+        return Promise.reject(error);
       }
     }
 

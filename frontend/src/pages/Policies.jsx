@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo, useCallback } from 'react';
 import API from '../api/axios';
 import { useAuth } from '../context/AuthContext';
 import { Plus, Search, Pencil, Trash2, X } from 'lucide-react';
@@ -170,11 +170,11 @@ export default function Policies() {
   const [showModal, setShowModal] = useState(false);
   const [editingPolicy, setEditingPolicy] = useState(null);
   const [toast, setToast] = useState({ msg: '', type: 'success' });
-  const showToast = (msg, type = 'success') => setToast({ msg, type });
+  const showToast = useCallback((msg, type = 'success') => setToast({ msg, type }), []);
   const [expandedId, setExpandedId] = useState(null);
   const perPage = 8;
 
-  const fetchData = () => {
+  const fetchData = useCallback(() => {
     setLoading(true);
     Promise.all([
       API.get('policies/?page_size=200'),
@@ -186,27 +186,27 @@ export default function Policies() {
       })
       .catch(() => {})
       .finally(() => setLoading(false));
-  };
+  }, []);
 
-  useEffect(() => { fetchData(); }, []);
+  useEffect(() => { fetchData(); }, [fetchData]);
 
-  const handleSaved = () => {
+  const handleSaved = useCallback(() => {
     fetchData();
     showToast(editingPolicy ? 'Policy updated successfully!' : 'Policy created successfully!');
     setEditingPolicy(null);
-  };
+  }, [fetchData, showToast, editingPolicy]);
 
-  const openEdit = (policy) => {
+  const openEdit = useCallback((policy) => {
     setEditingPolicy(policy);
     setShowModal(true);
-  };
+  }, []);
 
-  const openCreate = () => {
+  const openCreate = useCallback(() => {
     setEditingPolicy(null);
     setShowModal(true);
-  };
+  }, []);
 
-  const handleDelete = async (policy) => {
+  const handleDelete = useCallback(async (policy) => {
     if (!confirm(`Delete policy "${policy.title}"? This cannot be undone.`)) return;
     try {
       await API.delete(`policies/${policy.id}/`);
@@ -215,9 +215,9 @@ export default function Policies() {
     } catch {
       showToast('Failed to delete policy.', 'error');
     }
-  };
+  }, [fetchData, showToast]);
 
-  const handleStatusChange = async (policy, newStatus) => {
+  const handleStatusChange = useCallback(async (policy, newStatus) => {
     try {
       await API.patch(`policies/${policy.id}/`, { status: newStatus });
       fetchData();
@@ -225,7 +225,15 @@ export default function Policies() {
     } catch {
       showToast('Failed to update status.', 'error');
     }
-  };
+  }, [fetchData, showToast]);
+
+  const filtered = useMemo(() => policies.filter((p) =>
+    (p.title || '').toLowerCase().includes(search.toLowerCase()) ||
+    (p.description || '').toLowerCase().includes(search.toLowerCase())
+  ), [policies, search]);
+
+  const totalPages = useMemo(() => Math.ceil(filtered.length / perPage), [filtered, perPage]);
+  const paginated = useMemo(() => filtered.slice((page - 1) * perPage, page * perPage), [filtered, page, perPage]);
 
   if (loading) {
     return (
@@ -234,14 +242,6 @@ export default function Policies() {
       </div>
     );
   }
-
-  const filtered = policies.filter((p) =>
-    (p.title || '').toLowerCase().includes(search.toLowerCase()) ||
-    (p.description || '').toLowerCase().includes(search.toLowerCase())
-  );
-
-  const totalPages = Math.ceil(filtered.length / perPage);
-  const paginated = filtered.slice((page - 1) * perPage, page * perPage);
 
   return (
     <div>

@@ -433,6 +433,15 @@ class SystemSettingsView(APIView):
         serializer.is_valid(raise_exception=True)
         serializer.save()
         _audit(request.user, "updated System Settings", "Settings")
+
+        # Re-sync Celery Beat schedule if scan_frequency changed
+        if "scan_frequency" in request.data:
+            try:
+                from compliance.scheduler import sync_celery_beat_schedule
+                sync_celery_beat_schedule()
+            except Exception:
+                pass  # Non-critical — schedule will sync on next restart
+
         return Response(serializer.data)
 
 

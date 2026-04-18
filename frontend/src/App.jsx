@@ -9,7 +9,7 @@ import Dashboard      from './pages/Dashboard';
 import Scans          from './pages/Scans';
 import Frameworks     from './pages/Frameworks';
 import Policies       from './pages/Policies';
-import ComplianceChecks from './pages/ComplianceChecks';
+
 import Reports        from './pages/Reports';
 import Settings       from './pages/Settings';
 import ManageAdmins   from './pages/ManageAdmins';
@@ -58,7 +58,7 @@ export default function App() {
             <Route path="scans"    element={<Scans />} />
             <Route path="frameworks" element={<Frameworks />} />
             <Route path="policies" element={<Policies />} />
-            <Route path="checks"   element={<ComplianceChecks />} />
+
             <Route path="reports"  element={<Reports />} />
             <Route path="settings" element={<Settings />} />
             <Route path="manage-admins" element={

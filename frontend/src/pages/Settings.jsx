@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { Sliders, Bell, User, Lock, ShieldAlert, Mail, Camera, FileText, Eye, EyeOff } from 'lucide-react';
 import API from '../api/axios';
@@ -270,17 +270,18 @@ function SystemSettingsTab() {
     });
   }, []);
 
-  const handleChange = async (key, value) => {
-    const updated = { ...settings, [key]: value };
-    setSettings(updated);
-    try {
-      await API.patch('settings/', { [key]: value });
-      setToast({ msg: 'Configuration auto-saved.', type: 'success' });
-    } catch {
-      setToast({ msg: 'Failed to auto-save.', type: 'error' });
-      setSettings(settings); // revert
-    }
-  };
+  const handleChange = useCallback(async (key, value) => {
+    setSettings(prev => {
+      const updated = { ...prev, [key]: value };
+      API.patch('settings/', { [key]: value })
+        .then(() => setToast({ msg: 'Configuration auto-saved.', type: 'success' }))
+        .catch(() => {
+          setToast({ msg: 'Failed to auto-save.', type: 'error' });
+          setSettings(prev); // revert
+        });
+      return updated;
+    });
+  }, []);
 
   const Toggle = ({ checked, onChange }) => (
     <div 

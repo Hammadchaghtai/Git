@@ -44,6 +44,8 @@ INSTALLED_APPS = [
     'corsheaders',
     # ── JWT Auth ──
     'rest_framework_simplejwt',
+    # ── Celery Beat (periodic tasks) ──
+    'django_celery_beat',
     # ── Project apps ──
     'compliance',
 ]
@@ -175,3 +177,14 @@ SIMPLE_JWT = {
 # ── CORS ───────────────────────────────────────
 
 CORS_ALLOW_ALL_ORIGINS = DEBUG  # Restrict in production
+
+
+# ── Celery (Background Tasks) ─────────────────
+
+CELERY_BROKER_URL = config('CELERY_BROKER_URL', default='redis://redis:6379/0')
+CELERY_RESULT_BACKEND = config('CELERY_RESULT_BACKEND', default='redis://redis:6379/0')
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_TIMEZONE = 'UTC'
+CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'

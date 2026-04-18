@@ -1,12 +1,14 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import API from '../api/axios';
+import { useAuth } from '../context/AuthContext';
+import Toast from '../components/Toast';
 import {
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer,
   PieChart, Pie, Cell,
 } from 'recharts';
 import {
-  ShieldAlert, ShieldCheck, Activity, AlertTriangle, Users, Clock
+  ShieldAlert, ShieldCheck, Activity, AlertTriangle, Users, Clock, PlayCircle
 } from 'lucide-react';
 
 const COLORS = {
@@ -43,15 +45,33 @@ function ChartTooltip({ active, payload, label }) {
 
 /* ── Main Dashboard ─────────────────────────── */
 export default function Dashboard() {
+  const { role } = useAuth();
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [scanning, setScanning] = useState(false);
+  const [toast, setToast] = useState({ msg: '', type: 'success' });
 
-  useEffect(() => {
+  const fetchDashboard = useCallback(() => {
     API.get('dashboard-summary/')
       .then((res) => setData(res.data))
       .catch((err) => console.error('Dashboard fetch error:', err))
       .finally(() => setLoading(false));
   }, []);
+
+  useEffect(() => { fetchDashboard(); }, [fetchDashboard]);
+
+  const handleRunScan = useCallback(async () => {
+    setScanning(true);
+    try {
+      await API.post('run-scan/');
+      setToast({ msg: 'Scan completed successfully! Dashboard data refreshed.', type: 'success' });
+      fetchDashboard();
+    } catch (err) {
+      setToast({ msg: err.response?.data?.error || 'Scan failed. Please try again.', type: 'error' });
+    } finally {
+      setScanning(false);
+    }
+  }, [fetchDashboard]);
 
   if (loading) {
     return (
@@ -87,7 +107,21 @@ export default function Dashboard() {
 
   return (
     <div>
-      <h1 className="mb-6 text-2xl font-bold text-[#0f172a]">Executive Dashboard</h1>
+      <Toast message={toast.msg} type={toast.type} onClose={() => setToast({ msg: '', type: 'success' })} />
+
+      <div className="flex items-center justify-between mb-6">
+        <h1 className="text-2xl font-bold text-[#0f172a]">Executive Dashboard</h1>
+        {role !== 'auditor' && (
+          <button onClick={handleRunScan} disabled={scanning}
+            className="flex items-center gap-2 rounded-lg bg-[#0f172a] dark:bg-sky-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-[#1e293b] dark:hover:bg-sky-700 disabled:opacity-60 cursor-pointer transition-colors shadow-sm">
+            {scanning ? (
+              <><div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" /> Scanning...</>
+            ) : (
+              <><PlayCircle className="h-4 w-4" /> Run Manual Scan</>
+            )}
+          </button>
+        )}
+      </div>
 
       {/* ── Stat Cards Row ──────────────────── */}
       <div className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5">
