@@ -330,7 +330,7 @@ class UserProfile(models.Model):
     phone_number = models.CharField(max_length=20, blank=True, default="", help_text="Contact number for emergency / manage admins")
     designation = models.CharField(max_length=100, blank=True, default="", help_text="Job title or department")
     timezone = models.CharField(max_length=50, default="UTC", help_text="User timezone preference")
-    profile_picture = models.ImageField(upload_to="profile_pics/", blank=True, null=True, help_text="User avatar")
+    profile_pic_binary = models.BinaryField(null=True, blank=True, help_text="Binary image data compressed and stored directly in DB")
     
     # Time-Bound Access (Mainly for Auditors)
     account_expiry_date = models.DateTimeField(
@@ -347,6 +347,37 @@ class UserProfile(models.Model):
 
     def __str__(self) -> str:
         return f"{self.user.username} ({self.get_role_display()})"
+
+    def save_profile_pic(self, uploaded_file):
+        import io
+        from PIL import Image
+
+        # 1. Open the image
+        img = Image.open(uploaded_file)
+        
+        # Ensure image is in RGB mode (required for JPEG saving if it's RGBA/PNG)
+        if img.mode != 'RGB':
+            img = img.convert('RGB')
+        
+        # 2. Set max resolution (720p equivalent)
+        output_size = (1280, 720)
+        img.thumbnail(output_size) # Maintains aspect ratio
+
+        # 3. Compress to JPEG
+        buffer = io.BytesIO()
+        img.save(buffer, format="JPEG", quality=80, optimize=True)
+        
+        # 4. Save binary data
+        self.profile_pic_binary = buffer.getvalue()
+        self.save()
+
+    def get_image_base64(self):
+        """Returns a base64 encoded data URI for React to render"""
+        import base64
+        if not self.profile_pic_binary:
+            return None
+        encoded = base64.b64encode(self.profile_pic_binary).decode('utf-8')
+        return f"data:image/jpeg;base64,{encoded}"
 
 
 # ═══════════════════════════════════════════════════

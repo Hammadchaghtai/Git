@@ -281,13 +281,9 @@ class UserManagementSerializer(serializers.ModelSerializer):
 
     def get_profile_picture(self, obj):
         try:
-            pic = obj.profile.profile_picture
-            if pic:
-                request = self.context.get('request')
-                return request.build_absolute_uri(pic.url) if request else pic.url
+            return obj.profile.get_image_base64()
         except Exception:
-            pass
-        return None
+            return None
 
     class Meta:
         model = User

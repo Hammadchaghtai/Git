@@ -930,7 +930,7 @@ class MeView(APIView):
             phone_number = profile.phone_number or ""
             designation = profile.designation or ""
             timezone = profile.timezone or "UTC"
-            profile_pic = request.build_absolute_uri(profile.profile_picture.url) if profile.profile_picture else None
+            profile_pic = profile.get_image_base64()
             needs_setup = password_changed_at is None
         except UserProfile.DoesNotExist:
             if user.is_superuser:
@@ -1010,11 +1010,11 @@ class UpdateProfileView(APIView):
                     {"error": "Uploaded file is not a valid image."},
                     status=status.HTTP_400_BAD_REQUEST,
                 )
-            profile.profile_picture = pic
+            # Use the new method to compress and save binary data
+            profile.save_profile_pic(pic)
             
         if request.data.get("delete_picture") == "true":
-            profile.profile_picture.delete(save=False)
-            profile.profile_picture = None
+            profile.profile_pic_binary = None
 
         profile.save()
         return Response({"message": "Profile updated successfully."}, status=status.HTTP_200_OK)
