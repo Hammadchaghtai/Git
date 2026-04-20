@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { Sliders, Bell, User, Lock, ShieldAlert, Mail, Camera, FileText, Eye, EyeOff } from 'lucide-react';
+import { Sliders, Bell, User, Lock, ShieldAlert, Mail, Camera, FileText, Eye, EyeOff, Check, X as XIcon } from 'lucide-react';
 import API from '../api/axios';
 import Toast from '../components/Toast';
 
@@ -58,6 +58,30 @@ export default function SettingsPage() {
   );
 }
 
+/* ── Password Complexity Checklist ─────────────── */
+function PasswordChecklist({ password }) {
+  const rules = useMemo(() => [
+    { label: 'At least 8 characters', test: password.length >= 8 },
+    { label: 'One uppercase letter (A-Z)', test: /[A-Z]/.test(password) },
+    { label: 'One lowercase letter (a-z)', test: /[a-z]/.test(password) },
+    { label: 'One number (0-9)', test: /[0-9]/.test(password) },
+    { label: 'One special character (!@#$...)', test: /[^A-Za-z0-9]/.test(password) },
+  ], [password]);
+
+  if (!password) return null;
+
+  return (
+    <ul className="mt-2 space-y-1 text-xs">
+      {rules.map((r, i) => (
+        <li key={i} className={`flex items-center gap-1.5 ${r.test ? 'text-emerald-500' : 'text-gray-400 dark:text-slate-500'}`}>
+          {r.test ? <Check className="h-3 w-3" /> : <XIcon className="h-3 w-3" />}
+          {r.label}
+        </li>
+      ))}
+    </ul>
+  );
+}
+
 function MyProfileTab() {
   const { user, updateUser } = useAuth();
   const [loading, setLoading] = useState(false);
@@ -70,7 +94,8 @@ function MyProfileTab() {
     designation: '',
     timezone: 'UTC',
     profilePic: null,
-    previewUrl: null
+    previewUrl: null,
+    deletePic: false
   });
 
   const [pwd, setPwd] = useState({ oldPassword: '', newPassword: '', confirmPassword: '' });
@@ -87,7 +112,7 @@ function MyProfileTab() {
         designation: res.data.designation || '',
         timezone: res.data.timezone || 'UTC',
         profilePic: null,
-        previewUrl: res.data.profile_picture ? `${import.meta.env.VITE_API_URL}${res.data.profile_picture}` : null
+        previewUrl: res.data.profile_picture || null
       });
     });
     // Revoke any object URL on unmount
@@ -111,9 +136,22 @@ function MyProfileTab() {
       setProfile(prev => ({
         ...prev, 
         profilePic: file, 
-        previewUrl: URL.createObjectURL(file) 
+        previewUrl: URL.createObjectURL(file),
+        deletePic: false
       }));
     }
+  };
+
+  const handleRemovePic = () => {
+    if (profile.previewUrl && profile.previewUrl.startsWith('blob:')) {
+      URL.revokeObjectURL(profile.previewUrl);
+    }
+    setProfile(prev => ({
+      ...prev,
+      profilePic: null,
+      previewUrl: null,
+      deletePic: true
+    }));
   };
 
   const handleSaveAll = async (e) => {
@@ -137,6 +175,9 @@ function MyProfileTab() {
       formData.append('timezone', profile.timezone);
       if (profile.profilePic) {
         formData.append('profile_picture', profile.profilePic);
+      }
+      if (profile.deletePic) {
+        formData.append('delete_picture', 'true');
       }
       
       await API.patch('auth/update-profile/', formData, { headers: { 'Content-Type': 'multipart/form-data' }});
@@ -178,9 +219,16 @@ function MyProfileTab() {
         <div>
           <h3 className="text-xl font-bold text-slate-800 dark:text-white">Profile Picture</h3>
           <p className="text-sm text-slate-500 dark:text-slate-400 mb-3">Upload a new avatar. JPG or PNG allowed.</p>
-          <button type="button" onClick={() => fileInputRef.current.click()} className="rounded-lg bg-slate-100 dark:bg-navy-700 px-4 py-2 text-xs font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-navy-600 transition-colors">
-            Choose Image
-          </button>
+          <div className="flex items-center gap-2">
+            <button type="button" onClick={() => fileInputRef.current.click()} className="rounded-lg bg-slate-100 dark:bg-navy-700 px-4 py-2 text-xs font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-navy-600 transition-colors">
+              Choose Image
+            </button>
+            {profile.previewUrl && (
+              <button type="button" onClick={handleRemovePic} className="rounded-lg border border-red-200 dark:border-red-900/50 bg-red-50 dark:bg-red-900/20 px-4 py-2 text-xs font-semibold text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/40 transition-colors">
+                Remove
+              </button>
+            )}
+          </div>
           <input type="file" ref={fileInputRef} className="hidden" accept="image/*" onChange={handlePicChange} />
         </div>
       </div>
@@ -197,11 +245,35 @@ function MyProfileTab() {
           </div>
           <div>
             <label className="mb-1 block text-xs font-semibold uppercase text-gray-500">Phone Number</label>
-            <input required value={profile.phone} onChange={e => setProfile({...profile, phone: e.target.value})} className="w-full input-field" />
+            <input
+              required
+              value={profile.phone}
+              onChange={e => {
+                // Only allow digits, +, -, spaces, parentheses
+                const val = e.target.value.replace(/[^0-9+\-\s()]/g, '');
+                setProfile({...profile, phone: val});
+              }}
+              minLength={7}
+              maxLength={20}
+              placeholder="e.g. +92 300 1234567"
+              className="w-full input-field"
+            />
+            <p className="mt-1 text-[10px] text-gray-400">Digits, +, -, spaces only. Min 7 characters.</p>
           </div>
           <div>
             <label className="mb-1 block text-xs font-semibold uppercase text-gray-500">Designation</label>
-            <input value={profile.designation} onChange={e => setProfile({...profile, designation: e.target.value})} className="w-full input-field" />
+            <input
+              value={profile.designation}
+              onChange={e => {
+                // Only allow letters, spaces and hyphens — no numbers or special chars
+                const val = e.target.value.replace(/[^a-zA-Z\s\-]/g, '');
+                setProfile({...profile, designation: val});
+              }}
+              maxLength={60}
+              placeholder="e.g. Senior Auditor"
+              className="w-full input-field"
+            />
+            <p className="mt-1 text-[10px] text-gray-400">Letters and spaces only.</p>
           </div>
           <div>
             <label className="mb-1 block text-xs font-semibold uppercase text-gray-500">Timezone</label>
@@ -233,7 +305,7 @@ function MyProfileTab() {
             <button type="button" onClick={() => setShowNewPwd(!showNewPwd)} className="absolute right-3 top-[26px] text-gray-400 hover:text-gray-600">
                {showNewPwd ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
             </button>
-            <p className="text-[10px] text-gray-400 mt-1">Min 8 chars, 1 Uppercase, 1 Number, 1 Special</p>
+            <PasswordChecklist password={pwd.newPassword} />
           </div>
           <div className="relative">
             <label className="mb-1 block text-xs font-semibold uppercase text-gray-500">Confirm New Password</label>

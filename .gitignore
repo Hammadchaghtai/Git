@@ -18,3 +18,11 @@ build/
 # IDE
 .idea/
 .vscode/
+
+# Environment Variables
+.env
+.env.*
+
+# Django Media
+backend/media/
+media/

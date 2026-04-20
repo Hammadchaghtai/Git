@@ -20,13 +20,13 @@ const COLORS = {
 /* ── Stat Card ──────────────────────────────── */
 function StatCard({ icon: Icon, label, value, color, bgColor }) {
   return (
-    <div className="flex items-center gap-4 rounded-xl border border-gray-100 bg-white p-5 shadow-sm">
-      <div className={`flex h-11 w-11 items-center justify-center rounded-lg ${bgColor}`}>
+    <div className="flex items-center gap-4 rounded-xl border border-gray-100 dark:border-navy-700 bg-white dark:bg-navy-800 p-5 shadow-sm">
+      <div className={`flex h-11 w-11 items-center justify-center rounded-lg ${bgColor} dark:bg-opacity-20`}>
         <Icon className={`h-5 w-5 ${color}`} />
       </div>
       <div>
         <p className="text-xs font-medium text-gray-400">{label}</p>
-        <p className="text-xl font-bold text-[#0f172a]">{value}</p>
+        <p className="text-xl font-bold text-[#0f172a] dark:text-white">{value}</p>
       </div>
     </div>
   );
@@ -137,7 +137,7 @@ export default function Dashboard() {
       {/* ── Charts Row ──────────────────────── */}
       <div className="mb-8 grid grid-cols-1 gap-6 lg:grid-cols-3">
         {/* Donut — Overall Score */}
-        <div className="flex flex-col items-center rounded-xl border border-gray-100 bg-white p-6 shadow-sm">
+        <div className="flex flex-col items-center rounded-xl border border-gray-100 dark:border-navy-700 bg-white dark:bg-navy-800 p-6 shadow-sm">
           <h3 className="mb-4 text-sm font-semibold text-gray-600">Overall Compliance</h3>
           <div className="relative h-48 w-48">
             <ResponsiveContainer width="100%" height="100%">
@@ -166,7 +166,7 @@ export default function Dashboard() {
         </div>
 
         {/* Bar Chart — Framework Breakdown */}
-        <div className="col-span-1 rounded-xl border border-gray-100 bg-white p-6 shadow-sm lg:col-span-2">
+        <div className="col-span-1 rounded-xl border border-gray-100 dark:border-navy-700 bg-white dark:bg-navy-800 p-6 shadow-sm lg:col-span-2">
           <div className="mb-4 flex items-center justify-between">
             <div>
               <h3 className="text-sm font-semibold text-gray-600">Compliance by Framework</h3>
@@ -189,7 +189,7 @@ export default function Dashboard() {
                   tick={{ fontSize: 11, fill: '#94a3b8' }}
                   tickFormatter={(v) => `${v}%`}
                 />
-                <Tooltip content={<ChartTooltip />} cursor={{ fill: '#f1f5f9' }} />
+                <Tooltip content={<ChartTooltip />} cursor={{ fill: 'rgba(30,41,59,0.12)' }} />
                 <Bar dataKey="score" radius={[6, 6, 0, 0]}>
                   {barData.map((_, i) => (
                     <Cell key={i} fill={COLORS.bars[i % COLORS.bars.length]} />
@@ -202,7 +202,7 @@ export default function Dashboard() {
       </div>
 
       {/* ── Failed Controls Table ───────────── */}
-      <div className="rounded-xl border border-gray-100 bg-white p-6 shadow-sm">
+      <div className="rounded-xl border border-gray-100 dark:border-navy-700 bg-white dark:bg-navy-800 p-6 shadow-sm">
         <h3 className="mb-4 text-sm font-semibold text-gray-600">Top Failed Controls</h3>
 
         {top_failed_controls.length === 0 ? (
@@ -250,7 +250,7 @@ export default function Dashboard() {
         
         {/* Recent Scans */}
         {recent_scans.length > 0 && (
-          <div className="rounded-xl border border-gray-100 bg-white p-6 shadow-sm">
+          <div className="rounded-xl border border-gray-100 dark:border-navy-700 bg-white dark:bg-navy-800 p-6 shadow-sm">
             <h3 className="mb-4 text-sm font-semibold text-gray-600">Recent Scans</h3>
             <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
               {recent_scans.slice(0, 3).map((scan) => (
@@ -270,7 +270,7 @@ export default function Dashboard() {
 
         {/* Mini Audit Log */}
         {data.recent_activity?.length > 0 && (
-          <div className="rounded-xl border border-gray-100 bg-white p-6 shadow-sm">
+          <div className="rounded-xl border border-gray-100 dark:border-navy-700 bg-white dark:bg-navy-800 p-6 shadow-sm">
             <div className="mb-4 flex items-center justify-between">
               <h3 className="text-sm font-semibold text-gray-600">Recent Activity</h3>
               <Link to="/reports" className="text-xs font-semibold text-sky-500 hover:text-sky-600 cursor-pointer no-underline">View All →</Link>

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import API from '../api/axios';
-import { ChevronDown, ChevronRight } from 'lucide-react';
+import { ChevronDown, ChevronRight, ExternalLink } from 'lucide-react';
 
 export default function Frameworks() {
   const [frameworks, setFrameworks] = useState([]);
@@ -87,7 +87,8 @@ export default function Frameworks() {
                           <th className="pb-2 pr-4">Code</th>
                           <th className="pb-2 pr-4">Title</th>
                           <th className="pb-2 pr-4">Wazuh Mappings</th>
-                          <th className="pb-2 text-right">Weight</th>
+                          <th className="pb-2 pr-4 text-right">Weight</th>
+                          <th className="pb-2 text-center">Ref</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -114,10 +115,21 @@ export default function Frameworks() {
                                 <span className="text-xs text-gray-400">No mappings</span>
                               )}
                             </td>
-                            <td className="py-2.5 text-right">
+                            <td className="py-2.5 pr-4 text-right">
                               <span className="rounded bg-gray-100 px-2 py-0.5 text-xs font-semibold text-gray-600">
                                 {ctrl.weight}
                               </span>
+                            </td>
+                            <td className="py-2.5 text-center">
+                              <a
+                                href="https://google.com"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                title="View external documentation"
+                                className="inline-flex items-center justify-center rounded-md p-1.5 text-slate-400 hover:text-sky-500 dark:text-slate-500 dark:hover:text-sky-400 hover:bg-sky-50 dark:hover:bg-sky-900/20 transition-all duration-200"
+                              >
+                                <ExternalLink className="h-4 w-4" />
+                              </a>
                             </td>
                           </tr>
                         ))}

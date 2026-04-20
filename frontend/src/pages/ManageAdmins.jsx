@@ -73,21 +73,31 @@ function CredentialModal({ open, onClose, data }) {
 /* ── Regenerate Modal ─────────────────────────────────── */
 function RegenerateModal({ user, onClose, onRegenerated }) {
   const [email, setEmail] = useState('');
+  const [newExpiry, setNewExpiry] = useState('');
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
 
   useEffect(() => {
-    if (user) setEmail(user.email);
+    if (user) {
+      setEmail(user.email);
+      setNewExpiry('');
+    }
   }, [user]);
 
   if (!user) return null;
+
+  const isAuditor = user.role === 'auditor';
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSaving(true);
     setError('');
     try {
-      const res = await API.post(`users/${user.id}/regenerate-credentials/`, { email });
+      const payload = { email };
+      if (isAuditor && newExpiry) {
+        payload.account_expiry_date = new Date(newExpiry).toISOString();
+      }
+      const res = await API.post(`users/${user.id}/regenerate-credentials/`, payload);
       onRegenerated(res.data);
       onClose();
     } catch (err) {
@@ -103,7 +113,7 @@ function RegenerateModal({ user, onClose, onRegenerated }) {
           <RefreshCw className="w-5 h-5 text-blue-500" /> Regenerate Credentials
         </h3>
         <p className="text-sm text-gray-500 mb-4">
-          This will void existing credentials and trigger a <strong>new password & TOTP QR code</strong> setup process.
+          This will void existing credentials and trigger a <strong>new password &amp; TOTP QR code</strong> setup process.
         </p>
 
         {error && <div className="mb-4 rounded-lg bg-red-50 p-2 text-xs font-semibold text-red-600">⚠️ {error}</div>}
@@ -120,9 +130,26 @@ function RegenerateModal({ user, onClose, onRegenerated }) {
             className="w-full input-field"
             placeholder="Where should the new invite be sent?"
           />
-          <p className="text-[10px] text-gray-400 mt-1 mb-6">
+          <p className="text-[10px] text-gray-400 mt-1 mb-4">
             You can modify the email if the administrator lost access to their old address.
           </p>
+
+          {isAuditor && (
+            <div className="mb-6 rounded-lg border border-sky-200 dark:border-sky-900/50 bg-sky-50 dark:bg-sky-900/10 p-3">
+              <label className="mb-1 block text-xs font-semibold uppercase tracking-wider text-sky-700 dark:text-sky-400">
+                Extend / Set Access Expiry
+              </label>
+              <input
+                type="datetime-local"
+                value={newExpiry}
+                onChange={(e) => setNewExpiry(e.target.value)}
+                className="w-full input-field text-sm"
+              />
+              <p className="text-[10px] text-sky-600 dark:text-sky-400 mt-1">
+                Set a new expiry date to renew auditor access. Leave empty to keep the current expiry.
+              </p>
+            </div>
+          )}
 
           <div className="flex justify-end gap-2">
              <button type="button" onClick={onClose} className="rounded-lg px-4 py-2 text-sm font-medium text-gray-500 hover:bg-gray-100">Cancel</button>
@@ -222,7 +249,7 @@ function InviteModal({ open, onClose, onInvited }) {
 }
 
 /* ── View Details Slide-out Panel ─────────────────── */
-function ViewDetailsPanel({ user, onClose, showToast }) {
+function ViewDetailsPanel({ user, onClose, showToast, onImageClick }) {
   const [timeLeft, setTimeLeft] = useState('');
   const [sendingReminder, setSendingReminder] = useState(false);
 
@@ -268,7 +295,12 @@ function ViewDetailsPanel({ user, onClose, showToast }) {
           <div className="flex flex-col items-center text-center">
             <div className="h-20 w-20 rounded-full border border-slate-200 bg-slate-100 flex items-center justify-center overflow-hidden mb-3">
               {user.profile_picture ? (
-                 <img src={`${import.meta.env.VITE_API_URL}${user.profile_picture}`} className="h-full w-full object-cover" alt="Avatar"/>
+                 <img 
+                   src={user.profile_picture} 
+                   className="h-full w-full object-cover cursor-pointer hover:opacity-80 transition-opacity" 
+                   alt="Avatar"
+                   onClick={() => onImageClick(user.profile_picture)}
+                 />
               ) : (
                  <User className="h-10 w-10 text-slate-400" />
               )}
@@ -347,6 +379,14 @@ export default function ManageAdmins() {
   const [viewingUser, setViewingUser] = useState(null);
   const [regeneratingUser, setRegeneratingUser] = useState(null); 
   const [toast, setToast] = useState({ msg: '', type: 'success' });
+  const [fullscreenPic, setFullscreenPic] = useState(null);
+  // Ticking "now" so expired badges update in real-time without page refresh
+  const [now, setNow] = useState(() => new Date());
+
+  useEffect(() => {
+    const timer = setInterval(() => setNow(new Date()), 60_000);
+    return () => clearInterval(timer);
+  }, []);
 
   const showToast = useCallback((msg, type = 'success') => setToast({ msg, type }), []);
 
@@ -458,7 +498,7 @@ export default function ManageAdmins() {
                     <div className="flex items-center gap-3">
                       <div className="flex h-10 w-10 items-center justify-center rounded-full bg-slate-100 dark:bg-navy-700 overflow-hidden border border-slate-200 dark:border-navy-600">
                         {admin.profile_picture ? (
-                           <img src={`${import.meta.env.VITE_API_URL}${admin.profile_picture}`} className="w-full h-full object-cover" />
+                           <img src={admin.profile_picture} className="w-full h-full object-cover" />
                         ) : (
                            <User className="h-5 w-5 text-slate-400" />
                         )}
@@ -482,11 +522,23 @@ export default function ManageAdmins() {
                     </span>
                   </td>
                   <td className="py-3.5 pr-4">
-                    <span className={`rounded-full px-3 py-1 text-xs font-semibold ${
-                      admin.is_active ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400' : 'bg-red-50 text-red-700 dark:bg-red-900/30 dark:text-red-400'
-                    }`}>
-                      {admin.is_active ? 'Active' : 'Revoked'}
-                    </span>
+                    {(() => {
+                      const isExpired = admin.role === 'auditor' && admin.account_expiry_date && new Date(admin.account_expiry_date) < now;
+                      if (isExpired) {
+                        return (
+                          <span className="rounded-full px-3 py-1 text-xs font-semibold bg-amber-50 text-amber-700 border border-amber-200 dark:bg-amber-900/30 dark:text-amber-400 dark:border-amber-900/50">
+                            Expired
+                          </span>
+                        );
+                      }
+                      return (
+                        <span className={`rounded-full px-3 py-1 text-xs font-semibold ${
+                          admin.is_active ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400' : 'bg-red-50 text-red-700 dark:bg-red-900/30 dark:text-red-400'
+                        }`}>
+                          {admin.is_active ? 'Active' : 'Revoked'}
+                        </span>
+                      );
+                    })()}
                   </td>
                   <td className="py-3.5 pr-4 text-xs font-medium">
                     {admin.password_changed_at ? (
@@ -533,7 +585,17 @@ export default function ManageAdmins() {
       <InviteModal open={showInvite} onClose={() => setShowInvite(false)} onInvited={handleInvited} />
       <RegenerateModal user={regeneratingUser} onClose={() => setRegeneratingUser(null)} onRegenerated={handleRegenerated} />
       <CredentialModal open={!!credData} onClose={() => setCredData(null)} data={credData} />
-      <ViewDetailsPanel user={viewingUser} onClose={() => setViewingUser(null)} showToast={showToast} />
+      <ViewDetailsPanel user={viewingUser} onClose={() => setViewingUser(null)} showToast={showToast} onImageClick={setFullscreenPic} />
+
+      {/* Fullscreen Picture Modal */}
+      {fullscreenPic && (
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/80 backdrop-blur-sm" onClick={() => setFullscreenPic(null)}>
+          <button className="absolute top-6 right-6 text-white hover:text-gray-300" onClick={() => setFullscreenPic(null)}>
+            <X className="w-8 h-8" />
+          </button>
+          <img src={fullscreenPic} className="max-w-[90vw] max-h-[90vh] object-contain rounded-lg shadow-2xl" alt="Enlarged profile" onClick={(e) => e.stopPropagation()} />
+        </div>
+      )}
     </div>
   );
 }

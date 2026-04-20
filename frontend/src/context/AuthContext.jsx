@@ -74,8 +74,9 @@ export function AuthProvider({ children }) {
         role: meRes.data.role,
         needs_setup: meRes.data.needs_setup,
       };
-    } catch {
-      return { success: false };
+    } catch (err) {
+      const detail = err?.response?.data?.detail || 'Invalid username or password.';
+      return { success: false, message: detail };
     }
   };
 

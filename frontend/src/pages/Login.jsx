@@ -31,7 +31,7 @@ export default function Login() {
       }));
       navigate('/verify-otp');
     } else {
-      setError('Invalid Username or Password!');
+      setError(result.message || 'Invalid Username or Password!');
     }
     setLoading(false);
   };

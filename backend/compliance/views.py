@@ -128,8 +128,8 @@ def _chunk_secret(secret, chunk=4):
     return " ".join(secret[i:i+chunk] for i in range(0, len(secret), chunk))
 
 
-def _send_invite_email(receiver_email, username, password, totp_secret, role="admin"):
-    """Send invite email with credentials + QR code as CID attachment (works everywhere)."""
+def _send_invite_email(receiver_email, username, password, totp_secret, role="admin", account_expiry_date=None):
+    """Send role-specific invite email with credentials + QR code as CID attachment."""
     import smtplib
     from email.mime.multipart import MIMEMultipart
     from email.mime.text import MIMEText
@@ -137,7 +137,7 @@ def _send_invite_email(receiver_email, username, password, totp_secret, role="ad
 
     smtp_cfg = _get_smtp_config()
 
-    role_label = "Super Administrator" if role == "super_admin" else "Administrator"
+    role_label = "Super Administrator" if role == "super_admin" else ("Auditor" if role == "auditor" else "Administrator")
     secret_chunked = _chunk_secret(totp_secret)
     qr_bytes = _generate_qr_bytes(username, totp_secret)
 
@@ -149,25 +149,54 @@ def _send_invite_email(receiver_email, username, password, totp_secret, role="ad
                  style="display:block;margin:0 auto;border:4px solid #e2e8f0;border-radius:8px;" />
         </div>"""
     else:
-        qr_section = f"""
+        qr_section = """
         <p style="color:#dc2626;font-size:13px;">
             QR code could not be generated. Use the secret key below to manually add the account.
         </p>"""
+
+    # ── Auditor-specific expiry block ──
+    if role == "auditor":
+        if account_expiry_date:
+            try:
+                expiry_str = account_expiry_date.strftime("%d %B %Y, %H:%M UTC")
+            except Exception:
+                expiry_str = str(account_expiry_date)
+            access_block = f"""
+        <div style="background:#fff7ed;border:1px solid #fed7aa;border-radius:8px;padding:14px;margin-bottom:16px;">
+          <p style="margin:0 0 6px;color:#c2410c;font-weight:bold;font-size:13px;">&#x23F0; Time-Bound Auditor Access</p>
+          <p style="margin:0;color:#9a3412;font-size:13px;line-height:1.6;">
+            Your auditor account is active until <strong>{expiry_str}</strong>.<br>
+            After this date, access will be automatically revoked. Contact your Super Administrator to renew.
+          </p>
+        </div>"""
+        else:
+            access_block = """
+        <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:14px;margin-bottom:16px;">
+          <p style="margin:0 0 6px;color:#15803d;font-weight:bold;font-size:13px;">&#x2705; Unrestricted Auditor Access</p>
+          <p style="margin:0;color:#166534;font-size:13px;">Your account has no expiry date set. Contact your Super Administrator for more information.</p>
+        </div>"""
+        role_subtitle = "Auditor Portal Access &mdash; New Account"
+    else:
+        access_block = ""
+        role_subtitle = "Admin Portal Access &mdash; New Account"
 
     html = f"""
     <html><body style="font-family:Arial,sans-serif;max-width:600px;margin:auto;padding:16px;">
 
       <div style="background:#0f172a;padding:24px;border-radius:12px 12px 0 0;text-align:center;">
-        <h1 style="color:#38bdf8;margin:0;font-size:20px;">&#x1F6E1; GRC Compliance Platform</h1>
-        <p style="color:#94a3b8;margin:8px 0 0;font-size:14px;">Admin Portal Access &mdash; New Account</p>
+        <h1 style="color:#38bdf8;margin:0;font-size:22px;">&#x1F6E1; GRC Compliance Platform</h1>
+        <p style="color:#94a3b8;margin:8px 0 0;font-size:14px;">{role_subtitle}</p>
       </div>
 
-      <div style="border:1px solid #e2e8f0;border-top:none;padding:20px;border-radius:0 0 12px 12px;background:#fff;">
-        <p style="margin:0 0 16px;font-size:14px;">
+      <div style="border:1px solid #e2e8f0;border-top:none;padding:24px;border-radius:0 0 12px 12px;background:#fff;">
+        <p style="margin:0 0 8px;font-size:15px;color:#0f172a;">Hello <strong>{username}</strong>,</p>
+        <p style="margin:0 0 16px;font-size:14px;color:#334155;">
           You have been granted <strong>{role_label}</strong> access to the GRC Compliance Platform.
         </p>
 
-        <!-- ── Credentials ── -->
+        {access_block}
+
+        <!-- Credentials -->
         <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:16px;margin-bottom:16px;">
           <h3 style="margin:0 0 12px;color:#0f172a;font-size:15px;">&#x1F511; Login Credentials</h3>
           <table style="width:100%;border-collapse:collapse;font-size:14px;">
@@ -182,7 +211,7 @@ def _send_invite_email(receiver_email, username, password, totp_secret, role="ad
           </table>
         </div>
 
-        <!-- ── QR Code / Authenticator ── -->
+        <!-- QR Code / Authenticator -->
         <div style="background:#f0f9ff;border:1px solid #bae6fd;border-radius:8px;padding:16px;margin-bottom:16px;">
           <h3 style="margin:0 0 10px;color:#0f172a;font-size:15px;">&#x1F4F1; Set Up Authenticator App</h3>
           <p style="color:#64748b;font-size:13px;margin:0 0 12px;line-height:1.5;">
@@ -192,9 +221,7 @@ def _send_invite_email(receiver_email, username, password, totp_secret, role="ad
           </p>
           {qr_section}
           <div style="margin-top:14px;background:#e0f2fe;border-radius:6px;padding:10px;">
-            <p style="margin:0 0 6px;font-size:12px;color:#0369a1;font-weight:bold;">
-              &#x1F511; Manual Entry (TOTP Secret Key):
-            </p>
+            <p style="margin:0 0 6px;font-size:12px;color:#0369a1;font-weight:bold;">&#x1F511; Manual Entry (TOTP Secret Key):</p>
             <p style="margin:0;font-family:monospace;font-size:13px;font-weight:bold;
                      color:#0f172a;letter-spacing:1px;word-break:break-all;line-height:1.8;">
               {secret_chunked}
@@ -205,7 +232,7 @@ def _send_invite_email(receiver_email, username, password, totp_secret, role="ad
           </div>
         </div>
 
-        <!-- ── Security Notice ── -->
+        <!-- Security Notice -->
         <div style="background:#fef2f2;border:1px solid #fecaca;border-radius:8px;padding:12px;">
           <p style="margin:0 0 6px;color:#dc2626;font-weight:bold;font-size:13px;">&#x26A0;&#xFE0F; Security Notice</p>
           <ul style="color:#b91c1c;margin:0;padding-left:18px;font-size:12px;line-height:2;">
@@ -215,14 +242,16 @@ def _send_invite_email(receiver_email, username, password, totp_secret, role="ad
           </ul>
         </div>
       </div>
-
+      <p style="text-align:center;color:#94a3b8;font-size:11px;margin-top:16px;">
+        &copy; 2026 GRC Compliance Management System &mdash; This is an automated message.
+      </p>
     </body></html>
     """
 
     try:
         # outer container must be "related" so we can attach CID images
         msg_root = MIMEMultipart("related")
-        msg_root["Subject"] = "GRC Platform — Your Admin Account Credentials"
+        msg_root["Subject"] = f"GRC Platform \u2014 Your {role_label} Account Credentials"
         msg_root["From"] = smtp_cfg["username"]
         msg_root["To"] = receiver_email
 
@@ -305,6 +334,70 @@ def _send_reminder_email(receiver_email, username):
         print(f"[REMINDER EMAIL] Sent to {receiver_email}")
     except Exception as e:
         print(f"[REMINDER EMAIL ERROR] {e}")
+
+
+def _send_status_email(receiver_email, username, action):
+    """Send account revoke/restore notification email."""
+    import smtplib
+    from email.mime.multipart import MIMEMultipart
+    from email.mime.text import MIMEText
+
+    smtp_cfg = _get_smtp_config()
+
+    is_restored = (action == "restored")
+    header_color = "#15803d" if is_restored else "#991b1b"
+    header_bg = "#f0fdf4" if is_restored else "#fef2f2"
+    border_color = "#bbf7d0" if is_restored else "#fecaca"
+    icon = "\u2705" if is_restored else "\u26d4"
+    action_title = "Account Restored" if is_restored else "Account Revoked"
+    action_body = (
+        "Your GRC Platform account has been <strong>restored</strong> by a Super Administrator. You may now log in."
+        if is_restored else
+        "Your GRC Platform account has been <strong>revoked</strong> by a Super Administrator. You can no longer access the portal."
+    )
+    next_steps = (
+        'Visit the portal to log in: <a href="http://localhost:5173" style="color:#2563eb;">http://localhost:5173</a>'
+        if is_restored else
+        "If you believe this is an error, please contact your Super Administrator."
+    )
+
+    html = f"""
+    <html><body style="font-family:Arial,sans-serif;max-width:600px;margin:auto;padding:16px;">
+      <div style="background:#0f172a;padding:24px;border-radius:12px 12px 0 0;text-align:center;">
+        <h1 style="color:#38bdf8;margin:0;font-size:22px;">&#x1F6E1; GRC Compliance Platform</h1>
+        <p style="color:#94a3b8;margin:8px 0 0;font-size:14px;">Account Status Update</p>
+      </div>
+      <div style="border:1px solid #e2e8f0;border-top:none;padding:24px;border-radius:0 0 12px 12px;background:#fff;">
+        <p style="margin:0 0 16px;font-size:15px;color:#0f172a;">Hello <strong>{username}</strong>,</p>
+        <div style="background:{header_bg};border:1px solid {border_color};border-radius:8px;padding:16px;margin-bottom:16px;">
+          <p style="margin:0 0 8px;color:{header_color};font-weight:bold;font-size:15px;">{icon} {action_title}</p>
+          <p style="margin:0;color:#334155;font-size:14px;line-height:1.6;">{action_body}</p>
+        </div>
+        <p style="font-size:13px;color:#64748b;">{next_steps}</p>
+      </div>
+      <p style="text-align:center;color:#94a3b8;font-size:11px;margin-top:16px;">
+        &copy; 2026 GRC Compliance Management System &mdash; This is an automated message.
+      </p>
+    </body></html>
+    """
+
+    try:
+        msg = MIMEMultipart("alternative")
+        msg["Subject"] = f"GRC Platform \u2014 Your Account Has Been {action_title}"
+        msg["From"] = smtp_cfg["username"]
+        msg["To"] = receiver_email
+        msg.attach(MIMEText(f"Hello {username}, your GRC account has been {action}.", "plain"))
+        msg.attach(MIMEText(html, "html"))
+        with smtplib.SMTP(smtp_cfg["host"], smtp_cfg["port"], timeout=15) as smtp:
+            smtp.ehlo()
+            if smtp_cfg["use_tls"]:
+                smtp.starttls(); smtp.ehlo()
+            smtp.login(smtp_cfg["username"], smtp_cfg["password"])
+            smtp.sendmail(smtp_cfg["username"], receiver_email, msg.as_string())
+        print(f"[STATUS EMAIL] {action_title} sent to {receiver_email}")
+    except Exception as e:
+        print(f"[STATUS EMAIL ERROR] {e}")
+
 
 
 # ═══════════════════════════════════════════════════
@@ -465,7 +558,7 @@ class UserManagementViewSet(viewsets.ViewSet):
         users = User.objects.select_related("profile").exclude(
             username="AnonymousUser"
         ).order_by("username")
-        serializer = UserManagementSerializer(users, many=True)
+        serializer = UserManagementSerializer(users, many=True, context={"request": request})
         return Response(serializer.data)
 
     def create(self, request):
@@ -508,7 +601,8 @@ class UserManagementViewSet(viewsets.ViewSet):
         import threading as _threading
         t = _threading.Thread(
             target=_send_invite_email,
-            args=(email, username, password, totp_secret, role)
+            args=(email, username, password, totp_secret, role),
+            kwargs={'account_expiry_date': account_expiry_date}
         )
         t.daemon = True
         t.start()
@@ -538,6 +632,15 @@ class UserManagementViewSet(viewsets.ViewSet):
 
         action_word = "restored" if user.is_active else "revoked"
         _audit(request.user, f"{action_word} access for '{user.username}'", "Admin")
+
+        # Send revoke/restore notification email in background
+        import threading as _threading
+        _t = _threading.Thread(
+            target=_send_status_email,
+            args=(user.email, user.username, action_word)
+        )
+        _t.daemon = True
+        _t.start()
 
         return Response({
             "id": user.id,
@@ -572,11 +675,24 @@ class UserManagementViewSet(viewsets.ViewSet):
         new_totp_secret = _pyotp.random_base32()
 
         user.set_password(new_password)
+        # Re-activate the user (in case they were auto-deactivated due to expiry)
+        user.is_active = True
         user.save()
 
         profile, _ = UserProfile.objects.get_or_create(user=user)
         profile.totp_secret = new_totp_secret
-        profile.save(update_fields=["totp_secret"])
+
+        # ── Update expiry date if provided (auditor renewal) ──
+        new_expiry = request.data.get("account_expiry_date")
+        if new_expiry:
+            from django.utils.dateparse import parse_datetime
+            parsed = parse_datetime(new_expiry)
+            if parsed:
+                profile.account_expiry_date = parsed
+
+        # Reset password changed timestamp so they are forced to set a new password
+        profile.password_changed_at = None
+        profile.save()
 
         _audit(request.user, f"regenerated credentials for '{user.username}'", "Admin")
 
@@ -584,7 +700,8 @@ class UserManagementViewSet(viewsets.ViewSet):
         import threading as _threading
         t = _threading.Thread(
             target=_send_invite_email,
-            args=(user.email, user.username, new_password, new_totp_secret, getattr(profile, 'role', 'admin'))
+            args=(user.email, user.username, new_password, new_totp_secret, getattr(profile, 'role', 'admin')),
+            kwargs={'account_expiry_date': getattr(profile, 'account_expiry_date', None)}
         )
         t.daemon = True
         t.start()
@@ -810,7 +927,10 @@ class MeView(APIView):
             role = profile.role
             password_changed_at = profile.password_changed_at
             display_name = profile.display_name
-            profile_pic = profile.profile_picture.url if profile.profile_picture else None
+            phone_number = profile.phone_number or ""
+            designation = profile.designation or ""
+            timezone = profile.timezone or "UTC"
+            profile_pic = request.build_absolute_uri(profile.profile_picture.url) if profile.profile_picture else None
             needs_setup = password_changed_at is None
         except UserProfile.DoesNotExist:
             if user.is_superuser:
@@ -820,6 +940,9 @@ class MeView(APIView):
                 role = "admin"
             password_changed_at = None
             display_name = ""
+            phone_number = ""
+            designation = ""
+            timezone = "UTC"
             profile_pic = None
             needs_setup = True
 
@@ -831,6 +954,9 @@ class MeView(APIView):
                 "role": role,
                 "is_superuser": user.is_superuser,
                 "display_name": display_name,
+                "phone_number": phone_number,
+                "designation": designation,
+                "timezone": timezone,
                 "profile_picture": profile_pic,
                 "password_changed_at": password_changed_at,
                 "needs_setup": needs_setup,
@@ -885,6 +1011,10 @@ class UpdateProfileView(APIView):
                     status=status.HTTP_400_BAD_REQUEST,
                 )
             profile.profile_picture = pic
+            
+        if request.data.get("delete_picture") == "true":
+            profile.profile_picture.delete(save=False)
+            profile.profile_picture = None
 
         profile.save()
         return Response({"message": "Profile updated successfully."}, status=status.HTTP_200_OK)
@@ -906,23 +1036,50 @@ from django.core.cache import cache
 
 
 def _send_email_otp(receiver_email, otp):
-    """Send OTP via Gmail SMTP in a background thread."""
+    """Send OTP via Gmail SMTP — premium branded password reset email."""
     try:
         smtp_cfg = _get_smtp_config()
         msg = MIMEMultipart("alternative")
-        msg["Subject"] = "Password Reset OTP - GRC Platform"
+        msg["Subject"] = "GRC Platform \u2014 Your Password Reset Code"
         msg["From"] = smtp_cfg["username"]
         msg["To"] = receiver_email
         html = f"""
-        <html><body style="font-family:sans-serif;padding:20px;">
-            <h2 style="color:#0f172a;">GRC Platform – Password Reset</h2>
-            <p>Your One-Time Password (OTP) is:</p>
-            <div style="font-size:2rem;font-weight:bold;letter-spacing:8px;
-                        background:#f1f5f9;padding:20px;border-radius:8px;
-                        text-align:center;color:#0f172a;">{otp}</div>
-            <p style="color:#64748b;margin-top:16px;">
-                This code is valid for <strong>2 minutes</strong>. Do not share it.
+        <html><body style="font-family:Arial,sans-serif;max-width:560px;margin:auto;padding:16px;">
+
+          <div style="background:#0f172a;padding:28px 24px;border-radius:12px 12px 0 0;text-align:center;">
+            <h1 style="color:#38bdf8;margin:0;font-size:22px;">&#x1F6E1; GRC Compliance Platform</h1>
+            <p style="color:#94a3b8;margin:8px 0 0;font-size:14px;">Secure Password Reset</p>
+          </div>
+
+          <div style="border:1px solid #e2e8f0;border-top:none;padding:28px 24px;border-radius:0 0 12px 12px;background:#fff;">
+            <p style="margin:0 0 8px;font-size:15px;color:#0f172a;">Hello,</p>
+            <p style="margin:0 0 24px;font-size:14px;color:#334155;line-height:1.6;">
+              We received a request to reset your GRC Platform password.<br>
+              Use the verification code below to proceed. <strong>Do not share this code with anyone.</strong>
             </p>
+
+            <!-- OTP Code Block -->
+            <div style="background:#0f172a;border-radius:12px;padding:28px 20px;text-align:center;margin-bottom:24px;">
+              <p style="color:#94a3b8;font-size:12px;margin:0 0 12px;text-transform:uppercase;letter-spacing:2px;">Your One-Time Password</p>
+              <div style="font-size:42px;font-weight:bold;letter-spacing:14px;color:#38bdf8;
+                          font-family:monospace;text-align:center;line-height:1.2;">{otp}</div>
+              <p style="color:#64748b;font-size:12px;margin:16px 0 0;">Valid for <strong style="color:#f8fafc;">2 minutes</strong> only</p>
+            </div>
+
+            <!-- Warning Block -->
+            <div style="background:#fef2f2;border:1px solid #fecaca;border-radius:8px;padding:14px;margin-bottom:16px;">
+              <p style="margin:0 0 6px;color:#dc2626;font-weight:bold;font-size:13px;">&#x26A0;&#xFE0F; Security Warning</p>
+              <ul style="color:#b91c1c;margin:0;padding-left:18px;font-size:12px;line-height:2.0;">
+                <li>This code expires in <strong>2 minutes</strong>.</li>
+                <li>Never share this code with anyone, including GRC staff.</li>
+                <li>If you did not request this, please ignore this email.</li>
+              </ul>
+            </div>
+          </div>
+
+          <p style="text-align:center;color:#94a3b8;font-size:11px;margin-top:16px;">
+            &copy; 2026 GRC Compliance Management System &mdash; This is an automated message.
+          </p>
         </body></html>
         """
         msg.attach(MIMEText(html, "html"))

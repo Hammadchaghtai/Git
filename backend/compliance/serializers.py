@@ -277,13 +277,24 @@ class UserManagementSerializer(serializers.ModelSerializer):
     display_name = serializers.CharField(source="profile.display_name", read_only=True, default="")
     phone_number = serializers.CharField(source="profile.phone_number", read_only=True, default="")
     designation = serializers.CharField(source="profile.designation", read_only=True, default="")
+    profile_picture = serializers.SerializerMethodField()
+
+    def get_profile_picture(self, obj):
+        try:
+            pic = obj.profile.profile_picture
+            if pic:
+                request = self.context.get('request')
+                return request.build_absolute_uri(pic.url) if request else pic.url
+        except Exception:
+            pass
+        return None
 
     class Meta:
         model = User
         fields = [
             "id", "username", "email", "is_active", "role", 
             "date_joined", "password_changed_at", "account_expiry_date",
-            "display_name", "phone_number", "designation"
+            "display_name", "phone_number", "designation", "profile_picture"
         ]
         read_only_fields = ["id", "username", "date_joined"]
 

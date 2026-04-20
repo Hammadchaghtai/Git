@@ -81,6 +81,15 @@ body {
   border-radius: 8px !important;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important;
 }
+.dark .recharts-default-tooltip {
+  background-color: transparent !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+  color: #e2e8f0 !important;
+}
+.dark .recharts-cursor {
+  fill: rgba(30, 41, 59, 0.6) !important;
+}
 
 /* ── Toast Slide-In Animation ──────────────────── */
 @keyframes slideIn {
@@ -88,3 +97,8 @@ body {
   to   { opacity: 1; transform: translateX(0); }
 }
 .animate-slideIn { animation: slideIn 0.3s ease-out forwards; }
+
+/* ── Toast Dark Mode Override ───────────────────── */
+.dark .toast-dark-fix {
+  background-color: #0f172a !important; /* navy-900 */
+}
