@@ -17,13 +17,13 @@ import string
 
 from django.contrib.auth.models import User
 from django.core.management import call_command
-from django.db.models import Avg, Count
+from django.db.models import Avg, Count, Q
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework.permissions import IsAuthenticated, AllowAny, BasePermission
+from rest_framework.permissions import IsAuthenticated, AllowAny, BasePermission, SAFE_METHODS
 
 from .models import (
     ComplianceScan,
@@ -67,6 +67,31 @@ class IsSuperAdmin(BasePermission):
         except UserProfile.DoesNotExist:
             return request.user.is_superuser
 
+
+class IsAdminOrSuperAdmin(BasePermission):
+    """
+    Allow read-only access to all authenticated users.
+    Restricts write operations (POST, PUT, PATCH, DELETE) to Admin or Super Admin roles.
+    """
+
+    def has_permission(self, request, view):
+        if not request.user or not request.user.is_authenticated:
+            return False
+
+        # 1. Always allow safe methods (GET, HEAD, OPTIONS)
+        if request.method in SAFE_METHODS:
+            return True
+
+        # 2. Check for staff/superadmin flag as a fallback
+        if request.user.is_superuser:
+            return True
+
+        # 3. Check custom profile role
+        try:
+            role = request.user.profile.role
+            return role in ["super_admin", "admin"]
+        except UserProfile.DoesNotExist:
+            return False
 
 # ── Helper ─────────────────────────────────────────
 def _audit(user, action, module, status_val="Success"):
@@ -410,6 +435,7 @@ class FrameworkViewSet(viewsets.ReadOnlyModelViewSet):
 
     queryset = Framework.objects.prefetch_related("controls").all()
     serializer_class = FrameworkSerializer
+    permission_classes = [IsAuthenticated]
 
 
 class ControlViewSet(viewsets.ModelViewSet):
@@ -417,12 +443,9 @@ class ControlViewSet(viewsets.ModelViewSet):
 
     queryset = Control.objects.select_related("framework").prefetch_related("wazuh_mappings").all()
     serializer_class = ControlSerializer
+    permission_classes = [IsAuthenticated, IsAdminOrSuperAdmin]
     filterset_fields = ["framework"]
 
-    def get_permissions(self):
-        if self.action in ("list", "retrieve"):
-            return [AllowAny()]
-        return [IsAuthenticated()]
 
     def perform_create(self, serializer):
         obj = serializer.save()
@@ -438,11 +461,7 @@ class PolicyViewSet(viewsets.ModelViewSet):
 
     queryset = Policy.objects.prefetch_related("controls__framework").all()
     serializer_class = PolicySerializer
-
-    def get_permissions(self):
-        if self.action in ("list", "retrieve"):
-            return [AllowAny()]
-        return [IsAuthenticated()]
+    permission_classes = [IsAuthenticated, IsAdminOrSuperAdmin]
 
     def perform_create(self, serializer):
         obj = serializer.save()
@@ -498,6 +517,7 @@ class AuditLogViewSet(viewsets.ReadOnlyModelViewSet):
 
     queryset = AuditLog.objects.select_related("user").all()
     serializer_class = AuditLogSerializer
+    permission_classes = [IsAuthenticated]
 
 
 # ═══════════════════════════════════════════════════
@@ -510,11 +530,7 @@ class SystemSettingsView(APIView):
     GET  /api/settings/  → returns the current settings
     PATCH /api/settings/ → updates the settings
     """
-
-    def get_permissions(self):
-        if self.request.method == "GET":
-            return [AllowAny()]
-        return [IsAuthenticated()]
+    permission_classes = [IsAuthenticated, IsAdminOrSuperAdmin]
 
     def get(self, request):
         settings = SystemSettings.load()
@@ -763,6 +779,7 @@ class DashboardSummaryView(APIView):
     Returns an aggregated snapshot for the frontend dashboard.
     Includes the threshold from SystemSettings.
     """
+    permission_classes = [IsAuthenticated]
 
     def get(self, request):
         settings = SystemSettings.load()
@@ -799,15 +816,25 @@ class DashboardSummaryView(APIView):
         # Compare against threshold
         compliance_status = "Healthy" if rounded_score >= settings.passing_score_threshold else "Critical"
 
-        # ── 3. Per-framework compliance breakdown ───
+        # ── 3. Per-framework compliance breakdown (Optimized) ───
         framework_scores = []
-        for fw in Framework.objects.all():
-            fw_results = ScanResult.objects.filter(
-                scan__in=latest_scans,
-                mapping__control__framework=fw,
+        frameworks_annotated = Framework.objects.annotate(
+            total_checks=Count(
+                "controls__wazuh_mappings__scan_results",
+                filter=Q(controls__wazuh_mappings__scan_results__scan__in=latest_scans)
+            ),
+            passed_checks=Count(
+                "controls__wazuh_mappings__scan_results",
+                filter=Q(
+                    controls__wazuh_mappings__scan_results__scan__in=latest_scans,
+                    controls__wazuh_mappings__scan_results__is_passed=True
+                )
             )
-            total = fw_results.count()
-            passed = fw_results.filter(is_passed=True).count()
+        )
+
+        for fw in frameworks_annotated:
+            total = fw.total_checks
+            passed = fw.passed_checks
             score = round((passed / total) * 100, 1) if total > 0 else 0.0
             framework_scores.append(
                 {
@@ -888,6 +915,7 @@ class RunScanView(APIView):
     POST /api/run-scan/
     Triggers the sync_wazuh_scans management command.
     """
+    permission_classes = [IsAuthenticated, IsAdminOrSuperAdmin]
 
     def post(self, request):
         try:
@@ -985,9 +1013,23 @@ class UpdateProfileView(APIView):
         if "display_name" in request.data:
             profile.display_name = request.data["display_name"]
         if "phone_number" in request.data:
-            profile.phone_number = request.data["phone_number"]
+            phone = request.data["phone_number"]
+            if not re.match(r'^[0-9+\-\s()]{7,20}$', phone):
+                return Response(
+                    {"error": "Invalid phone number format. Use 7-20 digits, +, -, spaces, or ()."},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+            profile.phone_number = phone
+
         if "designation" in request.data:
-            profile.designation = request.data["designation"]
+            designation = request.data["designation"]
+            if not re.match(r'^[a-zA-Z\s\-]+$', designation):
+                return Response(
+                    {"error": "Invalid designation. Use alphabets, spaces, and hyphens only."},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+            profile.designation = designation
+
         if "timezone" in request.data:
             profile.timezone = request.data["timezone"]
 
@@ -1418,6 +1460,12 @@ class ProfileSetupView(APIView):
         except:
             profile = UserProfile.objects.create(user=user, role="admin")
         
+        # Regex validation for phone and designation
+        if phone_number and not re.match(r'^[0-9+\-\s()]{7,20}$', phone_number):
+            return Response({"error": "Invalid phone number format."}, status=status.HTTP_400_BAD_REQUEST)
+        if designation and not re.match(r'^[a-zA-Z\s\-]+$', designation):
+            return Response({"error": "Invalid designation format."}, status=status.HTTP_400_BAD_REQUEST)
+
         profile.display_name = display_name
         profile.designation = designation
         profile.phone_number = phone_number

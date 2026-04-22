@@ -1,6 +1,8 @@
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
+import Toast from '../components/Toast';
 import {
   LayoutDashboard, ScanLine, ShieldCheck, FileText, BarChart3,
   Settings, Users, LogOut, Shield, Eye, Moon, Sun
@@ -60,6 +62,16 @@ export default function DashboardLayout() {
   const navItems = NAV_MAP[role] || ADMIN_NAV;
   const portalLabel = PORTAL_LABELS[role] || 'Admin Portal';
   const BrandIcon = BRAND_ICONS[role] || Shield;
+
+  const [denialToast, setDenialToast] = useState(null);
+
+  useEffect(() => {
+    const handleDenial = (e) => {
+      setDenialToast(e.detail.message);
+    };
+    window.addEventListener('grc-access-denial', handleDenial);
+    return () => window.removeEventListener('grc-access-denial', handleDenial);
+  }, []);
 
   const handleLogout = () => {
     logout();
@@ -151,6 +163,13 @@ export default function DashboardLayout() {
         <main className="flex-1 overflow-y-auto bg-[#f4f6f9] dark:bg-slate-900 text-[#0f172a] dark:text-slate-200 p-8">
           <Outlet />
         </main>
+        
+        {/* Global Access Denial Toast */}
+        <Toast 
+          message={denialToast} 
+          type="error" 
+          onClose={() => setDenialToast(null)} 
+        />
       </div>
     </div>
   );

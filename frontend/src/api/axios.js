@@ -61,6 +61,15 @@ API.interceptors.response.use(
       }
     }
 
+    // ── Handle 403 Forbidden (RBAC rejection) ────────
+    if (error.response?.status === 403) {
+      // Dispatch global event that layouts/pages can listen to
+      const msg = error.response.data?.error || error.response.data?.detail || "Permission Denied: You do not have the required role to perform this action.";
+      window.dispatchEvent(new CustomEvent('grc-access-denial', { 
+        detail: { message: msg } 
+      }));
+    }
+
     return Promise.reject(error);
   }
 );

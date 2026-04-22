@@ -47,10 +47,10 @@ services:
     env_file:
       - ./backend/.env
     environment:
-      # Wazuh creds set here because env_file can't handle * in passwords
+      # Wazuh creds injected via environment variable — set WAZUH_API_PASSWORD in backend/.env
       WAZUH_API_HOST: "192.168.100.100"
       WAZUH_API_USER: "wazuh"
-      WAZUH_API_PASSWORD: "GrI.Fsi1F3u9E4Dp*+JmXTCmXV0cuYyZ"
+      WAZUH_API_PASSWORD: ${WAZUH_API_PASSWORD}
     depends_on:
       db:
         condition: service_healthy
@@ -115,7 +115,7 @@ services:
     environment:
       WAZUH_API_HOST: "192.168.100.100"
       WAZUH_API_USER: "wazuh"
-      WAZUH_API_PASSWORD: "GrI.Fsi1F3u9E4Dp*+JmXTCmXV0cuYyZ"
+      WAZUH_API_PASSWORD: ${WAZUH_API_PASSWORD}
     depends_on:
       db:
         condition: service_healthy
