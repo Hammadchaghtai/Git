@@ -88,7 +88,7 @@ export default function DashboardLayout() {
             <BrandIcon className="h-6 w-6 text-white" />
           </div>
           <div className="leading-tight">
-            <span className="text-[15px] font-bold text-slate-900 dark:text-white block tracking-tight">Antigravity</span>
+            <span className="text-[15px] font-bold text-slate-900 dark:text-white block tracking-tight">ICMS</span>
             <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-widest">{portalLabel}</span>
           </div>
         </div>

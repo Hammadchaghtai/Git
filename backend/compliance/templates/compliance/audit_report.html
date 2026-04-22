@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <style>
+        @page {
+            size: A4;
+            margin: 1.5cm;
+        }
+
+        body {
+            font-family: Helvetica, Arial, sans-serif;
+            color: #0f172a;
+            margin: 0;
+            padding: 0;
+            background-color: #ffffff;
+        }
+
+        .report-header {
+            width: 100%;
+            border-bottom: 2px solid #6D28D9;
+            padding-bottom: 10pt;
+            margin-bottom: 20pt;
+        }
+        .header-left {
+            font-size: 10pt;
+            font-weight: bold;
+            color: #6D28D9;
+        }
+        .header-right {
+            font-size: 9pt;
+            color: #64748b;
+            text-align: right;
+        }
+
+        .header-title {
+            font-size: 24pt;
+            font-weight: bold;
+            color: #1e293b;
+            margin-bottom: 20pt;
+        }
+
+        /* ── Summary Table ── */
+        .summary-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 25pt;
+            background-color: #f8fafc;
+            border: 1px solid #e2e8f0;
+        }
+        .summary-cell {
+            padding: 15pt;
+            text-align: center;
+            border-right: 1px solid #e2e8f0;
+        }
+        .summary-value {
+            font-size: 24pt;
+            font-weight: bold;
+            color: #6D28D9;
+        }
+        .summary-label {
+            font-size: 9pt;
+            text-transform: uppercase;
+            letter-spacing: 1pt;
+            color: #64748b;
+            margin-top: 5pt;
+        }
+
+        /* ── Data Table ── */
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .data-table th {
+            background-color: #f8fafc;
+            color: #475569;
+            font-size: 9pt;
+            text-transform: uppercase;
+            font-weight: bold;
+            padding: 12px;
+            text-align: left;
+            border-bottom: 2px solid #cbd5e1;
+        }
+        .data-table td {
+            padding: 12px;
+            font-size: 8.5pt;
+            color: #1e293b;
+            border-bottom: 1px solid #e2e8f0;
+            vertical-align: top;
+        }
+
+        .footer {
+            text-align: right;
+            font-size: 9pt;
+            color: #64748b;
+            margin-top: 20pt;
+            border-top: 1px solid #e2e8f0;
+            padding-top: 10pt;
+        }
+    </style>
+</head>
+<body>
+
+    <table class="report-header">
+        <tr>
+            <td class="header-left">ICMS Audit Trail</td>
+            <td class="header-right">System Date: {{ generation_date|date:"Y-m-d" }}</td>
+        </tr>
+    </table>
+
+    <div class="header-title">
+        Intelligent Compliance Management System (ICMS)
+    </div>
+
+    <table class="summary-table">
+        <tr>
+            <td class="summary-cell" width="33%">
+                <div class="summary-value">{{ total_entries }}</div>
+                <div class="summary-label">Total Events</div>
+            </td>
+            <td class="summary-cell" width="33%">
+                <div class="summary-value">{{ success_count }}</div>
+                <div class="summary-label">Success</div>
+            </td>
+            <td class="summary-cell" width="34%" style="border-right: none;">
+                <div class="summary-value">{{ alert_count }}</div>
+                <div class="summary-label">Alerts</div>
+            </td>
+        </tr>
+    </table>
+
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th width="20%">Date/Time</th>
+                <th width="15%">User</th>
+                <th width="45%">Action</th>
+                <th width="20%" style="text-align: center;">Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for log in logs %}
+            <tr>
+                <td style="color: #64748b;">{{ log.timestamp|date:"M d, Y H:i" }}</td>
+                <td style="font-weight: bold;">{{ log.user__username|default:"System" }}</td>
+                <td>{{ log.action }} <br/> <small style="color: #94a3b8;">Module: {{ log.module }}</small></td>
+                <td style="text-align: center;">
+                    {% if log.status == "Success" %}
+                    <span style="background-color: #d1fae5; color: #047857; padding: 4px 8px; border-radius: 4px; font-size: 9px; font-weight: bold;">{{ log.status|upper }}</span>
+                    {% elif log.status == "Alert" %}
+                    <span style="background-color: #fee2e2; color: #b91c1c; padding: 4px 8px; border-radius: 4px; font-size: 9px; font-weight: bold;">{{ log.status|upper }}</span>
+                    {% else %}
+                    <span style="background-color: #f1f5f9; color: #475569; padding: 4px 8px; border-radius: 4px; font-size: 9px; font-weight: bold;">{{ log.status|upper }}</span>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="footer">
+        Intelligent Compliance Management System &copy; 2026
+    </div>
+
+</body>
+</html>

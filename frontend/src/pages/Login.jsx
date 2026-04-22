@@ -62,7 +62,7 @@ export default function Login() {
                  <Shield className="h-10 w-10" />
                </div>
             </div>
-            <h2 className="text-3xl font-black text-slate-900 dark:text-white tracking-tight uppercase">Sovereign GRC</h2>
+            <h2 className="text-3xl font-black text-slate-900 dark:text-white tracking-tight uppercase">ICMS</h2>
             <p className="mt-2 text-[10px] font-black uppercase text-slate-400 tracking-[0.3em]">Access Security Terminal</p>
           </div>
 
@@ -142,7 +142,7 @@ export default function Login() {
         </div>
         
         <p className="mt-10 text-center text-[11px] font-black uppercase tracking-[0.2em] text-slate-400 dark:text-slate-600">
-          &copy; 2026 SOVEREIGN GRC ECOSYSTEM · ALL SYSTEMS OPERATIONAL
+          &copy; 2026 ICMS PLATFORM · ALL SYSTEMS OPERATIONAL
         </p>
       </div>
     </div>

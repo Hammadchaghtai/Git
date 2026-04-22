@@ -986,9 +986,55 @@ class GenerateReportView(APIView):
 
 
 # ═══════════════════════════════════════════════════
-# RUN MANUAL SCAN
+# GENERATE AUDIT TRAIL PDF REPORT
 # ═══════════════════════════════════════════════════
 
+
+class GenerateAuditReportView(APIView):
+    """
+    GET /api/generate-audit-report/
+    Renders a premium server-side PDF of the AuditLog using xhtml2pdf.
+    """
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        logs_qs = (
+            AuditLog.objects
+            .select_related("user")
+            .order_by("-timestamp")[:200]
+            .values("timestamp", "user__username", "action", "module", "status")
+        )
+        logs = list(logs_qs)
+
+        total_entries = len(logs)
+        success_count = sum(1 for l in logs if l["status"] == "Success")
+        alert_count   = sum(1 for l in logs if l["status"] == "Alert")
+
+        context = {
+            "logs": logs,
+            "total_entries": total_entries,
+            "success_count": success_count,
+            "alert_count": alert_count,
+            "generation_date": timezone.now(),
+            "generated_by": request.user.username,
+        }
+
+        html = render_to_string("compliance/audit_report.html", context)
+        result = io.BytesIO()
+        pdf = pisa.pisaDocument(io.BytesIO(html.encode("UTF-8")), result)
+
+        if not pdf.err:
+            response = HttpResponse(result.getvalue(), content_type="application/pdf")
+            filename = f"GRC_Audit_Trail_{timezone.now().strftime('%Y%m%d')}.pdf"
+            response["Content-Disposition"] = f'attachment; filename="{filename}"'
+            return response
+
+        return Response({"error": "Audit PDF generation failed."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+# ═══════════════════════════════════════════════════
+# RUN MANUAL SCAN
+# ═══════════════════════════════════════════════════
 
 class RunScanView(APIView):
     """

@@ -15,6 +15,7 @@ export default function Reports() {
   const [loadingLogs, setLoadingLogs] = useState(true);
   const [generating, setGenerating] = useState(false);
   const [generatingAudit, setGeneratingAudit] = useState(false);
+  const [error, setError] = useState('');
 
   useEffect(() => {
     API.get('frameworks/').then((res) => {
@@ -29,92 +30,66 @@ export default function Reports() {
       .finally(() => setLoadingLogs(false));
   }, []);
 
+  // ── Compliance PDF: raw fetch bypasses Axios interceptor blob-parse bug ──
   const handleDownload = async () => {
     if (!selectedFw) return;
     setGenerating(true);
+    setError('');
     try {
-      const response = await API.get(`generate-report/?framework_id=${selectedFw}`, {
-        responseType: 'blob',
-      });
-      
-      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const token = localStorage.getItem('grc_access_token');
+      const response = await fetch(
+        `http://localhost:8000/api/generate-report/?framework_id=${selectedFw}`,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      if (!response.ok) {
+        const text = await response.text();
+        throw new Error(text || `Server error: ${response.status}`);
+      }
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;
-      
-      const contentDisposition = response.headers['content-disposition'];
-      let fileName = `Compliance_Report_${new Date().toISOString().slice(0, 10)}.pdf`;
-      
-      if (contentDisposition) {
-        const fileNameMatch = contentDisposition.match(/filename="(.+)"/);
-        if (fileNameMatch && fileNameMatch.length === 2) {
-          fileName = fileNameMatch[1];
-        }
-      }
-      
-      link.setAttribute('download', fileName);
+      const disposition = response.headers.get('content-disposition') || '';
+      const match = disposition.match(/filename="(.+?)"/);
+      link.setAttribute('download', match ? match[1] : `Compliance_Report_${new Date().toISOString().slice(0, 10)}.pdf`);
       document.body.appendChild(link);
       link.click();
       link.remove();
       window.URL.revokeObjectURL(url);
     } catch (err) {
       console.error('PDF generation failed:', err);
+      setError('Failed to generate compliance report. Please try again.');
     } finally {
       setGenerating(false);
     }
   };
 
+  // ── Audit Trail PDF: server-rendered via Django/xhtml2pdf ──
   const handleDownloadAudit = async () => {
     setGeneratingAudit(true);
+    setError('');
     try {
-      const { jsPDF } = await import('jspdf');
-      await import('jspdf-autotable');
-      const doc = new jsPDF();
-      const now = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
-
-      doc.setFillColor(15, 23, 42);
-      doc.rect(0, 0, 210, 35, 'F');
-      doc.setTextColor(124, 58, 237);
-      doc.setFontSize(20);
-      doc.setFont(undefined, 'bold');
-      doc.text('Audit Trail Report', 14, 17);
-      doc.setFontSize(10);
-      doc.setFont(undefined, 'normal');
-      doc.setTextColor(148, 163, 184);
-      doc.text(`Generated: ${now}  |  Total Entries: ${auditLogs.length}`, 14, 27);
-
-      let y = 45;
-      doc.setTextColor(15, 23, 42);
-      doc.setFontSize(14);
-      doc.setFont(undefined, 'bold');
-      doc.text('Audit Log Entries', 14, y);
-      y += 3;
-
-      doc.autoTable({
-        startY: y,
-        head: [['User', 'Action', 'Module', 'Status', 'Timestamp']],
-        body: auditLogs.map((log) => [
-          log.user || 'System',
-          log.action.length > 50 ? log.action.slice(0, 50) + '...' : log.action,
-          log.module,
-          log.status,
-          new Date(log.timestamp).toLocaleString(),
-        ]),
-        theme: 'striped',
-        headStyles: { fillColor: [15, 23, 42], textColor: [124, 58, 237], fontSize: 9 },
-        styles: { fontSize: 8, cellPadding: 3 },
-        columnStyles: { 0: { cellWidth: 28 }, 1: { cellWidth: 62 }, 2: { cellWidth: 28 }, 3: { cellWidth: 22 }, 4: { cellWidth: 40 } },
-      });
-
-      const pageCount = doc.internal.getNumberOfPages();
-      for (let i = 1; i <= pageCount; i++) {
-        doc.setPage(i);
-        doc.setFontSize(8);
-        doc.setTextColor(148, 163, 184);
-        doc.text(`GRC Compliance Platform  ·  Audit Trail  ·  Page ${i} of ${pageCount}`, 14, 290);
+      const token = localStorage.getItem('grc_access_token');
+      const response = await fetch(
+        `http://localhost:8000/api/generate-audit-report/`,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      if (!response.ok) {
+        const text = await response.text();
+        throw new Error(text || `Server error: ${response.status}`);
       }
-      doc.save(`GRC_Audit_Trail_${new Date().toISOString().slice(0, 10)}.pdf`);
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `GRC_Audit_Trail_${new Date().toISOString().slice(0, 10)}.pdf`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
     } catch (err) {
       console.error('Audit PDF generation failed:', err);
+      setError('Failed to generate audit trail report. Please try again.');
     } finally {
       setGeneratingAudit(false);
     }
@@ -123,9 +98,16 @@ export default function Reports() {
   return (
     <div className="max-w-7xl mx-auto">
       <div className="mb-10">
-        <h1 className="text-4xl font-black text-slate-900 dark:text-white tracking-tight">Intelligence & Audits</h1>
+        <h1 className="text-4xl font-black text-slate-900 dark:text-white tracking-tight">Intelligence &amp; Audits</h1>
         <p className="text-slate-500 font-medium mt-1">Export executive compliance summaries and historical activity logs.</p>
       </div>
+
+      {error && (
+        <div className="mb-6 flex items-center gap-3 rounded-2xl bg-rose-50 dark:bg-rose-900/20 border border-rose-100 dark:border-rose-800 px-5 py-4">
+          <AlertCircle className="h-5 w-5 text-rose-500 flex-shrink-0" />
+          <p className="text-sm font-semibold text-rose-600 dark:text-rose-400">{error}</p>
+        </div>
+      )}
 
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-5 items-start">
         {/* Left — Report Generator */}
@@ -156,12 +138,12 @@ export default function Reports() {
               </div>
 
               <div className="pt-4 space-y-4">
-                <button onClick={handleDownload} disabled={generating}
+                <button onClick={handleDownload} disabled={generating || !selectedFw}
                   className="btn-primary w-full py-4 flex items-center justify-center gap-3 shadow-xl shadow-brand-600/20">
                   {generating ? (
                     <><Loader2 className="h-5 w-5 animate-spin" /> DISPATCHING...</>
                   ) : (
-                    <><Download className="h-5 w-5" /> GENERATE EXECUTIVE PDF</>
+                    <><Download className="h-5 w-5" /> DOWNLOAD COMPLIANCE REPORT</>
                   )}
                 </button>
 
@@ -175,7 +157,7 @@ export default function Reports() {
                 </button>
               </div>
             </div>
-            
+
             <div className="mt-10 p-5 rounded-2xl bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800">
                <div className="flex items-start gap-3">
                   <div className="p-2 rounded-xl bg-white dark:bg-slate-800 shadow-sm">

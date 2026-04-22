@@ -75,7 +75,7 @@ export default function ForgotPassword() {
       await API.post('auth/forgot-password/', { email });
       setStep(2);
     } catch (err) {
-      setError(err.response?.data?.error || 'Account not found: Identify record missing in the sovereign registry.');
+      setError(err.response?.data?.error || 'Account not found: Identify record missing in the ICMS registry.');
     }
     setLoading(false);
   };
@@ -445,7 +445,7 @@ export default function ForgotPassword() {
         </div>
         
         <p className="mt-10 text-center text-[11px] font-black uppercase tracking-[0.2em] text-slate-400 dark:text-slate-600">
-          &copy; 2026 SOVEREIGN GRC ECOSYSTEM · ALL SYSTEMS OPERATIONAL
+          &copy; 2026 ICMS PLATFORM · ALL SYSTEMS OPERATIONAL
         </p>
       </div>
     </div>

@@ -5,162 +5,200 @@
     <style>
         @page {
             size: A4;
-            margin: 2cm;
-            @bottom-right {
-                content: "Page " counter(page) " of " counter(pages);
-                font-size: 9pt;
-                color: #64748b;
-            }
+            margin: 1.5cm;
         }
+
         body {
-            font-family: 'Helvetica', 'Arial', sans-serif;
+            font-family: Helvetica, Arial, sans-serif;
             color: #0f172a;
-            line-height: 1.5;
             margin: 0;
             padding: 0;
+            background-color: #ffffff;
         }
-        .header {
-            border-bottom: 2pt solid #7c3aed;
-            padding-bottom: 20pt;
-            margin-bottom: 30pt;
+
+        /* ── Repeating Header Simulation ── */
+        .report-header {
+            width: 100%;
+            border-bottom: 2px solid #6D28D9;
+            padding-bottom: 10pt;
+            margin-bottom: 20pt;
         }
-        .logo {
-            font-size: 24pt;
+        .header-left {
+            font-size: 10pt;
             font-weight: bold;
-            color: #7c3aed;
-            margin-bottom: 5pt;
+            color: #6D28D9;
         }
-        .report-title {
-            font-size: 18pt;
-            font-weight: bold;
-            color: #1e293b;
-        }
-        .meta-data {
+        .header-right {
             font-size: 9pt;
             color: #64748b;
-            margin-top: 10pt;
+            text-align: right;
         }
-        .summary-grid {
+
+        .header-title {
+            font-size: 24pt;
+            font-weight: bold;
+            color: #1e293b;
+            margin-bottom: 20pt;
+        }
+
+        /* ── Executive Summary Table ── */
+        .summary-table {
+            width: 100%;
+            border-collapse: collapse;
             margin-bottom: 30pt;
-        }
-        .card {
             background-color: #f8fafc;
-            border: 1pt solid #e2e8f0;
-            border-radius: 8pt;
-            padding: 15pt;
-            margin-bottom: 15pt;
+            border: 1px solid #e2e8f0;
         }
-        .score-box {
+        .score-cell {
+            width: 40%;
             text-align: center;
-            background-color: #7c3aed;
-            color: white;
-            padding: 20pt;
-            border-radius: 12pt;
+            padding: 30pt;
+            border-right: 1px solid #e2e8f0;
         }
         .score-value {
-            font-size: 36pt;
-            font-weight: 900;
+            font-size: 56pt;
+            font-weight: bold;
+            color: #6D28D9;
+            line-height: 1;
         }
         .score-label {
             font-size: 10pt;
             text-transform: uppercase;
-            letter-spacing: 1pt;
-            font-weight: bold;
+            letter-spacing: 2pt;
+            color: #64748b;
+            margin-top: 10pt;
         }
+        .details-cell {
+            width: 60%;
+            padding: 20pt;
+            vertical-align: middle;
+        }
+        .details-cell table {
+            width: 100%;
+        }
+        .details-cell td {
+            padding: 4pt 0;
+            font-size: 10pt;
+            color: #475569;
+        }
+        .details-cell strong {
+            color: #0f172a;
+        }
+
+        /* ── Section Headings ── */
         h2 {
             font-size: 14pt;
-            color: #7c3aed;
-            border-left: 4pt solid #7c3aed;
-            padding-left: 10pt;
+            color: #6D28D9;
             margin-bottom: 15pt;
-            margin-top: 25pt;
+            margin-top: 20pt;
+            text-transform: uppercase;
+            letter-spacing: 1pt;
         }
-        table {
+
+        /* ── Data Table ── */
+        .data-table {
             width: 100%;
             border-collapse: collapse;
-            margin-bottom: 20pt;
         }
-        th {
-            background-color: #f1f5f9;
+        .data-table th {
+            background-color: #f8fafc;
             color: #475569;
-            font-size: 9pt;
-            text-transform: uppercase;
-            text-align: left;
-            padding: 10pt;
-            border-bottom: 1pt solid #e2e8f0;
-        }
-        td {
-            padding: 10pt;
             font-size: 10pt;
-            border-bottom: 1pt solid #f1f5f9;
-            color: #334155;
+            text-transform: uppercase;
+            font-weight: bold;
+            padding: 12pt;
+            text-align: left;
+            border-bottom: 2px solid #cbd5e1;
         }
-        .status-fail {
-            color: #e11d48;
+        .data-table td {
+            padding: 12pt;
+            font-size: 10pt;
+            color: #1e293b;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        .badge-fail {
+            color: #b91c1c;
             font-weight: bold;
         }
-        .footer {
-            margin-top: 50pt;
-            font-size: 8pt;
-            color: #94a3b8;
+        .all-clear {
+            padding: 20pt;
+            background-color: #f0fdf4;
+            color: #15803d;
             text-align: center;
-            border-top: 1pt solid #f1f5f9;
+            font-weight: bold;
+            border: 1px solid #bbf7d0;
+        }
+        
+        .footer {
+            text-align: right;
+            font-size: 9pt;
+            color: #64748b;
+            margin-top: 20pt;
+            border-top: 1px solid #e2e8f0;
             padding-top: 10pt;
         }
     </style>
 </head>
 <body>
-    <div class="header">
-        <div class="logo">SOVEREIGN GRC</div>
-        <div class="report-title">Compliance Assessment Report</div>
-        <div class="meta-data">
-            <strong>Framework:</strong> {{ framework.name }} v{{ framework.version }}<br>
-            <strong>Generated:</strong> {{ generation_date|date:"F d, Y H:i" }} UTC<br>
-            <strong>Auditor:</strong> {{ generated_by }}
-        </div>
+
+    <table class="report-header">
+        <tr>
+            <td class="header-left">ICMS Compliance Report</td>
+            <td class="header-right">System Date: {{ generation_date|date:"Y-m-d" }}</td>
+        </tr>
+    </table>
+
+    <div class="header-title">
+        Intelligent Compliance Management System (ICMS)
     </div>
 
-    <div class="summary-grid">
-        <div class="score-box">
-            <div class="score-value">{{ compliance_score }}%</div>
-            <div class="score-label">Overall Compliance Score</div>
-        </div>
-    </div>
+    <table class="summary-table">
+        <tr>
+            <td class="score-cell">
+                <div class="score-value">{{ compliance_score }}%</div>
+                <div class="score-label">Compliance Score</div>
+            </td>
+            <td class="details-cell">
+                <table>
+                    <tr><td width="40%"><strong>Framework:</strong></td><td>{{ framework.name }} v{{ framework.version }}</td></tr>
+                    <tr><td><strong>Generated:</strong></td><td>{{ generation_date|date:"F d, Y H:i" }} UTC</td></tr>
+                    <tr><td><strong>Prepared By:</strong></td><td>{{ generated_by }}</td></tr>
+                    <tr><td><strong>Total Checks:</strong></td><td>{{ total_checks }}</td></tr>
+                    <tr><td><strong>Agents Scanned:</strong></td><td>{{ total_agents }}</td></tr>
+                </table>
+            </td>
+        </tr>
+    </table>
 
-    <div class="card">
-        <strong>Executive Summary</strong><br>
-        This report provides a detailed breakdown of the compliance posture for the <strong>{{ framework.name }}</strong> framework. 
-        A total of <strong>{{ total_checks }}</strong> checks were performed across <strong>{{ total_agents }}</strong> active agents.
-        The current assessment identifies <strong>{{ passed_checks }}</strong> successful controls and <strong>{{ failed_controls|length }}</strong> unique control gaps.
-    </div>
-
-    <h2>Critical Gaps & Non-Compliant Controls</h2>
+    <h2>Critical Gaps &amp; Non-Compliant Controls</h2>
     {% if failed_controls %}
-    <table>
+    <table class="data-table">
         <thead>
             <tr>
-                <th>Control Code</th>
-                <th>Description</th>
-                <th style="text-align: right;">Total Failures</th>
+                <th width="20%">Control Code</th>
+                <th width="65%">Title</th>
+                <th width="15%" style="text-align: center;">Failures</th>
             </tr>
         </thead>
         <tbody>
             {% for ctrl in failed_controls %}
             <tr>
-                <td style="font-weight: bold; color: #7c3aed;">{{ ctrl.code }}</td>
+                <td style="font-weight: bold; color: #6D28D9;">{{ ctrl.code }}</td>
                 <td>{{ ctrl.title }}</td>
-                <td style="text-align: right;" class="status-fail">{{ ctrl.fails }} Agents</td>
+                <td style="text-align: center;" class="badge-fail">{{ ctrl.fails }}</td>
             </tr>
             {% endfor %}
         </tbody>
     </table>
     {% else %}
-    <p style="color: #64748b; font-style: italic;">No control failures detected for this framework. All systems are compliant.</p>
+    <div class="all-clear">
+        No compliance failures detected. System is fully compliant with {{ framework.name }}.
+    </div>
     {% endif %}
 
     <div class="footer">
-        Confidential - Internal Use Only<br>
-        &copy; 2026 Sovereign GRC Platform. All rights reserved.
+        Intelligent Compliance Management System &copy; 2026
     </div>
+
 </body>
 </html>

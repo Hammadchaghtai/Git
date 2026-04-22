@@ -36,6 +36,11 @@ urlpatterns = [
         views.GenerateReportView.as_view(),
         name="generate-report",
     ),
+    path(
+        "generate-audit-report/",
+        views.GenerateAuditReportView.as_view(),
+        name="generate-audit-report",
+    ),
 
     # Trigger Wazuh SCA sync from the frontend
     path(
