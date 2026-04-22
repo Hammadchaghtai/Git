@@ -1,6 +1,6 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Fragment } from 'react';
 import API from '../api/axios';
-import { ChevronDown, ChevronRight, ExternalLink } from 'lucide-react';
+import { ChevronDown, ChevronRight, ExternalLink, Shield, BookOpen, Layers, Zap, Info, Link as LinkIcon } from 'lucide-react';
 
 export default function Frameworks() {
   const [frameworks, setFrameworks] = useState([]);
@@ -26,19 +26,25 @@ export default function Frameworks() {
   if (loading) {
     return (
       <div className="flex h-full items-center justify-center">
-        <div className="h-10 w-10 animate-spin rounded-full border-4 border-gray-200 border-t-[#38bdf8]" />
+        <div className="h-12 w-12 animate-spin rounded-full border-4 border-slate-200 border-t-brand-600" />
       </div>
     );
   }
 
   return (
-    <div>
-      <h1 className="mb-6 text-2xl font-bold text-[#0f172a]">Frameworks & Controls</h1>
+    <div className="max-w-7xl mx-auto">
+      <div className="mb-10">
+        <h1 className="text-4xl font-black text-slate-900 dark:text-white tracking-tight">Compliance Frameworks</h1>
+        <p className="text-slate-500 font-medium mt-1">Regulatory catalogs and security controls mapped to technical telemetry.</p>
+      </div>
 
       {frameworks.length === 0 ? (
-        <p className="text-gray-400">No frameworks found.</p>
+        <div className="cyber-card p-20 text-center">
+          <BookOpen className="mx-auto h-12 w-12 text-slate-200 mb-4" />
+          <p className="text-slate-400 font-black uppercase tracking-widest text-xs">No frameworks cataloged in registry.</p>
+        </div>
       ) : (
-        <div className="space-y-4">
+        <div className="space-y-6">
           {frameworks.map((fw) => {
             const fwControls = controls.filter((c) => c.framework === fw.id);
             const isExpanded = expandedFw === fw.id;
@@ -46,95 +52,96 @@ export default function Frameworks() {
             return (
               <div
                 key={fw.id}
-                className="rounded-xl border border-gray-100 bg-white shadow-sm"
+                className={`cyber-card transition-all duration-500 ${isExpanded ? 'ring-2 ring-brand-600/20 shadow-2xl shadow-brand-600/10' : ''}`}
               >
                 {/* Framework Header */}
                 <button
                   onClick={() => toggleExpand(fw.id)}
-                  className="flex w-full items-center justify-between px-6 py-5 text-left cursor-pointer"
+                  className="flex w-full items-center justify-between px-8 py-6 text-left cursor-pointer hover:bg-slate-50/50 dark:hover:bg-slate-900/50 transition-all"
                 >
-                  <div className="flex items-center gap-4">
-                    <div className="flex h-11 w-11 items-center justify-center rounded-lg bg-[#0f172a]">
-                      <span className="text-sm font-bold text-[#38bdf8]">
-                        {fw.name.slice(0, 3).toUpperCase()}
-                      </span>
+                  <div className="flex items-center gap-6">
+                    <div className={`flex h-14 w-14 items-center justify-center rounded-2xl transition-all ${isExpanded ? 'bg-brand-600 text-white shadow-lg shadow-brand-600/30' : 'bg-brand-50 dark:bg-brand-900/20 text-brand-600'}`}>
+                      <Shield className="h-6 w-6" />
                     </div>
                     <div>
-                      <h3 className="text-sm font-bold text-[#0f172a]">{fw.name}</h3>
-                      <p className="text-xs text-gray-400">
-                        Version {fw.version} · {fw.controls_count} control(s)
+                      <h3 className="text-xl font-black text-slate-900 dark:text-white tracking-tighter uppercase">{fw.name}</h3>
+                      <p className="text-xs font-bold text-slate-400 uppercase tracking-tighter mt-1 flex items-center gap-2">
+                        <Layers className="w-3 h-3" /> Version {fw.version} · {fw.controls_count} Governance Controls
                       </p>
                     </div>
                   </div>
-                  <div className="flex items-center gap-3">
-                    <span className="rounded-full bg-sky-50 px-3 py-1 text-xs font-semibold text-sky-600">
-                      {fw.controls_count} controls
-                    </span>
-                    {isExpanded ? (
-                      <ChevronDown className="h-5 w-5 text-gray-400" />
-                    ) : (
-                      <ChevronRight className="h-5 w-5 text-gray-400" />
-                    )}
+                  <div className="flex items-center gap-4">
+                    <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800">
+                      <Zap className="h-3.5 w-3.5 text-brand-600" />
+                      <span className="text-[10px] font-black text-slate-600 dark:text-slate-400 uppercase tracking-widest">
+                        {fw.controls_count} ACTIVE
+                      </span>
+                    </div>
+                    <div className={`p-2 rounded-full transition-all ${isExpanded ? 'bg-brand-600 text-white' : 'bg-slate-100 dark:bg-slate-800 text-slate-400'}`}>
+                      {isExpanded ? <ChevronDown className="h-5 w-5" /> : <ChevronRight className="h-5 w-5" />}
+                    </div>
                   </div>
                 </button>
 
-                {/* Controls List with Wazuh Mapping badges */}
-                {isExpanded && fwControls.length > 0 && (
-                  <div className="border-t border-gray-100 px-6 py-4">
-                    <table className="w-full text-left text-sm">
-                      <thead>
-                        <tr className="text-xs font-semibold uppercase tracking-wider text-gray-400">
-                          <th className="pb-2 pr-4">Code</th>
-                          <th className="pb-2 pr-4">Title</th>
-                          <th className="pb-2 pr-4">Wazuh Mappings</th>
-                          <th className="pb-2 pr-4 text-right">Weight</th>
-                          <th className="pb-2 text-center">Ref</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {fwControls.map((ctrl) => (
-                          <tr key={ctrl.id} className="border-t border-gray-50">
-                            <td className="py-2.5 pr-4 font-mono text-xs font-semibold text-[#0f172a]">
+                {/* Controls List */}
+                {isExpanded && (
+                  <div className="border-t border-slate-100 dark:border-slate-800 animate-in fade-in slide-in-from-top-4 duration-500">
+                    <div className="px-8 pb-8 pt-6 space-y-3">
+                      <div className="hidden md:flex items-center px-4 mb-2 text-[10px] font-black uppercase tracking-widest text-slate-400">
+                        <span className="w-32">Control Code</span>
+                        <span className="flex-1">Title & Objective</span>
+                        <span className="w-48">Telemetry Integration</span>
+                        <span className="w-24 text-right">Impact</span>
+                        <span className="w-24 text-center">Docs</span>
+                      </div>
+
+                      {fwControls.length > 0 ? fwControls.map((ctrl) => (
+                        <div key={ctrl.id} className="flex flex-col md:flex-row md:items-center px-6 py-4 rounded-2xl bg-white dark:bg-slate-950 border border-slate-100 dark:border-slate-800 transition-all shadow-sm hover:translate-x-1 hover:border-brand-100 dark:hover:border-brand-900/30">
+                          <div className="w-32 flex-shrink-0 mb-2 md:mb-0">
+                            <span className="font-mono text-xs font-black text-brand-700 dark:text-brand-400 bg-brand-50 dark:bg-brand-900/20 px-2 py-1 rounded">
                               {ctrl.control_code}
-                            </td>
-                            <td className="py-2.5 pr-4 font-medium text-gray-700">
-                              {ctrl.title}
-                            </td>
-                            <td className="py-2.5 pr-4">
-                              {ctrl.wazuh_mappings?.length > 0 ? (
-                                <div className="flex flex-wrap gap-1">
-                                  {ctrl.wazuh_mappings.map(m => (
-                                    <span key={m.id}
-                                      className="rounded bg-violet-50 px-2 py-0.5 text-[10px] font-semibold text-violet-700 cursor-default"
-                                      title={m.rule_description}>
-                                      🔗 {m.wazuh_rule_id}
-                                    </span>
-                                  ))}
-                                </div>
-                              ) : (
-                                <span className="text-xs text-gray-400">No mappings</span>
-                              )}
-                            </td>
-                            <td className="py-2.5 pr-4 text-right">
-                              <span className="rounded bg-gray-100 px-2 py-0.5 text-xs font-semibold text-gray-600">
-                                {ctrl.weight}
-                              </span>
-                            </td>
-                            <td className="py-2.5 text-center">
-                              <a
-                                href="https://google.com"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                title="View external documentation"
-                                className="inline-flex items-center justify-center rounded-md p-1.5 text-slate-400 hover:text-sky-500 dark:text-slate-500 dark:hover:text-sky-400 hover:bg-sky-50 dark:hover:bg-sky-900/20 transition-all duration-200"
-                              >
-                                <ExternalLink className="h-4 w-4" />
-                              </a>
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
+                            </span>
+                          </div>
+
+                          <div className="flex-1 min-w-0 pr-4 mb-2 md:mb-0">
+                            <p className="font-bold text-slate-700 dark:text-slate-200 text-sm leading-relaxed">{ctrl.title}</p>
+                          </div>
+
+                          <div className="w-48 flex-shrink-0 mb-2 md:mb-0">
+                            {ctrl.wazuh_mappings?.length > 0 ? (
+                              <div className="flex flex-wrap gap-1.5">
+                                {ctrl.wazuh_mappings.map(m => (
+                                  <span key={m.id} className="inline-flex items-center gap-1.5 text-[9px] font-black px-2 py-1 rounded-lg bg-slate-50 dark:bg-slate-900 text-slate-500 border border-slate-100 dark:border-slate-800 transition-all hover:border-brand-600/50 cursor-help" title={m.rule_description}>
+                                    <LinkIcon className="w-3 h-3 text-brand-600" /> {m.wazuh_rule_id}
+                                  </span>
+                                ))}
+                              </div>
+                            ) : (
+                              <div className="flex items-center gap-1.5 text-slate-300">
+                                <Info className="w-3 h-3" />
+                                <span className="text-[9px] font-black uppercase tracking-widest">Manual Verification</span>
+                              </div>
+                            )}
+                          </div>
+
+                          <div className="w-24 flex-shrink-0 text-right mb-2 md:mb-0">
+                            <span className={`text-[9px] font-black px-2 py-1 rounded-lg border ${ctrl.weight >= 10 ? 'bg-rose-50 text-rose-600 border-rose-100' : 'bg-slate-50 dark:bg-slate-900 text-slate-500 border-slate-100 dark:border-slate-800'}`}>
+                              W: {ctrl.weight}
+                            </span>
+                          </div>
+
+                          <div className="w-24 flex-shrink-0 flex justify-center">
+                            <a href="https://google.com" target="_blank" rel="noopener noreferrer" className="p-2 rounded-xl text-slate-400 hover:text-brand-600 hover:bg-slate-50 dark:hover:bg-slate-900 transition-all shadow-sm border border-transparent hover:border-slate-100 dark:hover:border-slate-800">
+                              <ExternalLink className="h-4 w-4" />
+                            </a>
+                          </div>
+                        </div>
+                      )) : (
+                        <div className="py-12 text-center bg-white dark:bg-slate-950 rounded-2xl border border-dashed border-slate-200 dark:border-slate-800">
+                           <p className="text-xs font-black text-slate-400 uppercase tracking-widest">No controls registered for this framework.</p>
+                        </div>
+                      )}
+                    </div>
                   </div>
                 )}
               </div>

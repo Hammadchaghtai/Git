@@ -1,5 +1,5 @@
-import { useEffect, useState, useCallback } from 'react';
-import { UserPlus, Trash2, Ban, CheckCircle, User, X, Copy, RefreshCw, Key, Eye, EyeOff, Bell, Clock } from 'lucide-react';
+import { useEffect, useState, useCallback, Fragment } from 'react';
+import { UserPlus, Trash2, Ban, CheckCircle, User, X, Copy, RefreshCw, Key, Eye, EyeOff, Bell, Clock, Shield, ShieldCheck, ShieldAlert, Mail, Smartphone, Briefcase, ChevronRight, Activity } from 'lucide-react';
 import API from '../api/axios';
 import Toast from '../components/Toast';
 
@@ -18,51 +18,56 @@ function CredentialModal({ open, onClose, data }) {
   };
 
   return (
-    <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/40">
-      <div className="w-full max-w-md rounded-xl bg-white p-6 shadow-2xl">
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="text-lg font-bold text-[#0f172a]">🎉 Admin Created Successfully</h3>
-          <button onClick={onClose} className="text-gray-400 hover:text-gray-600"><X className="h-5 w-5" /></button>
+    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/60 backdrop-blur-md p-4">
+      <div className="w-full max-w-md rounded-3xl bg-white dark:bg-slate-950 p-8 shadow-2xl border border-emerald-100 dark:border-emerald-900/30 animate-in zoom-in-95 duration-300">
+        <div className="flex items-center justify-between mb-8">
+          <div>
+            <h3 className="text-2xl font-black text-slate-900 dark:text-white tracking-tight">Identity Provisioned</h3>
+            <p className="text-emerald-600 text-xs font-black uppercase tracking-widest mt-1">Status: Success</p>
+          </div>
+          <button onClick={onClose} className="text-slate-400 hover:text-slate-600 cursor-pointer">
+            <X className="h-6 w-6" />
+          </button>
         </div>
 
-        <div className="rounded-lg bg-amber-50 border border-amber-200 p-4">
-          <p className="text-xs font-semibold uppercase text-amber-600 mb-3">⚠️ Save these credentials — they won't be shown again!</p>
-          <div className="space-y-2">
-            <div className="flex items-center justify-between rounded bg-white px-3 py-2 border border-amber-100">
-              <span className="text-sm text-gray-600">Username:</span>
-              <span className="font-mono text-sm font-bold text-[#0f172a]">{data.username}</span>
+        <div className="rounded-2xl bg-emerald-50 dark:bg-emerald-900/10 border border-emerald-100 dark:border-emerald-900/30 p-6 mb-8">
+          <p className="text-[10px] font-black uppercase text-emerald-700 dark:text-emerald-400 mb-4 tracking-tighter flex items-center gap-2">
+            <ShieldCheck className="w-3 h-3" /> Secure Credential Registry
+          </p>
+          <div className="space-y-3">
+            <div className="flex flex-col gap-1 p-3 bg-white dark:bg-slate-900 rounded-xl border border-emerald-100 dark:border-emerald-900/30">
+              <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Username</span>
+              <span className="font-mono text-sm font-black text-slate-900 dark:text-white">{data.username}</span>
             </div>
-            <div className="flex items-center justify-between rounded bg-white px-3 py-2 border border-amber-100">
-              <span className="text-sm text-gray-600">Password:</span>
-              <span className="font-mono text-sm font-bold text-[#0f172a]">{data.temp_password}</span>
-            </div>
-            <div className="flex items-center justify-between rounded bg-white px-3 py-2 border border-amber-100">
-              <span className="text-sm text-gray-600">Role:</span>
-              <span className="text-sm font-semibold text-violet-700">{data.role || 'Admin'}</span>
+            <div className="flex flex-col gap-1 p-3 bg-white dark:bg-slate-900 rounded-xl border border-emerald-100 dark:border-emerald-900/30">
+              <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Temporary Password</span>
+              <span className="font-mono text-sm font-black text-slate-900 dark:text-white">{data.temp_password}</span>
             </div>
             {data.totp_secret && (
-              <div className="rounded bg-sky-50 border border-sky-100 px-3 py-2">
-                <div className="flex items-center justify-between mb-1">
-                  <span className="text-sm text-gray-600 flex items-center gap-1"><Key className="h-3.5 w-3.5" /> TOTP Secret Key:</span>
-                  <button onClick={() => setShowSecret(s => !s)} className="text-gray-400 hover:text-gray-600">
+              <div className="flex flex-col gap-1 p-3 bg-brand-50 dark:bg-brand-900/10 rounded-xl border border-brand-100 dark:border-brand-900/30">
+                <div className="flex items-center justify-between">
+                   <span className="text-[10px] font-black text-brand-600 uppercase tracking-widest">MFA Secret Key</span>
+                   <button onClick={() => setShowSecret(s => !s)} className="text-brand-400 hover:text-brand-600">
                     {showSecret ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                  </button>
+                   </button>
                 </div>
-                <span className={`font-mono text-xs font-bold text-sky-800 break-all ${!showSecret ? 'blur-sm select-none' : ''}`}>
+                <span className={`font-mono text-xs font-black text-brand-700 dark:text-brand-400 break-all ${!showSecret ? 'blur-sm select-none' : ''}`}>
                   {data.totp_secret}
                 </span>
-                <p className="text-[10px] text-sky-600 mt-1">📱 QR code + credentials also sent to admin's email.</p>
               </div>
             )}
           </div>
+          <p className="text-[10px] text-slate-400 font-bold uppercase tracking-tighter mt-4 text-center">
+            ⚠️ Credentials are encrypted post-view. Document them immediately.
+          </p>
         </div>
 
-        <div className="mt-4 flex gap-2">
-          <button onClick={handleCopy} className="flex-1 flex items-center justify-center gap-2 rounded-lg border border-gray-200 py-2.5 text-sm font-medium text-gray-600 hover:bg-gray-50">
-            <Copy className="h-4 w-4" /> {copied ? 'Copied!' : 'Copy All'}
+        <div className="flex gap-3">
+          <button onClick={handleCopy} className="flex-1 flex items-center justify-center gap-2 rounded-2xl border border-slate-200 dark:border-slate-800 py-3 text-sm font-black text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-900 transition-all">
+            <Copy className="h-4 w-4" /> {copied ? 'Copied' : 'Extract All'}
           </button>
-          <button onClick={onClose} className="flex-1 rounded-lg bg-[#0f172a] py-2.5 text-sm font-semibold text-white hover:bg-[#1e293b]">
-            Done
+          <button onClick={onClose} className="flex-1 btn-primary">
+            Acknowledge
           </button>
         </div>
       </div>
@@ -107,55 +112,63 @@ function RegenerateModal({ user, onClose, onRegenerated }) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-      <div className="w-full max-w-md rounded-xl bg-white p-6 shadow-2xl">
-        <h3 className="text-lg font-bold text-[#0f172a] mb-2 flex items-center gap-2">
-          <RefreshCw className="w-5 h-5 text-blue-500" /> Regenerate Credentials
-        </h3>
-        <p className="text-sm text-gray-500 mb-4">
-          This will void existing credentials and trigger a <strong>new password &amp; TOTP QR code</strong> setup process.
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-md p-4">
+      <div className="w-full max-w-md rounded-3xl bg-white dark:bg-slate-950 p-8 shadow-2xl border border-slate-200 dark:border-slate-800 animate-in slide-in-from-bottom-4 duration-300">
+        <div className="flex items-center gap-3 mb-6">
+           <div className="p-3 rounded-2xl bg-brand-50 dark:bg-brand-900/20 text-brand-600 shadow-sm">
+              <RefreshCw className="w-6 h-6" />
+           </div>
+           <div>
+              <h3 className="text-2xl font-black text-slate-900 dark:text-white tracking-tight">Cycle Identity</h3>
+              <p className="text-slate-400 text-xs font-bold uppercase tracking-widest mt-0.5">Revoke & Reissue Credentials</p>
+           </div>
+        </div>
+
+        <p className="text-sm text-slate-500 font-medium leading-relaxed mb-8">
+          Executing this will immediately invalidate current access. A new <strong className="text-slate-900 dark:text-white">secure cryptographic secret</strong> will be generated for <span className="text-brand-600 font-bold">{user.username}</span>.
         </p>
 
-        {error && <div className="mb-4 rounded-lg bg-red-50 p-2 text-xs font-semibold text-red-600">⚠️ {error}</div>}
+        {error && (
+          <div className="mb-6 rounded-2xl bg-rose-50 dark:bg-rose-900/20 p-4 text-xs font-black text-rose-600 uppercase tracking-widest border border-rose-100 dark:border-rose-900/30">
+            ⚠️ {error}
+          </div>
+        )}
 
-        <form onSubmit={handleSubmit}>
-          <label className="mb-1 block text-xs font-semibold uppercase tracking-wider text-gray-500">
-             Target Delivery Email
-          </label>
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-            className="w-full input-field"
-            placeholder="Where should the new invite be sent?"
-          />
-          <p className="text-[10px] text-gray-400 mt-1 mb-4">
-            You can modify the email if the administrator lost access to their old address.
-          </p>
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div>
+            <label className="mb-2 block text-[11px] font-black uppercase tracking-widest text-slate-400">Delivery Endpoint (Email)</label>
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              className="input-field"
+              placeholder="admin@company.com"
+            />
+          </div>
 
           {isAuditor && (
-            <div className="mb-6 rounded-lg border border-sky-200 dark:border-sky-900/50 bg-sky-50 dark:bg-sky-900/10 p-3">
-              <label className="mb-1 block text-xs font-semibold uppercase tracking-wider text-sky-700 dark:text-sky-400">
-                Extend / Set Access Expiry
+            <div className="rounded-2xl border border-brand-100 dark:border-brand-900/30 bg-brand-50 dark:bg-brand-900/10 p-5">
+              <label className="mb-2 block text-[11px] font-black uppercase tracking-widest text-brand-600 dark:text-brand-400">
+                Extension: Access Expiry
               </label>
               <input
                 type="datetime-local"
                 value={newExpiry}
                 onChange={(e) => setNewExpiry(e.target.value)}
-                className="w-full input-field text-sm"
+                className="input-field border-brand-200"
               />
-              <p className="text-[10px] text-sky-600 dark:text-sky-400 mt-1">
-                Set a new expiry date to renew auditor access. Leave empty to keep the current expiry.
+              <p className="text-[10px] text-brand-500 font-bold uppercase tracking-tighter mt-2">
+                Set a new lifecycle boundary for this identity.
               </p>
             </div>
           )}
 
-          <div className="flex justify-end gap-2">
-             <button type="button" onClick={onClose} className="rounded-lg px-4 py-2 text-sm font-medium text-gray-500 hover:bg-gray-100">Cancel</button>
-             <button type="submit" disabled={saving} className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700 flex items-center gap-2">
+          <div className="flex gap-3 pt-4">
+             <button type="button" onClick={onClose} className="flex-1 py-3 text-sm font-black text-slate-400 hover:text-slate-600 transition-colors uppercase tracking-widest">Discard</button>
+             <button type="submit" disabled={saving} className="flex-[2] btn-primary flex items-center justify-center gap-2">
                 {saving ? <RefreshCw className="w-4 h-4 animate-spin" /> : <RefreshCw className="w-4 h-4" />} 
-                Confirm Regeneration
+                Authorize Cycle
              </button>
           </div>
         </form>
@@ -193,53 +206,62 @@ function InviteModal({ open, onClose, onInvited }) {
     } finally { setSaving(false); }
   };
 
-  // Get current datetime string formatted for datetime-local input
   const getMinDateTime = () => {
     const tzOffset = (new Date()).getTimezoneOffset() * 60000; 
     return (new Date(Date.now() - tzOffset)).toISOString().slice(0, 16);
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-      <div className="w-full max-w-md rounded-xl bg-white p-6 shadow-2xl">
-        <div className="flex items-center justify-between">
-          <h3 className="text-lg font-bold text-[#0f172a]">Invite New Administrator</h3>
-          <button onClick={onClose} className="text-gray-400 hover:text-gray-600"><X className="h-5 w-5" /></button>
-        </div>
-        <form onSubmit={handleSubmit}>
-          <p className="mt-2 text-xs text-gray-400">
-            A unique password with special characters + a QR code barcode will be generated and sent to the email.
-          </p>
-          {error && <div className="mt-3 rounded-lg bg-red-50 px-4 py-2 text-xs font-semibold text-red-600">⚠️ {error}</div>}
-          
-          <div className="mt-4">
-            <label className="mb-1 block text-xs font-semibold uppercase tracking-wider text-gray-500">Email Address</label>
-            <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required
-              className="w-full input-field" placeholder="admin@company.com" />
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-md p-4">
+      <div className="w-full max-w-md rounded-3xl bg-white dark:bg-slate-950 p-8 shadow-2xl border border-slate-200 dark:border-slate-800 animate-in zoom-in-95 duration-300">
+        <div className="flex items-center justify-between mb-8">
+          <div>
+            <h3 className="text-2xl font-black text-slate-900 dark:text-white tracking-tight">Onboard Identity</h3>
+            <p className="text-slate-500 text-xs font-bold uppercase tracking-widest mt-1">Platform-Wide Access Provisioning</p>
           </div>
-          <div className="mt-3">
-            <label className="mb-1 block text-xs font-semibold uppercase tracking-wider text-gray-500">Role</label>
-            <select value={role} onChange={(e) => setRole(e.target.value)} className="w-full input-field cursor-pointer">
-              <option value="admin">Admin</option>
-              <option value="auditor">Auditor</option>
+          <button onClick={onClose} className="text-slate-400 hover:text-slate-600 transition-colors cursor-pointer">
+            <X className="h-6 w-6" />
+          </button>
+        </div>
+        <form onSubmit={handleSubmit} className="space-y-6">
+          {error && (
+            <div className="rounded-2xl bg-rose-50 dark:bg-rose-900/20 p-4 text-xs font-black text-rose-600 uppercase tracking-widest border border-rose-100 dark:border-rose-900/30">
+              ⚠️ {error}
+            </div>
+          )}
+          
+          <div>
+            <label className="mb-2 block text-[11px] font-black uppercase tracking-widest text-slate-400">Target Email Address</label>
+            <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required
+              className="input-field" placeholder="admin@security.io" />
+          </div>
+          <div>
+            <label className="mb-2 block text-[11px] font-black uppercase tracking-widest text-slate-400">Assign Privilege Tier</label>
+            <select value={role} onChange={(e) => setRole(e.target.value)} className="input-field cursor-pointer appearance-none bg-no-repeat bg-[right_1rem_center] bg-[length:1em_1em]">
+              <option value="admin">Administrator</option>
+              <option value="auditor">External Auditor</option>
             </select>
           </div>
 
           {role === 'auditor' && (
-            <div className="mt-3 p-3 bg-sky-50 rounded-lg border border-sky-100">
-              <label className="mb-1 block text-xs font-semibold uppercase tracking-wider text-sky-800">Access Expiry Date & Time</label>
+            <div className="p-5 bg-brand-50 dark:bg-brand-900/10 rounded-2xl border border-brand-100 dark:border-brand-900/30">
+              <label className="mb-2 block text-[11px] font-black uppercase tracking-widest text-brand-600 dark:text-brand-400">Automatic Access Revocation</label>
               <input type="datetime-local" min={getMinDateTime()} value={expiryDate} onChange={e => setExpiryDate(e.target.value)}
-                className="w-full input-field border-sky-200" required />
-              <p className="text-[10px] text-sky-600 mt-1 flex items-center gap-1"><Clock className="w-3 h-3" /> Account will auto-revoke precisely at this time.</p>
-              <p className="text-[10px] text-gray-400 mt-0.5 italic">(Saved in UTC, currently adjusting for your local timezone)</p>
+                className="input-field border-brand-200" required />
+              <div className="mt-3 flex items-start gap-2">
+                 <Clock className="w-3.5 h-3.5 text-brand-500 mt-0.5" />
+                 <p className="text-[10px] text-brand-600 font-bold leading-tight uppercase tracking-tighter">
+                   Identity will be purged precisely at the configured timestamp.
+                 </p>
+              </div>
             </div>
           )}
 
-          <div className="mt-5 flex justify-end gap-2">
-            <button type="button" onClick={onClose} className="rounded-lg px-4 py-2 text-sm font-medium text-gray-500 hover:bg-gray-100">Cancel</button>
-            <button type="submit" disabled={saving} className="rounded-lg bg-[#0f172a] px-4 py-2 text-sm font-semibold text-white hover:bg-[#1e293b] disabled:opacity-60 flex items-center gap-2">
-              {saving ? <div className="w-4 h-4 rounded-full border-2 border-white/20 border-t-white animate-spin" /> : '📧'} 
-              {saving ? 'Creating...' : 'Create & Send Invite'}
+          <div className="flex gap-4 pt-6">
+            <button type="button" onClick={onClose} className="flex-1 py-3 text-sm font-black text-slate-400 hover:text-slate-600 uppercase tracking-widest">Cancel</button>
+            <button type="submit" disabled={saving} className="flex-[2] btn-primary flex items-center justify-center gap-2">
+              {saving ? <div className="w-5 h-5 rounded-full border-2 border-white/20 border-t-white animate-spin" /> : <Mail className="w-4 h-4" />} 
+              {saving ? 'Provisioning...' : 'Dispatch Invite'}
             </button>
           </div>
         </form>
@@ -284,70 +306,77 @@ function ViewDetailsPanel({ user, onClose, showToast, onImageClick }) {
   };
 
   return (
-    <div className="fixed inset-y-0 right-0 z-50 w-full max-w-sm bg-white shadow-2xl border-l border-gray-100 transform transition-transform translate-x-0 duration-300">
+    <div className="fixed inset-y-0 right-0 z-[60] w-full max-w-md bg-white dark:bg-slate-950 shadow-2xl border-l border-slate-100 dark:border-slate-800 animate-in slide-in-from-right duration-500">
       <div className="flex h-full flex-col">
-        <div className="flex items-center justify-between border-b border-gray-100 px-6 py-4">
-          <h3 className="text-lg font-bold text-[#0f172a]">User Details</h3>
-          <button onClick={onClose} className="rounded-full p-2 hover:bg-gray-100"><X className="h-5 w-5 text-gray-500" /></button>
+        <div className="flex items-center justify-between px-8 py-6 border-b border-slate-100 dark:border-slate-900">
+          <div>
+            <h3 className="text-xl font-black text-slate-900 dark:text-white tracking-tight">Identity Profile</h3>
+            <p className="text-[10px] font-black uppercase text-brand-600 tracking-widest mt-0.5">UID: {user.id.toString().slice(0, 8)}</p>
+          </div>
+          <button onClick={onClose} className="rounded-2xl p-2 hover:bg-slate-100 dark:hover:bg-slate-900 text-slate-400 transition-all"><X className="h-6 w-6" /></button>
         </div>
 
-        <div className="flex-1 overflow-y-auto px-6 py-6 space-y-6">
+        <div className="flex-1 overflow-y-auto px-8 py-10 space-y-10">
           <div className="flex flex-col items-center text-center">
-            <div className="h-20 w-20 rounded-full border border-slate-200 bg-slate-100 flex items-center justify-center overflow-hidden mb-3">
+            <div className="h-32 w-32 rounded-3xl border-4 border-white dark:border-slate-900 shadow-2xl bg-slate-100 dark:bg-slate-900 flex items-center justify-center overflow-hidden mb-6 relative group">
               {user.profile_picture ? (
                  <img 
                    src={user.profile_picture} 
-                   className="h-full w-full object-cover cursor-pointer hover:opacity-80 transition-opacity" 
+                   className="h-full w-full object-cover cursor-pointer group-hover:scale-110 transition-transform duration-500" 
                    alt="Avatar"
                    onClick={() => onImageClick(user.profile_picture)}
                  />
               ) : (
-                 <User className="h-10 w-10 text-slate-400" />
+                 <User className="h-14 w-14 text-slate-300" />
               )}
             </div>
-            <h4 className="text-xl font-bold text-slate-800">{user.display_name || user.username}</h4>
-            <span className="text-sm font-semibold text-sky-600 uppercase tracking-widest mt-1">{user.role}</span>
+            <h4 className="text-2xl font-black text-slate-900 dark:text-white tracking-tight">{user.display_name || user.username}</h4>
+            <span className="status-pill bg-brand-50 text-brand-600 dark:bg-brand-900/30 dark:text-brand-400 font-black mt-3">
+              <Shield className="w-3 h-3" /> {user.role.toUpperCase()}
+            </span>
           </div>
 
-          <div className="space-y-4">
-            <div>
-              <p className="text-xs font-semibold text-slate-400 uppercase">Email</p>
-              <p className="text-sm font-medium text-slate-800">{user.email}</p>
-            </div>
-            {(user.display_name && user.display_name !== user.username) && (
-              <div>
-                <p className="text-xs font-semibold text-slate-400 uppercase">System Username</p>
-                <p className="font-mono text-sm font-medium text-slate-800">{user.username}</p>
-              </div>
-            )}
-            <div>
-              <p className="text-xs font-semibold text-slate-400 uppercase">Designation</p>
-              <p className="text-sm font-medium text-slate-800">{user.designation || '—'}</p>
-            </div>
-            <div>
-              <p className="text-xs font-semibold text-slate-400 uppercase">Phone Number</p>
-              <p className="text-sm font-medium text-slate-800">{user.phone_number || '—'}</p>
-            </div>
-            <div>
-              <p className="text-xs font-semibold text-slate-400 uppercase">Status</p>
-              <span className={`inline-block rounded-full px-2 py-0.5 text-xs font-semibold ${user.is_active ? 'bg-emerald-100 text-emerald-800' : 'bg-red-100 text-red-800'}`}>
-                {user.is_active ? 'Active Account' : 'Access Revoked'}
-              </span>
+          <div className="space-y-6">
+            <div className="grid grid-cols-2 gap-4">
+               <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-900/50 border border-slate-100 dark:border-slate-800">
+                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1 flex items-center gap-1.5"><Mail className="w-3 h-3" /> Email</p>
+                  <p className="text-xs font-bold text-slate-700 dark:text-slate-200 truncate">{user.email}</p>
+               </div>
+               <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-900/50 border border-slate-100 dark:border-slate-800">
+                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1 flex items-center gap-1.5"><Smartphone className="w-3 h-3" /> Registry ID</p>
+                  <p className="text-xs font-mono font-bold text-slate-700 dark:text-slate-200 truncate">{user.username}</p>
+               </div>
+               <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-900/50 border border-slate-100 dark:border-slate-800">
+                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1 flex items-center gap-1.5"><Briefcase className="w-3 h-3" /> Designation</p>
+                  <p className="text-xs font-bold text-slate-700 dark:text-slate-200 truncate">{user.designation || 'Security Admin'}</p>
+               </div>
+               <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-900/50 border border-slate-100 dark:border-slate-800">
+                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1 flex items-center gap-1.5"><Smartphone className="w-3 h-3" /> Mobile</p>
+                  <p className="text-xs font-bold text-slate-700 dark:text-slate-200 truncate">{user.phone_number || 'Not Linked'}</p>
+               </div>
             </div>
 
-            <div className="rounded-lg border border-slate-100 bg-slate-50 p-4">
-              <p className="text-xs font-semibold text-slate-400 uppercase mb-2">Security Status</p>
-              <div className="space-y-3">
+            <div className="rounded-3xl border border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/50 p-6 shadow-sm">
+              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4 flex items-center gap-2">
+                <ShieldCheck className="w-4 h-4 text-brand-600" /> Identity Lifecycle Status
+              </p>
+              <div className="space-y-5">
                 <div>
-                  <p className="text-xs text-slate-500 mb-1">Password Changed At</p>
+                  <p className="text-[10px] font-black text-slate-500 uppercase tracking-tighter mb-2">Password Compliance</p>
                   {user.password_changed_at ? (
-                    <p className="text-sm font-semibold text-emerald-600">{new Date(user.password_changed_at).toLocaleString()}</p>
-                  ) : (
                     <div className="flex items-center gap-2">
-                       <span className="rounded bg-rose-100 px-2 py-0.5 text-xs font-bold text-rose-700 border border-rose-200">NEVER CHANGED</span>
-                       <button onClick={handleSendReminder} disabled={sendingReminder} title="Send reminder to change password"
-                        className={`rounded-full p-1 border transition-colors ${sendingReminder ? 'bg-slate-300 border-slate-300' : 'bg-white border-slate-200 hover:bg-slate-100'}`}>
-                          <Bell className={`w-3.5 h-3.5 ${sendingReminder ? 'text-slate-400' : 'text-slate-600'}`} />
+                       <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                       <p className="text-xs font-black text-emerald-600">Secure: Updated {new Date(user.password_changed_at).toLocaleDateString()}</p>
+                    </div>
+                  ) : (
+                    <div className="flex items-center justify-between">
+                       <div className="flex items-center gap-2">
+                          <span className="h-2 w-2 rounded-full bg-rose-500"></span>
+                          <p className="text-xs font-black text-rose-500 uppercase tracking-widest">Action Required</p>
+                       </div>
+                       <button onClick={handleSendReminder} disabled={sendingReminder} 
+                         className="p-2 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 hover:text-brand-600 transition-all shadow-sm">
+                          <Bell className={`w-4 h-4 ${sendingReminder ? 'animate-bounce' : ''}`} />
                        </button>
                     </div>
                   )}
@@ -355,12 +384,19 @@ function ViewDetailsPanel({ user, onClose, showToast, onImageClick }) {
 
                 {user.account_expiry_date && (
                   <div>
-                    <p className="text-xs text-slate-500 mb-1">Auditor Access Expiry</p>
-                    <div className={`flex items-center gap-2 text-sm font-semibold ${timeLeft === 'Expired' ? 'text-rose-600' : 'text-sky-700'}`}>
-                      <Clock className="w-4 h-4" /> {timeLeft}
+                    <p className="text-[10px] font-black text-slate-500 uppercase tracking-tighter mb-2">Auditor Lease Expiry</p>
+                    <div className={`flex items-center gap-2 text-xs font-black p-3 rounded-xl ${timeLeft === 'Expired' ? 'bg-rose-100 text-rose-700' : 'bg-brand-50 text-brand-700'}`}>
+                      <Clock className="w-4 h-4" /> {timeLeft.toUpperCase()}
                     </div>
                   </div>
                 )}
+                
+                <div className="pt-4 border-t border-slate-200 dark:border-slate-800">
+                   <p className="text-[10px] font-black text-slate-500 uppercase tracking-tighter mb-2">Account Availability</p>
+                   <span className={`status-pill ${user.is_active ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'} border-none shadow-none font-black`}>
+                      {user.is_active ? 'ENABLED & ACTIVE' : 'ACCESS REVOKED'}
+                   </span>
+                </div>
               </div>
             </div>
           </div>
@@ -380,7 +416,6 @@ export default function ManageAdmins() {
   const [regeneratingUser, setRegeneratingUser] = useState(null); 
   const [toast, setToast] = useState({ msg: '', type: 'success' });
   const [fullscreenPic, setFullscreenPic] = useState(null);
-  // Ticking "now" so expired badges update in real-time without page refresh
   const [now, setNow] = useState(() => new Date());
 
   useEffect(() => {
@@ -450,136 +485,117 @@ export default function ManageAdmins() {
   if (loading) {
     return (
       <div className="flex h-full items-center justify-center">
-        <div className="h-10 w-10 animate-spin rounded-full border-4 border-gray-200 border-t-[#38bdf8]" />
+        <div className="h-12 w-12 animate-spin rounded-full border-4 border-slate-200 border-t-brand-600" />
       </div>
     );
   }
 
   return (
-    <div className="relative">
-      {/* Black backdrop if viewing user */}
-      {viewingUser && <div className="fixed inset-0 bg-black/20 z-[40]" onClick={() => setViewingUser(null)} />}
+    <div className="max-w-7xl mx-auto relative">
+      {viewingUser && <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[50] animate-in fade-in duration-300" onClick={() => setViewingUser(null)} />}
       
       <Toast message={toast.msg} type={toast.type} onClose={() => setToast({ msg: '', type: 'success' })} />
 
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-10">
         <div>
-          <h1 className="text-2xl font-bold text-[#0f172a] dark:text-white">Manage Administrators</h1>
-          <p className="text-sm text-gray-400">Add, remove, or modify administrator access via strict identities</p>
+          <h1 className="text-4xl font-black text-slate-900 dark:text-white tracking-tight">Identity Governance</h1>
+          <p className="text-slate-500 font-medium mt-1">Manage privileged access and enforce identity lifecycle requirements.</p>
         </div>
-        <button onClick={() => setShowInvite(true)} className="flex items-center gap-2 rounded-lg bg-[#0f172a] dark:bg-sky-500 px-4 py-2.5 text-sm font-semibold text-white hover:bg-[#1e293b] dark:hover:bg-sky-600 transition-colors shadow-sm">
-          <UserPlus className="h-4 w-4" /> Invite Administrator
+        <button onClick={() => setShowInvite(true)} className="btn-primary flex items-center gap-2">
+          <UserPlus className="h-5 w-5" /> Provision Identity
         </button>
       </div>
 
-      <div className="rounded-xl border border-gray-100 bg-white shadow-sm overflow-hidden dark:bg-navy-800 dark:border-navy-700">
-        <table className="w-full text-left text-sm">
-          <thead>
-            <tr className="border-b border-gray-100 bg-gray-50 text-xs font-semibold uppercase tracking-wider text-gray-400 dark:bg-navy-900 dark:border-navy-700">
-              <th className="py-3 pl-5 pr-4">Admin Details</th>
-              <th className="py-3 pr-4">Role</th>
-              <th className="py-3 pr-4">Status</th>
-              <th className="py-3 pr-4">Pwd Changed</th>
-              <th className="py-3 pr-5 text-right">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {admins.length === 0 ? (
-              <tr>
-                <td colSpan={5} className="py-12 text-center text-gray-400">
-                  <User className="mx-auto h-10 w-10 text-gray-300 mb-2" />
-                  No administrators found. Click "Invite Administrator" to add identity.
-                </td>
-              </tr>
-            ) : (
-              admins.map((admin) => (
-                <tr key={admin.id} className="border-b border-gray-50 hover:bg-slate-50 transition-colors dark:border-navy-700/50 dark:hover:bg-navy-900/50">
-                  <td className="py-3.5 pl-5 pr-4 group">
-                    <div className="flex items-center gap-3">
-                      <div className="flex h-10 w-10 items-center justify-center rounded-full bg-slate-100 dark:bg-navy-700 overflow-hidden border border-slate-200 dark:border-navy-600">
-                        {admin.profile_picture ? (
-                           <img src={admin.profile_picture} className="w-full h-full object-cover" />
-                        ) : (
-                           <User className="h-5 w-5 text-slate-400" />
-                        )}
-                      </div>
-                      <div className="flex flex-col">
-                        <span className="font-semibold text-slate-800 dark:text-white flex items-center gap-2 cursor-pointer hover:underline" onClick={() => setViewingUser(admin)}>
-                          {admin.display_name || admin.username}
-                          <Eye className="w-3.5 h-3.5 text-slate-300 dark:text-slate-600 opacity-0 group-hover:opacity-100 transition-opacity" />
-                        </span>
-                        <span className="text-xs text-slate-400 dark:text-slate-500">{admin.email}</span>
-                      </div>
+      <div className="space-y-4">
+        {admins.length === 0 ? (
+          <div className="cyber-card py-20 text-center text-slate-400">
+            <User className="mx-auto h-12 w-12 text-slate-200 mb-4" />
+            <p className="text-xs font-black uppercase tracking-widest">No identity records found in registry.</p>
+          </div>
+        ) : (
+          admins.map((admin) => (
+            <div key={admin.id} className="cyber-card p-5 group transition-all hover:translate-x-1 flex flex-col lg:flex-row lg:items-center justify-between gap-6 border border-transparent hover:border-brand-100 dark:hover:border-brand-900/30">
+              <div className="flex items-center gap-5 flex-1 min-w-0">
+                <div className="h-14 w-14 rounded-2xl bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 overflow-hidden shadow-sm transition-transform group-hover:scale-105 flex-shrink-0">
+                  {admin.profile_picture ? (
+                    <img src={admin.profile_picture} className="w-full h-full object-cover" alt="" />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center bg-slate-50 dark:bg-slate-900">
+                      <User className="h-7 w-7 text-slate-300" />
                     </div>
-                  </td>
-                  <td className="py-3.5 pr-4">
-                    <span className={`rounded-full px-2.5 py-1 text-[10px] font-semibold tracking-wider uppercase ${
-                      admin.role === 'super_admin' ? 'bg-amber-50 text-amber-700 border border-amber-200 dark:bg-amber-900/30 dark:text-amber-400 dark:border-amber-900/50'
-                      : admin.role === 'auditor' ? 'bg-sky-50 text-sky-700 border border-sky-200 dark:bg-sky-900/30 dark:text-sky-400 dark:border-sky-900/50'
-                      : 'bg-violet-50 text-violet-700 border border-violet-200 dark:bg-violet-900/30 dark:text-violet-400 dark:border-violet-900/50'
-                    }`}>
-                      {admin.role}
+                  )}
+                </div>
+                <div className="flex flex-col min-w-0">
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className="font-black text-slate-900 dark:text-white truncate cursor-pointer hover:text-brand-600 transition-colors text-lg" onClick={() => setViewingUser(admin)}>
+                      {admin.display_name || admin.username}
                     </span>
-                  </td>
-                  <td className="py-3.5 pr-4">
-                    {(() => {
-                      const isExpired = admin.role === 'auditor' && admin.account_expiry_date && new Date(admin.account_expiry_date) < now;
-                      if (isExpired) {
-                        return (
-                          <span className="rounded-full px-3 py-1 text-xs font-semibold bg-amber-50 text-amber-700 border border-amber-200 dark:bg-amber-900/30 dark:text-amber-400 dark:border-amber-900/50">
-                            Expired
-                          </span>
-                        );
-                      }
-                      return (
-                        <span className={`rounded-full px-3 py-1 text-xs font-semibold ${
-                          admin.is_active ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400' : 'bg-red-50 text-red-700 dark:bg-red-900/30 dark:text-red-400'
-                        }`}>
-                          {admin.is_active ? 'Active' : 'Revoked'}
-                        </span>
-                      );
-                    })()}
-                  </td>
-                  <td className="py-3.5 pr-4 text-xs font-medium">
-                    {admin.password_changed_at ? (
-                      <span className="text-slate-500 px-2">Changed</span>
-                    ) : (
-                      <div className="flex items-center gap-1.5">
-                        <span className="rounded bg-rose-100 px-1.5 py-0.5 text-[10px] font-bold text-rose-700 tracking-wider dark:bg-rose-900/30 dark:border-rose-900/50 border border-rose-200">NEVER</span>
-                        <button onClick={() => handleSendReminderGrid(admin)} title="Force Send Reset Reminder" className="text-rose-400 hover:text-rose-600 transition-colors p-1 rounded-full hover:bg-rose-50 dark:hover:bg-rose-900/20">
-                          <Bell className="w-3.5 h-3.5" />
-                        </button>
-                      </div>
-                    )}
-                  </td>
-                  <td className="py-3.5 pr-5">
-                    <div className="flex items-center justify-end gap-1.5">
-                      {admin.is_active ? (
-                        <button onClick={() => handleToggleActive(admin)} title="Revoke Access"
-                          className="flex items-center gap-1 rounded-lg border border-amber-200 px-2 py-1.5 text-xs font-medium text-amber-600 hover:bg-amber-50 dark:border-amber-900/50 dark:text-amber-500 dark:hover:bg-amber-900/30 transition-colors">
-                          <Ban className="h-3.5 w-3.5" />
-                        </button>
-                      ) : (
-                        <button onClick={() => handleToggleActive(admin)} title="Restore Access"
-                          className="flex items-center gap-1 rounded-lg border border-emerald-200 px-2 py-1.5 text-xs font-medium text-emerald-600 hover:bg-emerald-50 dark:border-emerald-900/50 dark:text-emerald-500 dark:hover:bg-emerald-900/30 transition-colors">
-                          <CheckCircle className="h-3.5 w-3.5" />
-                        </button>
-                      )}
-                      <button onClick={() => setRegeneratingUser(admin)} title="Regenerate Credentials"
-                        className="flex items-center gap-1 rounded-lg border border-blue-200 px-2 py-1.5 text-xs font-medium text-blue-600 hover:bg-blue-50 dark:border-blue-900/50 dark:text-blue-500 dark:hover:bg-blue-900/30 transition-colors">
-                        <RefreshCw className="h-3.5 w-3.5" />
-                      </button>
-                      <button onClick={() => handleDelete(admin)} title="Delete Admin"
-                        className="flex items-center gap-1 rounded-lg border border-red-200 px-2 py-1.5 text-xs font-medium text-red-500 hover:bg-red-50 dark:border-red-900/50 dark:text-red-500 dark:hover:bg-red-900/30 transition-colors">
-                        <Trash2 className="h-3.5 w-3.5" />
+                    <span className={`status-pill text-[9px] py-0.5 px-2 ${
+                      admin.role === 'super_admin' ? 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400 border-none'
+                      : admin.role === 'auditor' ? 'bg-brand-50 text-brand-600 dark:bg-brand-900/30 dark:text-brand-400 border-none'
+                      : 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400 border-none'
+                    } font-black`}>
+                      {admin.role.replace('_', ' ').toUpperCase()}
+                    </span>
+                  </div>
+                  <span className="text-[11px] font-bold text-slate-400 lowercase truncate">{admin.email}</span>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 md:flex items-center gap-8 md:gap-16">
+                <div className="flex flex-col min-w-[100px]">
+                  <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5">Access Status</span>
+                  {(() => {
+                    const isExpired = admin.role === 'auditor' && admin.account_expiry_date && new Date(admin.account_expiry_date) < now;
+                    if (isExpired) return (
+                      <span className="status-pill bg-rose-100 text-rose-700 dark:bg-rose-900/30 dark:text-rose-400 border-none animate-pulse w-fit">EXPIRED</span>
+                    );
+                    return (
+                      <span className={`status-pill ${admin.is_active ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400 border-none' : 'bg-rose-100 text-rose-700 dark:bg-rose-900/30 dark:text-rose-400 border-none'} font-black w-fit`}>
+                        {admin.is_active ? 'ACTIVE' : 'REVOKED'}
+                      </span>
+                    );
+                  })()}
+                </div>
+
+                <div className="flex flex-col min-w-[100px]">
+                  <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5">Compliance</span>
+                  {admin.password_changed_at ? (
+                    <div className="flex items-center gap-1.5 text-emerald-600">
+                      <ShieldCheck className="w-3.5 h-3.5" />
+                      <span className="text-[10px] font-black uppercase tracking-tighter">Compliant</span>
+                    </div>
+                  ) : (
+                    <div className="flex items-center gap-2">
+                      <span className="text-[10px] font-black bg-rose-50 dark:bg-rose-900/20 px-2 py-0.5 rounded text-rose-600 border border-rose-100 dark:border-rose-900/30 uppercase tracking-tighter">Insecure</span>
+                      <button onClick={() => handleSendReminderGrid(admin)} title="Trigger Security Warning" className="p-1.5 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-rose-400 hover:text-rose-600 transition-all shadow-sm">
+                        <Bell className="w-3.5 h-3.5" />
                       </button>
                     </div>
-                  </td>
-                </tr>
-              ))
-            )}
-          </tbody>
-        </table>
+                  )}
+                </div>
+              </div>
+
+              <div className="flex items-center justify-end gap-2 md:opacity-0 group-hover:opacity-100 transition-all flex-shrink-0 border-t md:border-none pt-4 md:pt-0">
+                {admin.is_active ? (
+                  <button onClick={() => handleToggleActive(admin)} title="Suspend Identity" className="p-2.5 rounded-xl border border-amber-200 text-amber-600 hover:bg-amber-50 dark:border-amber-900/50 dark:text-amber-500 dark:hover:bg-amber-900/30 transition-all shadow-sm">
+                    <Ban className="h-4.5 w-4.5" />
+                  </button>
+                ) : (
+                  <button onClick={() => handleToggleActive(admin)} title="Activate Identity" className="p-2.5 rounded-xl border border-emerald-200 text-emerald-600 hover:bg-emerald-50 dark:border-emerald-900/50 dark:text-emerald-500 dark:hover:bg-emerald-900/30 transition-all shadow-sm">
+                    <CheckCircle className="h-4.5 w-4.5" />
+                  </button>
+                )}
+                <button onClick={() => setRegeneratingUser(admin)} title="Cycle Credentials" className="p-2.5 rounded-xl border border-brand-200 text-brand-600 hover:bg-brand-50 dark:border-brand-900/50 dark:text-brand-400 dark:hover:bg-brand-900/30 transition-all shadow-sm">
+                  <RefreshCw className="h-4.5 w-4.5" />
+                </button>
+                <button onClick={() => handleDelete(admin)} title="Purge Identity" className="p-2.5 rounded-xl border border-rose-200 text-rose-500 hover:bg-rose-50 dark:border-rose-900/50 dark:text-rose-500 dark:hover:bg-rose-900/30 transition-all shadow-sm">
+                  <Trash2 className="h-4.5 w-4.5" />
+                </button>
+              </div>
+            </div>
+          ))
+        )}
       </div>
 
       <InviteModal open={showInvite} onClose={() => setShowInvite(false)} onInvited={handleInvited} />
@@ -589,11 +605,11 @@ export default function ManageAdmins() {
 
       {/* Fullscreen Picture Modal */}
       {fullscreenPic && (
-        <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/80 backdrop-blur-sm" onClick={() => setFullscreenPic(null)}>
-          <button className="absolute top-6 right-6 text-white hover:text-gray-300" onClick={() => setFullscreenPic(null)}>
-            <X className="w-8 h-8" />
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-slate-900/90 backdrop-blur-xl p-8" onClick={() => setFullscreenPic(null)}>
+          <button className="absolute top-8 right-8 text-white hover:text-brand-400 transition-colors" onClick={() => setFullscreenPic(null)}>
+            <X className="w-10 h-10" />
           </button>
-          <img src={fullscreenPic} className="max-w-[90vw] max-h-[90vh] object-contain rounded-lg shadow-2xl" alt="Enlarged profile" onClick={(e) => e.stopPropagation()} />
+          <img src={fullscreenPic} className="max-w-full max-h-full object-contain rounded-3xl shadow-2xl animate-in zoom-in-95 duration-500 border border-slate-800" alt="Identity Proof" onClick={(e) => e.stopPropagation()} />
         </div>
       )}
     </div>

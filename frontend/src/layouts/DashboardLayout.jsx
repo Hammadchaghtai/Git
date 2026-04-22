@@ -81,44 +81,44 @@ export default function DashboardLayout() {
   return (
     <div className="flex h-screen overflow-hidden">
       {/* ── Sidebar ─────────────────────────── */}
-      <aside className="w-64 flex-shrink-0 flex flex-col bg-[#0f172a] text-[#94a3b8]">
+      <aside className="w-64 flex-shrink-0 flex flex-col bg-white dark:bg-slate-950 border-r border-slate-100 dark:border-slate-800 transition-colors duration-300">
         {/* Brand */}
-        <div className="flex items-center gap-3 px-5 py-5">
-          <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[#38bdf8]">
-            <BrandIcon className="h-5 w-5 text-white" />
+        <div className="flex items-center gap-3 px-6 py-8">
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-600 shadow-lg shadow-brand-600/20">
+            <BrandIcon className="h-6 w-6 text-white" />
           </div>
           <div className="leading-tight">
-            <span className="text-sm font-bold text-white block">GRC Compliance</span>
-            <span className="text-xs text-[#94a3b8]">{portalLabel}</span>
+            <span className="text-[15px] font-bold text-slate-900 dark:text-white block tracking-tight">Antigravity</span>
+            <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-widest">{portalLabel}</span>
           </div>
         </div>
 
         {/* Navigation */}
-        <nav className="flex-1 mt-2 flex flex-col gap-0.5 px-2 overflow-y-auto">
+        <nav className="flex-1 flex flex-col gap-1 px-4 overflow-y-auto">
           {navItems.map(({ to, icon: Icon, label, badge, spacer }) => (
             <div key={to}>
-              {spacer && <div className="mt-6" />}
+              {spacer && <div className="h-px bg-slate-100 dark:bg-slate-800 my-6 mx-2" />}
               <NavLink
                 to={to}
                 end={to === '/'}
                 className={({ isActive }) =>
-                  `flex items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium transition-all duration-200 ${
+                  `flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-semibold transition-all duration-300 group ${
                     isActive
-                      ? 'bg-[#1e293b] text-white border-r-[3px] border-[#38bdf8]'
-                      : 'hover:bg-[#1e293b]/60 hover:text-white'
+                      ? 'bg-brand-50 text-brand-700 dark:bg-brand-900/20 dark:text-brand-400 border-r-[4px] border-brand-600'
+                      : 'text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-900 hover:text-slate-900 dark:hover:text-white'
                   }`
                 }
               >
-                <Icon className="h-[18px] w-[18px]" />
+                <Icon className={`h-[20px] w-[20px] transition-colors ${badge ? 'text-brand-600' : ''}`} />
                 <span className="flex-1">{label}</span>
                 {badge === 'SUPER' && (
-                  <span className="rounded-full bg-gradient-to-r from-amber-500 to-amber-600 px-2 py-0.5 text-[10px] font-bold text-white">
-                    SUPER
+                  <span className="rounded-full bg-amber-100 dark:bg-amber-900/30 px-2 py-0.5 text-[10px] font-bold text-amber-700 dark:text-amber-500 uppercase tracking-tighter">
+                    Admin
                   </span>
                 )}
                 {badge === 'VIEW' && (
-                  <span className="rounded-full bg-gray-500 px-2 py-0.5 text-[10px] font-bold text-white">
-                    VIEW
+                  <span className="rounded-full bg-slate-100 dark:bg-slate-800 px-2 py-0.5 text-[10px] font-bold text-slate-600 dark:text-slate-400 uppercase tracking-tighter">
+                    Audit
                   </span>
                 )}
               </NavLink>
@@ -127,18 +127,18 @@ export default function DashboardLayout() {
         </nav>
 
         {/* Bottom Actions: Theme & Logout */}
-        <div className="px-2 pb-5 flex flex-col gap-1">
+        <div className="px-4 pb-6 flex flex-col gap-1">
           <button
             onClick={toggleTheme}
-            className="flex w-full items-center justify-between gap-3 rounded-lg px-4 py-3 text-sm font-medium text-[#94a3b8] transition-colors hover:bg-[#1e293b]/60 hover:text-white cursor-pointer"
+            className="flex w-full items-center justify-between gap-3 rounded-xl px-4 py-3 text-sm font-semibold text-slate-500 transition-all hover:bg-slate-50 dark:hover:bg-slate-900 hover:text-slate-900 dark:hover:text-white cursor-pointer"
           >
             <div className="flex items-center gap-3">
-              {isDarkMode ? <Sun className="h-[18px] w-[18px]" /> : <Moon className="h-[18px] w-[18px]" />}
+              {isDarkMode ? <Sun className="h-[20px] w-[20px]" /> : <Moon className="h-[20px] w-[20px]" />}
               <span>{isDarkMode ? 'Light Mode' : 'Dark Mode'}</span>
             </div>
             {/* Toggle switch UI */}
-            <div className={`w-8 h-4 rounded-full p-0.5 transition-colors ${isDarkMode ? 'bg-[#38bdf8]' : 'bg-[#334155]'}`}>
-              <div className={`w-3 h-3 bg-white rounded-full shadow-sm transition-transform ${isDarkMode ? 'translate-x-4' : 'translate-x-0'}`} />
+            <div className={`w-10 h-5 rounded-full p-1 transition-all duration-300 ${isDarkMode ? 'bg-brand-600' : 'bg-slate-200 dark:bg-slate-800'}`}>
+              <div className={`w-3 h-3 bg-white rounded-full shadow-md transition-transform duration-300 ${isDarkMode ? 'translate-x-5' : 'translate-x-0'}`} />
             </div>
           </button>
 
@@ -160,7 +160,7 @@ export default function DashboardLayout() {
             👁️ Auditor View — Read-Only Access
           </div>
         )}
-        <main className="flex-1 overflow-y-auto bg-[#f4f6f9] dark:bg-slate-900 text-[#0f172a] dark:text-slate-200 p-8">
+        <main className="flex-1 overflow-y-auto bg-slate-50 dark:bg-[#0b0e14] p-8 transition-colors duration-300">
           <Outlet />
         </main>
         

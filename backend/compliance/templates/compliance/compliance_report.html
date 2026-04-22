@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <style>
+        @page {
+            size: A4;
+            margin: 2cm;
+            @bottom-right {
+                content: "Page " counter(page) " of " counter(pages);
+                font-size: 9pt;
+                color: #64748b;
+            }
+        }
+        body {
+            font-family: 'Helvetica', 'Arial', sans-serif;
+            color: #0f172a;
+            line-height: 1.5;
+            margin: 0;
+            padding: 0;
+        }
+        .header {
+            border-bottom: 2pt solid #7c3aed;
+            padding-bottom: 20pt;
+            margin-bottom: 30pt;
+        }
+        .logo {
+            font-size: 24pt;
+            font-weight: bold;
+            color: #7c3aed;
+            margin-bottom: 5pt;
+        }
+        .report-title {
+            font-size: 18pt;
+            font-weight: bold;
+            color: #1e293b;
+        }
+        .meta-data {
+            font-size: 9pt;
+            color: #64748b;
+            margin-top: 10pt;
+        }
+        .summary-grid {
+            margin-bottom: 30pt;
+        }
+        .card {
+            background-color: #f8fafc;
+            border: 1pt solid #e2e8f0;
+            border-radius: 8pt;
+            padding: 15pt;
+            margin-bottom: 15pt;
+        }
+        .score-box {
+            text-align: center;
+            background-color: #7c3aed;
+            color: white;
+            padding: 20pt;
+            border-radius: 12pt;
+        }
+        .score-value {
+            font-size: 36pt;
+            font-weight: 900;
+        }
+        .score-label {
+            font-size: 10pt;
+            text-transform: uppercase;
+            letter-spacing: 1pt;
+            font-weight: bold;
+        }
+        h2 {
+            font-size: 14pt;
+            color: #7c3aed;
+            border-left: 4pt solid #7c3aed;
+            padding-left: 10pt;
+            margin-bottom: 15pt;
+            margin-top: 25pt;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20pt;
+        }
+        th {
+            background-color: #f1f5f9;
+            color: #475569;
+            font-size: 9pt;
+            text-transform: uppercase;
+            text-align: left;
+            padding: 10pt;
+            border-bottom: 1pt solid #e2e8f0;
+        }
+        td {
+            padding: 10pt;
+            font-size: 10pt;
+            border-bottom: 1pt solid #f1f5f9;
+            color: #334155;
+        }
+        .status-fail {
+            color: #e11d48;
+            font-weight: bold;
+        }
+        .footer {
+            margin-top: 50pt;
+            font-size: 8pt;
+            color: #94a3b8;
+            text-align: center;
+            border-top: 1pt solid #f1f5f9;
+            padding-top: 10pt;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="logo">SOVEREIGN GRC</div>
+        <div class="report-title">Compliance Assessment Report</div>
+        <div class="meta-data">
+            <strong>Framework:</strong> {{ framework.name }} v{{ framework.version }}<br>
+            <strong>Generated:</strong> {{ generation_date|date:"F d, Y H:i" }} UTC<br>
+            <strong>Auditor:</strong> {{ generated_by }}
+        </div>
+    </div>
+
+    <div class="summary-grid">
+        <div class="score-box">
+            <div class="score-value">{{ compliance_score }}%</div>
+            <div class="score-label">Overall Compliance Score</div>
+        </div>
+    </div>
+
+    <div class="card">
+        <strong>Executive Summary</strong><br>
+        This report provides a detailed breakdown of the compliance posture for the <strong>{{ framework.name }}</strong> framework. 
+        A total of <strong>{{ total_checks }}</strong> checks were performed across <strong>{{ total_agents }}</strong> active agents.
+        The current assessment identifies <strong>{{ passed_checks }}</strong> successful controls and <strong>{{ failed_controls|length }}</strong> unique control gaps.
+    </div>
+
+    <h2>Critical Gaps & Non-Compliant Controls</h2>
+    {% if failed_controls %}
+    <table>
+        <thead>
+            <tr>
+                <th>Control Code</th>
+                <th>Description</th>
+                <th style="text-align: right;">Total Failures</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for ctrl in failed_controls %}
+            <tr>
+                <td style="font-weight: bold; color: #7c3aed;">{{ ctrl.code }}</td>
+                <td>{{ ctrl.title }}</td>
+                <td style="text-align: right;" class="status-fail">{{ ctrl.fails }} Agents</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p style="color: #64748b; font-style: italic;">No control failures detected for this framework. All systems are compliant.</p>
+    {% endif %}
+
+    <div class="footer">
+        Confidential - Internal Use Only<br>
+        &copy; 2026 Sovereign GRC Platform. All rights reserved.
+    </div>
+</body>
+</html>

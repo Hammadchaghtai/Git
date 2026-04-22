@@ -24,6 +24,10 @@ from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated, AllowAny, BasePermission, SAFE_METHODS
+from django.utils import timezone
+from django.http import HttpResponse
+from django.template.loader import render_to_string
+import xhtml2pdf.pisa as pisa
 
 from .models import (
     ComplianceScan,
@@ -903,6 +907,82 @@ class DashboardSummaryView(APIView):
             },
             status=status.HTTP_200_OK,
         )
+
+
+class GenerateReportView(APIView):
+    """
+    GET /api/generate-report/?framework_id=1
+    Generates a framework-specific compliance PDF report.
+    """
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        framework_id = request.query_params.get("framework_id")
+        if not framework_id:
+            return Response({"error": "framework_id is required."}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            framework = Framework.objects.get(id=framework_id)
+        except Framework.DoesNotExist:
+            return Response({"error": "Framework not found."}, status=status.HTTP_404_NOT_FOUND)
+
+        # 1. Fetch latest scans
+        latest_scan_ids = (
+            ComplianceScan.objects
+            .order_by("agent_id", "-scan_date")
+            .distinct("agent_id")
+            .values_list("id", flat=True)
+        )
+        latest_scans = ComplianceScan.objects.filter(id__in=latest_scan_ids)
+
+        # 2. Filter ScanResults by framework and latest scans
+        results = ScanResult.objects.filter(
+            scan__in=latest_scans,
+            mapping__control__framework=framework
+        ).select_related("mapping__control", "scan")
+
+        # 3. Calculate metrics for THIS framework
+        total_checks = results.count()
+        passed_checks = results.filter(is_passed=True).count()
+        score = round((passed_checks / total_checks) * 100, 1) if total_checks > 0 else 0.0
+
+        failed_controls_qs = results.filter(is_passed=False).values(
+            "mapping__control__control_code",
+            "mapping__control__title",
+        ).annotate(fail_count=Count("id")).order_by("-fail_count")
+
+        failed_controls = [
+            {
+                "code": item["mapping__control__control_code"],
+                "title": item["mapping__control__title"],
+                "fails": item["fail_count"]
+            } for item in failed_controls_qs
+        ]
+
+        # 4. Prepare context
+        context = {
+            "framework": framework,
+            "total_agents": latest_scans.values("agent_id").distinct().count(),
+            "compliance_score": score,
+            "total_checks": total_checks,
+            "passed_checks": passed_checks,
+            "failed_controls": failed_controls,
+            "generation_date": timezone.now(),
+            "generated_by": request.user.username,
+        }
+
+        # 5. Render HTML to PDF
+        html = render_to_string("compliance/compliance_report.html", context)
+        result = io.BytesIO()
+        pdf = pisa.pisaDocument(io.BytesIO(html.encode("UTF-8")), result)
+
+        if not pdf.err:
+            response = HttpResponse(result.getvalue(), content_type="application/pdf")
+            filename = f"Compliance_Report_{framework.name.replace(' ', '_')}_{timezone.now().strftime('%Y%m%d')}.pdf"
+            response["Content-Disposition"] = f'attachment; filename="{filename}"'
+            return response
+
+        return Response({"error": "PDF generation failed."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 # ═══════════════════════════════════════════════════

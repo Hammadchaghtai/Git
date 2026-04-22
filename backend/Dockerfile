@@ -7,9 +7,10 @@ ENV PYTHONUNBUFFERED=1
 
 WORKDIR /app
 
-# Install system-level dependencies required by psycopg
+# Install system-level dependencies required by psycopg and xhtml2pdf (pycairo)
 RUN apt-get update \
     && apt-get install -y --no-install-recommends gcc libpq-dev \
+       pkg-config libcairo2-dev \
     && rm -rf /var/lib/apt/lists/*
 
 # Install Python dependencies

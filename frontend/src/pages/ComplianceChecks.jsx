@@ -4,6 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import {
   Search, PlayCircle, CheckCircle, XCircle, ShieldCheck,
   Laptop, UserCheck, Bug, Sliders, EyeOff, CloudUpload, Router, Key,
+  Zap, Info, ArrowRight, ShieldAlert, Activity, RefreshCw
 } from 'lucide-react';
 
 /* icon lookup by control code prefix */
@@ -48,7 +49,7 @@ export default function ComplianceChecks() {
     try {
       const res = await API.post('run-scan/');
       setScanMsg(res.data.message || 'Scan completed successfully!');
-      fetchResults(); // refresh
+      fetchResults();
     } catch (err) {
       setScanMsg('Scan failed: ' + (err.response?.data?.error || err.message));
     } finally {
@@ -59,7 +60,7 @@ export default function ComplianceChecks() {
   if (loading) {
     return (
       <div className="flex h-full items-center justify-center">
-        <div className="h-10 w-10 animate-spin rounded-full border-4 border-gray-200 border-t-[#38bdf8]" />
+        <div className="h-12 w-12 animate-spin rounded-full border-4 border-slate-200 border-t-brand-600" />
       </div>
     );
   }
@@ -70,75 +71,119 @@ export default function ComplianceChecks() {
   });
 
   return (
-    <div>
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold text-[#0f172a]">Compliance Checks</h1>
+    <div className="max-w-7xl mx-auto">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-10">
+        <div>
+          <h1 className="text-4xl font-black text-slate-900 dark:text-white tracking-tight">Technical Audits</h1>
+          <p className="text-slate-500 font-medium mt-1">Real-time validation of technical controls via Wazuh agent telemetry.</p>
+        </div>
         {role !== 'auditor' && (
           <button onClick={runManualScan} disabled={scanning}
-            className="flex items-center gap-2 rounded-lg bg-[#0f172a] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[#1e293b] disabled:opacity-60 cursor-pointer">
+            className="btn-primary flex items-center gap-2 shadow-xl shadow-brand-600/20">
             {scanning ? (
-              <><div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" /> Scanning...</>
+              <><RefreshCw className="h-5 w-5 animate-spin" /> DISPATCHING AUDIT...</>
             ) : (
-              <><PlayCircle className="h-4 w-4" /> Run Manual Scan</>
+              <><PlayCircle className="h-5 w-5" /> INITIATE FULL SCAN</>
             )}
           </button>
         )}
       </div>
 
       {scanMsg && (
-        <div className={`mb-5 rounded-lg px-4 py-3 text-sm font-medium ${
-          scanMsg.includes('failed') ? 'bg-red-50 text-red-700' : 'bg-emerald-50 text-emerald-700'
+        <div className={`mb-8 rounded-2xl p-5 flex items-center gap-4 animate-in slide-in-from-top-4 duration-500 border shadow-sm ${
+          scanMsg.includes('failed') ? 'bg-rose-50 border-rose-100 text-rose-700 dark:bg-rose-950/20 dark:border-rose-900/30 dark:text-rose-400' : 'bg-emerald-50 border-emerald-100 text-emerald-700 dark:bg-emerald-950/20 dark:border-emerald-900/30 dark:text-emerald-400'
         }`}>
-          {scanMsg}
+          {scanMsg.includes('failed') ? <ShieldAlert className="w-5 h-5" /> : <ShieldCheck className="w-5 h-5" />}
+          <p className="text-sm font-black uppercase tracking-widest">{scanMsg}</p>
         </div>
       )}
 
-      {/* Search */}
-      <div className="mb-5 rounded-xl border border-gray-100 bg-white p-3 shadow-sm">
-        <div className="flex items-center gap-2 px-2">
-          <Search className="h-4 w-4 text-gray-400" />
+      {/* Search Hub */}
+      <div className="cyber-card p-2 mb-10 border-slate-200 shadow-xl shadow-slate-200/40">
+        <div className="relative group">
+          <Search className="absolute left-6 top-4.5 h-5 w-5 text-slate-300 group-focus-within:text-brand-600 transition-colors" />
           <input type="text" value={search} onChange={(e) => setSearch(e.target.value)}
-            placeholder="Filter by control ID or keyword..."
-            className="w-full text-sm text-gray-700 placeholder-gray-400 outline-none" />
+            placeholder="Filter by control code, rule ID, or technical keyword..."
+            className="w-full pl-16 pr-8 py-4 bg-transparent text-slate-700 dark:text-slate-200 font-bold placeholder-slate-400 outline-none" />
         </div>
       </div>
 
       {/* Check Cards */}
       {filtered.length === 0 ? (
-        <p className="text-center text-gray-400 py-10">No compliance check results found.</p>
+        <div className="cyber-card p-20 text-center">
+           <Activity className="mx-auto h-16 w-16 text-slate-100 mb-6" />
+           <p className="text-slate-400 font-black uppercase tracking-widest text-sm">No telemetry records match your query.</p>
+        </div>
       ) : (
-        <div className="space-y-3">
+        <div className="grid grid-cols-1 gap-4">
           {filtered.map((r) => {
             const Icon = getIcon(r.control_code);
             return (
-              <div key={r.id} className="rounded-xl border border-gray-100 bg-white shadow-sm">
-                <div className="flex items-center justify-between px-5 py-4">
-                  <div className="flex items-center gap-4">
-                    <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gray-50">
-                      <Icon className="h-5 w-5 text-[#0f172a]" />
+              <div key={r.id} className={`cyber-card group transition-all duration-300 hover:translate-x-1 ${!r.is_passed ? 'border-l-4 border-l-rose-500' : 'border-l-4 border-l-emerald-500'}`}>
+                <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 px-8 py-7">
+                  <div className="flex items-center gap-6 flex-1 min-w-0">
+                    <div className={`flex h-16 w-16 items-center justify-center rounded-2xl shadow-sm flex-shrink-0 transition-transform group-hover:scale-105 ${!r.is_passed ? 'bg-rose-50 dark:bg-rose-950/20 text-rose-500' : 'bg-brand-50 dark:bg-brand-900/20 text-brand-600'}`}>
+                      <Icon className="h-8 w-8" />
                     </div>
-                    <div>
-                      <h4 className="text-sm font-bold text-[#0f172a]">
-                        {r.control_code} — {r.control_title || 'Untitled'}
-                      </h4>
-                      <p className="text-xs text-gray-400 mt-0.5">{r.rule_description || 'No description'}</p>
+                    <div className="min-w-0">
+                      <div className="flex items-center gap-3 flex-wrap">
+                         <span className="font-mono text-[10px] font-black text-brand-700 dark:text-brand-400 bg-brand-50 dark:bg-brand-900/20 px-2.5 py-1 rounded-lg border border-brand-100 dark:border-brand-900/30">
+                           {r.control_code}
+                         </span>
+                         <h4 className="text-xl font-black text-slate-900 dark:text-white tracking-tight truncate">
+                           {r.control_title || 'Untitled Check'}
+                         </h4>
+                      </div>
+                      <p className="text-xs text-slate-500 dark:text-slate-400 font-medium mt-2 leading-relaxed max-w-2xl">
+                        {r.rule_description || 'Technical validation logic for control requirement.'}
+                      </p>
                     </div>
                   </div>
-                  {r.is_passed ? (
-                    <span className="flex items-center gap-1.5 rounded-full bg-emerald-50 px-3 py-1.5 text-xs font-bold text-emerald-600">
-                      <CheckCircle className="h-3.5 w-3.5" /> PASS
-                    </span>
-                  ) : (
-                    <span className="flex items-center gap-1.5 rounded-full bg-red-50 px-3 py-1.5 text-xs font-bold text-red-500">
-                      <XCircle className="h-3.5 w-3.5" /> FAIL
-                    </span>
-                  )}
+                  
+                  <div className="flex items-center gap-8 self-end lg:self-center pl-8 lg:border-l border-slate-100 dark:border-slate-800">
+                    <div className="hidden xl:flex flex-col items-end">
+                       <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Telemetry ID</span>
+                       <span className="text-[11px] font-mono font-bold text-slate-600 dark:text-slate-400">RULE {r.wazuh_rule_id}</span>
+                    </div>
+                    {r.is_passed ? (
+                      <div className="flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-emerald-50 text-emerald-700 dark:bg-emerald-900/20 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-900/30 shadow-sm">
+                        <CheckCircle className="h-4 w-4" />
+                        <span className="text-xs font-black uppercase tracking-widest">Compliant</span>
+                      </div>
+                    ) : (
+                      <div className="flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-rose-50 text-rose-700 dark:bg-rose-900/20 dark:text-rose-400 border border-rose-100 dark:border-rose-900/30 shadow-sm">
+                        <XCircle className="h-4 w-4" />
+                        <span className="text-xs font-black uppercase tracking-widest">Non-Compliant</span>
+                      </div>
+                    )}
+                  </div>
                 </div>
 
                 {!r.is_passed && (
-                  <div className="mx-5 mb-4 rounded-lg bg-gray-50 px-4 py-2.5 text-xs text-gray-500">
-                    <span className="font-semibold">ℹ️ Evidence:</span> Check "{r.wazuh_rule_id}" — rule failed on agent scan.
-                    {r.remediation && <span className="block mt-1">💡 Remediation: {r.remediation}</span>}
+                  <div className="mx-8 mb-8 mt-2 p-8 rounded-3xl bg-slate-50 dark:bg-slate-900/50 border border-slate-100 dark:border-slate-800 relative overflow-hidden">
+                    <div className="relative z-10 grid grid-cols-1 md:grid-cols-2 gap-8">
+                       <div>
+                         <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3 flex items-center gap-2">
+                           <Info className="w-4 h-4 text-brand-600" /> Evidence Logs
+                         </p>
+                         <p className="text-xs text-slate-600 dark:text-slate-300 font-bold leading-relaxed bg-white dark:bg-slate-950 p-5 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm">
+                           Technical evaluation of telemetry rule "{r.wazuh_rule_id}" failed. The current configuration state at the endpoint deviates from the required security baseline for {r.control_code}.
+                         </p>
+                       </div>
+                       {r.remediation && (
+                         <div className="bg-brand-600 rounded-3xl p-7 shadow-xl shadow-brand-600/20 relative overflow-hidden">
+                           <div className="absolute top-0 right-0 p-4 opacity-10">
+                             <Zap className="w-16 h-16 text-white" />
+                           </div>
+                           <p className="text-[10px] font-black text-brand-100 uppercase tracking-widest mb-3 flex items-center gap-2">
+                             <Activity className="w-4 h-4" /> Remediation Blueprint
+                           </p>
+                           <p className="text-sm font-black text-white leading-relaxed italic">
+                             "{r.remediation}"
+                           </p>
+                         </div>
+                       )}
+                    </div>
                   </div>
                 )}
               </div>
