@@ -59,12 +59,42 @@ from .serializers import (
 )
 
 
-# ── Custom permission ──────────────────────────────
-class IsSuperAdmin(BasePermission):
-    """Only allows access to super_admin role users."""
-
+# ── Custom permissions ─────────────────────────────
+class EnforceAccountExpiry(BasePermission):
+    """
+    Enforces account_expiry_date on every request.
+    If the account is expired or deactivated, it returns False.
+    """
     def has_permission(self, request, view):
         if not request.user or not request.user.is_authenticated:
+            return False
+        
+        # Super admins have no expiry
+        if request.user.is_superuser:
+            return True
+
+        try:
+            profile = request.user.profile
+            from django.utils import timezone
+            # 1. Check if explicitly deactivated
+            if not request.user.is_active:
+                return False
+            # 2. Check if account window has closed
+            if profile.account_expiry_date and profile.account_expiry_date < timezone.now():
+                # Auto-deactivate for future logins
+                request.user.is_active = False
+                request.user.save(update_fields=["is_active"])
+                return False
+        except UserProfile.DoesNotExist:
+            pass
+            
+        return True
+
+class IsSuperAdmin(BasePermission):
+    """Only allows access to super_admin role users."""
+    def has_permission(self, request, view):
+        # First ensure account is valid
+        if not EnforceAccountExpiry().has_permission(request, view):
             return False
         try:
             return request.user.profile.role == "super_admin"
@@ -1071,8 +1101,7 @@ class MeView(APIView):
     Returns the currently authenticated user's username, email,
     and their GRC role from the UserProfile model.
     """
-
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, EnforceAccountExpiry]
 
     def get(self, request):
         user = request.user
