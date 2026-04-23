@@ -1,0 +1,107 @@
+\begin{thebibliography}{15}
+\providecommand{\natexlab}[1]{#1}
+\providecommand{\url}[1]{\texttt{#1}}
+\expandafter\ifx\csname urlstyle\endcsname\relax
+  \providecommand{\doi}[1]{doi: #1}\else
+  \providecommand{\doi}{doi: \begingroup \urlstyle{rm}\Url}\fi
+
+\bibitem[{Center for Internet Security}(2020)]{cis_docker_2020}
+{Center for Internet Security}.
+\newblock Cis docker benchmark v1.2.0.
+\newblock Technical report, 2020.
+\newblock URL \url{https://www.cisecurity.org/benchmark/docker}.
+
+\bibitem[{ISO/IEC}(2022)]{iso27001_2022}
+{ISO/IEC}.
+\newblock Information security, cybersecurity and privacy protection —
+  information security management systems — requirements, 2022.
+\newblock URL \url{https://www.iso.org/standard/27001}.
+
+\bibitem[Johnson et~al.(2011)Johnson, Kelley, and Ronquille]{nist800128_2011}
+Arnold Johnson, Mark Kelley, and Barrett Ronquille.
+\newblock Guide for security-focused configuration management of information
+  systems.
+\newblock Technical Report NIST Special Publication 800-128, National Institute
+  of Standards and Technology, 2011.
+
+\bibitem[Kent and Souppaya(2006)]{nist80092_2006}
+Karen Kent and Murugiah Souppaya.
+\newblock Guide to computer security log management.
+\newblock Technical Report NIST Special Publication 800-92, National Institute
+  of Standards and Technology, 2006.
+
+\bibitem[Kuraj(2024)]{kuraj_microservices_2024}
+Ivanko Kuraj.
+\newblock \emph{Microservices Architecture for Heterogeneous-Database Web
+  Applications}.
+\newblock PhD thesis, Massachusetts Institute of Technology, Cambridge, MA,
+  2024.
+\newblock URL \url{https://dspace.mit.edu/handle/1721.1/153838}.
+
+\bibitem[{Mozilla Developer Network}(2024)]{mdn_flexbox}
+{Mozilla Developer Network}.
+\newblock Basic concepts of flexbox, 2024.
+\newblock URL
+  \url{https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_flexible_box_layout/Basic_concepts_of_flexbox}.
+\newblock Accessed: 2026-04-23.
+
+\bibitem[M'Raihi et~al.(2011)M'Raihi, Machani, Pei, and Rydell]{rfc6238}
+D.~M'Raihi, S.~Machani, M.~Pei, and J.~Rydell.
+\newblock Totp: Time-based one-time password algorithm.
+\newblock RFC 6238, Internet Engineering Task Force, 2011.
+
+\bibitem[{National Institute of Standards and
+  Technology}(2020)]{nist80053_2020}
+{National Institute of Standards and Technology}.
+\newblock \emph{Security and Privacy Controls for Information Systems and
+  Organizations}.
+\newblock NIST Special Publication 800-53 Revision 5. U.S. Department of
+  Commerce, 2020.
+\newblock \doi{10.6028/NIST.SP.800-53r5}.
+
+\bibitem[Nelson(2024)]{nelson_stateless_2024}
+J.~Nelson.
+\newblock Securing the stateless frontier: A critical analysis of advanced
+  authentication techniques in asp.net core web apis.
+\newblock \emph{ResearchGate}, 2024.
+\newblock Technical Analysis of JWT and RBAC.
+
+\bibitem[of~Technology(2021)]{mit_alert_fatigue}
+Massachusetts~Institute of~Technology.
+\newblock The psychology of alert fatigue in security operations.
+\newblock \emph{MIT Sloan Management Review}, 2021.
+\newblock Technical Report on HCI and Security.
+
+\bibitem[PlanetScale(2023)]{planetscale_n1}
+PlanetScale.
+\newblock What is the n+1 query problem?, 2023.
+\newblock URL
+  \url{https://planetscale.com/blog/what-is-the-n-1-query-problem-and-how-to-fix-it}.
+\newblock Accessed: 2026-04-23.
+
+\bibitem[Souppaya et~al.(2017)Souppaya, Morello, and Scarfone]{nist800190_2017}
+Murugiah Souppaya, John Morello, and Karen Scarfone.
+\newblock Application container security guide.
+\newblock Technical Report NIST Special Publication 800-190, National Institute
+  of Standards and Technology, 2017.
+
+\bibitem[{U.S. Congress}(2014)]{fisma_2014}
+{U.S. Congress}.
+\newblock Federal information security modernization act of 2014, 2014.
+\newblock Public Law 113-283.
+
+\bibitem[{Wazuh Team}(2024)]{wazuh_doc}
+{Wazuh Team}.
+\newblock Wazuh documentation, 2024.
+\newblock URL \url{https://documentation.wazuh.com/}.
+\newblock Accessed: 2026-04-23.
+
+\bibitem[Zavarella(2022)]{mit_hci_security_2022}
+T.~Zavarella.
+\newblock \emph{The impact of alert fatigue on cognitive load in security
+  operations}.
+\newblock PhD thesis, Massachusetts Institute of Technology, Cambridge, MA,
+  2022.
+\newblock URL \url{https://dspace.mit.edu/handle/1721.1/155176}.
+
+\end{thebibliography}

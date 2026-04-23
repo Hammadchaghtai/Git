@@ -1,0 +1,82 @@
+\chapter{Introduction}
+
+\section{Background of Enterprise Compliance}
+
+Historical security auditing methodologies rely on manual evidence collection and point-in-time assessments. Organizations traditionally compile spreadsheets and static configuration snapshots to satisfy periodic regulatory requirements. This approach creates significant temporal blind spots, as the security posture remains unverified between audit cycles. Configuration drift often occurs within hours of a successful audit, leaving the infrastructure vulnerable to exploitation while maintaining a formal status of compliance.
+
+The cybersecurity industry addresses these vulnerabilities by transitioning toward Continuous Controls Monitoring (CCM). This paradigm shift replaces manual sampling with automated, real-time validation of security controls. CCM platforms integrate directly with the technical environment to evaluate configurations, access logs, and system integrity continuously. This automation ensures that compliance reflects the actual, current state of the environment rather than a historical record.
+
+Modern regulatory mandates codify the requirement for continuous visibility. NIST Special Publication 800-53 Revision 5 emphasizes the transition from static control assessments to ongoing monitoring to validate system integrity \cite{nist80053_2020}. Similarly, the ISO/IEC 27001:2022 standard requires organizations to establish an Information Security Management System (ISMS) that identifies and treats risks through continuous evaluation \cite{iso27001_2022}. These frameworks necessitate the adoption of technological solutions capable of mapping raw system data to high-level compliance objectives.
+
+The integration of Security Information and Event Management (SIEM) systems provides the data foundation for this automated GRC architecture. SIEM engines ingest raw telemetry from across the enterprise, translating low-level system events into verifiable compliance states. By establishing deterministic baselines, organizations move from reactive, audit-driven reporting to proactive, data-driven security management. This thesis evaluates the implementation of an intelligent system that bridge the gap between technical SIEM telemetry and regulatory control satisfaction.
+
+\section{Problem Statement}
+
+Translating massive volumes of low-level endpoint telemetry into high-level regulatory frameworks presents a significant operational hurdle. SIEM platforms generate thousands of technical alerts, such as SSH authentication failures or unauthorized file modifications, which require immediate correlation against ISO 27001 or SOC 2 control matrices. Manual correlation processes introduce dangerous delays between event detection and compliance validation, creating a window of risk where system vulnerabilities remain unaddressed. Concurrent telemetry sources often produce contradictory states, requiring deterministic resolution mechanisms that existing manual workflows cannot provide.
+
+Calculating real-time compliance metrics across distributed fleets exposes severe data aggregation failures in traditional GRC platforms. Standard relational database implementations often suffer from the N+1 query problem, where the application executes sequential retrieval loops for every individual security control. This architectural flaw imposes a linear $O(N)$ algorithmic complexity on data retrieval, causing geometric performance decay as the number of monitored agents increases \cite{planetscale_n1}. The resulting latency prevents organizations from achieving a truly continuous monitoring state, as dashboard rendering times exceed the threshold for effective operational visibility.
+
+Legacy GRC interfaces fail to account for the cognitive limitations of security analysts. Rigid, HTML table-heavy dashboards and unoptimized color schemes maximize extraneous cognitive load, leading to rapid desensitization known as alert fatigue. Chronic overstimulation from noisy, unfiltered telemetry streams depletes essential neurotransmitters, causing operators to ignore or misclassify high-severity threats \cite{mit_alert_fatigue}. This Human-Computer Interaction (HCI) shortcoming transforms security tools into sources of distraction, ultimately degrading incident response times and increasing organizational risk.
+
+\section{Project Objectives}
+
+The development of the Intelligent Compliance Management System (ICMS) focuses on four primary engineering objectives designed to resolve the identified technical and operational gaps:
+
+\begin{itemize}
+    \item Automate the ingestion and mapping of Wazuh SIEM telemetry to ISO 27001 and SOC 2 controls, utilizing a deterministic Worst-Case Priority state-mutation algorithm to resolve conflicting evaluations.
+    \item Eliminate the N+1 database querying bottleneck by engineering $O(1)$ set-based aggregations through the Django ORM, specifically utilizing \texttt{.annotate()} and conditional SQL filtering to ensure dashboard latency remains below 200 milliseconds.
+    \item Enforce strict infrastructure and session security through a Dockerized virtual bridge network that isolates the PostgreSQL data tier, combined with custom Django REST Framework Role-Based Access Control and stateless JWT rotation.
+    \item Mitigate analyst alert fatigue by architecting a Cyber-SaaS frontend that replaces rigid HTML tables with Flexbox layouts and utilizes semantic soft-scaling to improve data parsing speeds.
+\end{itemize}
+
+\section{Project Scope}
+
+The Intelligent Compliance Management System (ICMS) strictly operates within the boundaries of the ISO/IEC 27001:2022 and SOC 2 Type II compliance frameworks. The platform scope encompasses the ingestion and mapping of endpoint security telemetry specifically from the Wazuh Manager's Security Configuration Assessment (SCA) module. By utilizing the Wazuh REST API, the system retrieves individual check results from active agents and correlates them to the identified governance controls. This data-driven mapping ensures that the compliance state represents an actual reflection of the technical environment's configuration.
+
+The implementation boundary is restricted to a containerized Docker ecosystem designed for secure, isolated operation. This environment utilizes a private virtual bridge network to facilitate communication between the PostgreSQL database, Redis message broker, Celery workers, and the Django-React application stack. This architectural scope ensures that the data persistence tier remains inaccessible to external networks, maintaining a secure baseline for the storage of sensitive compliance telemetry and organizational policies.
+
+To maintain the focus on Governance, Risk, and Compliance (GRC) monitoring, several operational domains remain outside the project scope. The system does not perform active Incident Response (IR) actions, such as isolating compromised endpoints or terminating malicious processes. The platform does not conduct network packet sniffing or automated remediation of configuration drift. While the system evaluates and reports on the compliance state, it does not mutate endpoint configurations; all infrastructure remediation remains the responsibility of dedicated IT operations teams.
+
+\section{Proposed Solution Overview}
+
+The Intelligent Compliance Management System (ICMS) adopts a defense-in-depth, containerized architecture designed to maintain strict logical separation between processing tiers. The platform utilizes the Django REST Framework for backend orchestration, while a React Single Page Application (SPA) provides a dynamic, Cyber-SaaS user interface. This separation ensures that the frontend remains stateless, relying on cryptographically signed JSON Web Tokens (JWT) for secure API communication.
+
+Within the containerized ecosystem, the system isolates critical data persistence and messaging layers. The PostgreSQL database and Redis message broker operate on a private virtual bridge network, restricting access to the internal backend and Celery worker services. This topology prevents direct external exposure of compliance telemetry and session data. The Celery workers and scheduler manage periodic Wazuh SIEM synchronization, while the Django API serves as the central gateway for framework mapping and report generation.
+
+\begin{figure}[htbp]
+    \centering
+    \begin{tikzpicture}[
+        node distance=1.5cm and 2cm,
+        service/.style={rectangle, draw, minimum width=3cm, minimum height=1cm, align=center, fill=blue!5, thick},
+        database/.style={cylinder, draw, shape border rotate=90, minimum width=2cm, minimum height=1.5cm, align=center, fill=gray!10, thick},
+        external/.style={rectangle, draw, dashed, minimum width=3cm, minimum height=1cm, align=center, fill=red!5, thick},
+        arrow/.style={-Stealth, thick}
+    ]
+        % Nodes
+        \node[external] (wazuh) {Wazuh SIEM Manager\\(External Host)};
+        \node[service, right=of wazuh] (backend) {Django API\\(Backend Service)};
+        \node[service, above=of backend] (frontend) {React SPA\\(Frontend Interface)};
+        \node[database, right=of backend] (db) {PostgreSQL\\(Data Tier)};
+        \node[service, below=of backend] (redis) {Redis\\(Message Broker)};
+        \node[service, right=of redis] (celery) {Celery Workers\\(Background Tasks)};
+
+        % Paths
+        \draw[arrow] (frontend) -- (backend) node[midway, right] {REST / JWT};
+        \draw[arrow] (backend) -- (wazuh) node[midway, above] {SCA API};
+        \draw[arrow] (backend) -- (db) node[midway, above] {ORM};
+        \draw[arrow] (backend) -- (redis) node[midway, left] {Enqueues};
+        \draw[arrow] (redis) -- (celery) node[midway, above] {Dequeues};
+        \draw[arrow] (celery) -- (db) node[midway, right] {Updates};
+
+        % Container Boundary (Visual Representation)
+        \draw[gray, dashed, thick] ($(frontend.north west)+(-0.8,0.8)$ ) rectangle ($(celery.south east)+(0.8,-0.8)$);
+        \node[gray, anchor=north east] at ($(celery.south east)+(0.8,-0.8)$) {Docker Bridge Network};
+
+    \end{tikzpicture}
+    \caption{High-Level Architecture of the Containerized ICMS Platform}
+    \label{fig:high_level_architecture}
+\end{figure}
+
+\section{Thesis Organization}
+
+This thesis consists of seven chapters that detail the research, design, and implementation of the Intelligent Compliance Management System (ICMS). Chapter 2 evaluates existing literature regarding Governance, Risk, and Compliance (GRC) frameworks and Security Information and Event Management (SIEM) integration. Chapter 3 defines the functional and non-functional requirements of the platform while establishing the high-level system architecture. Chapter 4 provides the detailed system design, incorporating Unified Modeling Language (UML) diagrams to represent the logical and physical data flows. Chapter 5 focuses on the implementation phase, detailing the backend algorithms and containerized orchestration used to achieve continuous monitoring. Chapter 6 outlines the system testing protocols and evaluates the platform's performance against defined accuracy and latency metrics. Chapter 7 concludes the research by summarizing the project's contributions and proposing directions for future work.

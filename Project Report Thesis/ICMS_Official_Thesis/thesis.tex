@@ -1,0 +1,163 @@
+\documentclass[12pt, a4paper]{report}
+
+% --- Packages ---
+\usepackage[margin=1in]{geometry}
+\usepackage{graphicx}
+\usepackage[hidelinks]{hyperref}
+\usepackage{tikz}
+\usetikzlibrary{shapes, arrows.meta, positioning, calc}
+\usepackage{setspace}
+\usepackage{titlesec}
+\usepackage[numbers]{natbib}
+\usepackage{fancyhdr}
+\usepackage{etoolbox}
+
+% --- Document Settings ---
+\onehalfspacing
+\setlength{\parskip}{1em}
+\setlength{\parindent}{0pt}
+
+% --- Chapter Formatting ---
+\titleformat{\chapter}[display]
+  {\normalfont\huge\bfseries}{\chaptertitlename\ \thechapter}{20pt}{\Huge}
+\titlespacing*{\chapter}{0pt}{-20pt}{20pt}
+
+% --- PDF Metadata ---
+\hypersetup{
+    pdftitle={Intelligent Compliance Management System (ICMS)},
+    pdfauthor={Muhammad Ali Bukhari, Hammad Chaghtai},
+    pdfsubject={Final Year Project Thesis},
+    pdfkeywords={GRC, SIEM, Wazuh, Compliance, Automation}
+}
+
+\begin{document}
+
+% =========================================================
+% TITLE PAGE
+% =========================================================
+\begin{titlepage}
+    \centering
+    \vspace*{1cm}
+    
+    \includegraphics[width=0.3\textwidth]{bui_logo.jpg}\\[1.5cm]
+    
+    {\Huge \textbf{Intelligent Compliance Management System (ICMS)}}\\[1.5cm]
+    
+    {\Large \textbf{Muhammad Ali Bukhari (01-135222-096)}}\\[0.3cm]
+    {\Large \textbf{Hammad Chaghtai (01-135222-014)}}\\[1.5cm]
+    
+    {\large \textbf{Supervisor: Dr. Faisal Bashir}}\\[2cm]
+    
+    {\large \textbf{Bachelor of Science in Information Technology}}\\[1cm]
+    
+    {\large \textbf{Department of Computer Science}}\\[0.2cm]
+    {\large \textbf{Bahria University, Islamabad}}\\[1.5cm]
+    
+    {\large \textbf{April 2026}}
+    
+    \vfill
+\end{titlepage}
+
+% =========================================================
+% APPROVAL CERTIFICATE
+% =========================================================
+\newpage
+\pagenumbering{roman}
+\section*{Certificate of Approval}
+\addcontentsline{toc}{section}{Certificate of Approval}
+\vspace{1cm}
+
+We accept the work contained in the report titled \textbf{``Intelligent Compliance Management System (ICMS)''}, written by \textbf{Muhammad Ali Bukhari} and \textbf{Hammad Chaghtai} as a confirmation to the required standard for the partial fulfillment of the degree of Bachelor of Science in Information Technology.
+
+\vspace{2cm}
+
+\begin{flushleft}
+    \textbf{Approved by:}
+    \vspace{1.5cm}
+    
+    \rule{8cm}{0.4pt}\\
+    \textbf{Supervisor: Dr. Faisal Bashir}\\
+    (Department of Computer Science)
+    
+    \vspace{1.5cm}
+    
+    \rule{8cm}{0.4pt}\\
+    \textbf{Internal Examiner: Name of the Internal Examiner}\\
+    (Title/Designation)
+    
+    \vspace{1.5cm}
+    
+    \rule{8cm}{0.4pt}\\
+    \textbf{External Examiner: Name of the External Examiner}\\
+    (Title/Designation)
+    
+    \vspace{1.5cm}
+    
+    \rule{8cm}{0.4pt}\\
+    \textbf{Head of Department: Name of the HOD}\\
+    (Department of Computer Science)
+\end{flushleft}
+
+% =========================================================
+% ABSTRACT
+% =========================================================
+\newpage
+\section*{Abstract}
+\addcontentsline{toc}{section}{Abstract}
+
+Manual security auditing in enterprise environments fails to address rapid configuration drift or ephemeral workloads effectively. This thesis presents the Intelligent Compliance Management System (ICMS), a full-stack platform designed to automate Governance, Risk, and Compliance (GRC) workflows through direct Security Information and Event Management (SIEM) integration. The system utilizes a specialized client to ingest raw telemetry from Wazuh, mapping technical events to specific control requirements within the ISO 27001:2022 and SOC 2 Type II frameworks. To manage the performance demands of real-time monitoring, the architecture eliminates the N+1 query bottleneck by implementing set-based ORM aggregation and SQL FILTER clauses. This optimization converts linear retrieval patterns into constant-time database operations, allowing the dashboard to aggregate millions of telemetry rows without significant latency. When telemetry sources provide contradictory states, the system applies a Worst-Case Priority algorithm to ensure a pessimistic, secure resolution of compliance statuses. Infrastructure security follows a defense-in-depth model, utilizing a containerized topology that isolates the PostgreSQL data tier and Redis message broker within a private Docker bridge network. This isolation prevents direct host-port exposure and restricts lateral movement during a potential breach. Identity management relies on stateless JSON Web Tokens (JWT) with rotation policies and Time-Based One-Time Passwords (TOTP) to maintain a zero-trust baseline. The resulting framework replaces periodic, manual evidence collection with a continuous, data-driven assessment model that provides deterministic validation of an organization's security posture.
+
+% =========================================================
+% ACKNOWLEDGMENTS
+% =========================================================
+\newpage
+\section*{Acknowledgments}
+\addcontentsline{toc}{section}{Acknowledgments}
+
+In the name of Allah, the Most Gracious, the Most Merciful. All praise is due to Allah, the Almighty, for granting the strength and guidance required to complete this work.
+
+I express my deepest gratitude to my supervisor, Dr. Faisal Bashir, for his mentorship, technical expertise, and continuous encouragement throughout the development of this project. His insights into systems architecture and cybersecurity were fundamental to the successful execution of this thesis.
+
+I am also thankful to the Department of Computer Science at Bahria University for providing the academic environment and resources necessary for our research. Finally, I would like to thank my family and peers for their unwavering support and patience during this intensive process.
+
+\vspace{1cm}
+\begin{flushright}
+    \textbf{Muhammad Ali Bukhari}\\
+    \textbf{Hammad Chaghtai}
+\end{flushright}
+
+% =========================================================
+% TABLE OF CONTENTS / LISTS
+% =========================================================
+\newpage
+\tableofcontents
+
+\newpage
+\listoffigures
+
+\newpage
+\listoftables
+
+% =========================================================
+% CHAPTERS
+% =========================================================
+\newpage
+\pagenumbering{arabic}
+
+\input{chapter1}
+\input{chapter2}
+% \input{chapter3}
+% \input{chapter4}
+% \input{chapter5}
+% \input{chapter6}
+% \input{chapter7}
+
+% =========================================================
+% BIBLIOGRAPHY
+% =========================================================
+\newpage
+\addcontentsline{toc}{chapter}{Bibliography}
+\bibliographystyle{plainnat}
+\bibliography{references}
+
+\end{document}
