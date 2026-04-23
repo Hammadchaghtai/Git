@@ -1,0 +1,2060 @@
+This is pdfTeX, Version 3.141592653-2.6-1.40.29 (MiKTeX 26.2) (preloaded format=pdflatex 2026.4.23)  23 APR 2026 08:17
+entering extended mode
+ restricted \write18 enabled.
+ %&-line parsing enabled.
+**./thesis.tex
+(thesis.tex
+LaTeX2e <2025-11-01>
+L3 programming layer <2026-03-20>
+(C:\Users\malib\AppData\Local\Programs\MiKTeX\tex/latex/base\report.cls
+Document Class: report 2025/01/22 v1.4n Standard LaTeX document class
+(C:\Users\malib\AppData\Local\Programs\MiKTeX\tex/latex/base\size11.clo
+File: size11.clo 2025/01/22 v1.4n Standard LaTeX file (size option)
+)
+\c@part=\count275
+\c@chapter=\count276
+\c@section=\count277
+\c@subsection=\count278
+\c@subsubsection=\count279
+\c@paragraph=\count280
+\c@subparagraph=\count281
+\c@figure=\count282
+\c@table=\count283
+\abovecaptionskip=\skip49
+\belowcaptionskip=\skip50
+\bibindent=\dimen150
+)
+(C:\Users\malib\AppData\Local\Programs\MiKTeX\tex/latex/base\inputenc.sty
+Package: inputenc 2024/02/08 v1.3d Input encoding file
+\inpenc@prehook=\toks17
+\inpenc@posthook=\toks18
+)
+(C:\Users\malib\AppData\Local\Programs\MiKTeX\tex/generic/babel\babel.sty
+Package: babel 2026/03/24 v26.5 The multilingual framework for LuaLaTeX, pdfLaT
+eX and XeLaTeX
+\babel@savecnt=\count284
+LaTeX Encoding Info:    Redeclaring text command \ij (encoding OT1) on input li
+ne 2078.
+LaTeX Encoding Info:    Redeclaring text command \IJ (encoding OT1) on input li
+ne 2080.
+LaTeX Encoding Info:    Redeclaring text command \ij (encoding T1) on input lin
+e 2082.
+LaTeX Encoding Info:    Redeclaring text command \IJ (encoding T1) on input lin
+e 2083.
+LaTeX Encoding Info:    Ignoring declaration for text command \ij (encoding ?) 
+on input line 2084.
+LaTeX Encoding Info:    Ignoring declaration for text command \IJ (encoding ?) 
+on input line 2086.
+LaTeX Encoding Info:    Ignoring declaration for text command \SS (encoding ?) 
+on input line 2111.
+\U@D=\dimen151
+\l@unhyphenated=\language79
+
+(C:\Users\malib\AppData\Local\Programs\MiKTeX\tex/generic/babel\txtbabel.def)
+\bbl@readstream=\read2
+\bbl@dirlevel=\count285
+Package babel Info: Configuration files are deprecated, as
+(babel)             they can break document portability.
+(babel)             Reported on input line 4206.
+
+*************************************
+* Local config file bblopts.cfg used
+*
+(C:\Users\malib\AppData\Local\Programs\MiKTeX\tex/latex/arabi\bblopts.cfg
+File: bblopts.cfg 2005/09/08 v0.1 add Arabic and Farsi to "declared" options of
+ babel
+)
+(C:\Users\malib\AppData\Local\Programs\MiKTeX\tex/generic/babel/locale/en\babel
+-english.tex)
+Package babel Info: Importing font and identification data for english
+(babel)             from babel-en.ini. Reported on input line 4330.
+
+(C:\Users\malib\AppData\Local\Programs\MiKTeX\tex/latex/babel-english\english.l
+df
+Language: english 2017/06/06 v3.3r English support from the babel system
+Package babel Info: Hyphen rules for 'canadian' set to \l@english
+(babel)             (\language0). Reported on input line 102.
+Package babel Info: Hyphen rules for 'australian' set to \l@ukenglish
+(babel)             (\language73). Reported on input line 105.
+Package babel Info: Hyphen rules for 'newzealand' set to \l@ukenglish
+(babel)             (\language73). Reported on input line 108.
+))
+(C:\Users\malib\AppData\Local\Programs\MiKTeX\tex/latex/fancyvrb\fancyvrb.sty
+Package: fancyvrb 2025/07/28 4.6 verbatim text (tvz,hv)
+
+(C:\Users\malib\AppData\Local\Programs\MiKTeX\tex/latex/graphics\keyval.sty
+Package: keyval 2022/05/29 v1.15 key=value parser (DPC)
+\KV@toks@=\toks19
+)
+\FV@CodeLineNo=\count286
+\FV@InFile=\read3
+\FV@TabBox=\box53
+\c@FancyVerbLine=\count287
+\FV@StepNumber=\count288
+\FV@OutFile=\write3
+)
+(C:\Users\malib\AppData\Local\Programs\MiKTeX\tex/latex/multirow\multirow.sty
+Package: multirow 2024/11/12 v2.9 Span multiple rows of a table
+\multirow@colwidth=\skip51
+\multirow@cntb=\count289
+\multirow@dima=\skip52
+\bigstrutjot=\dimen152
+)
+(C:\Users\malib\AppData\Local\Programs\MiKTeX\tex/latex/graphics\rotating.sty
+Package: rotating 2025/01/14 v2.16e rotated objects in LaTeX
+
+(C:\Users\malib\AppData\Local\Programs\MiKTeX\tex/latex/graphics\graphicx.sty
+Package: graphicx 2024/12/31 v1.2e Enhanced LaTeX Graphics (DPC,SPQR)
+
+(C:\Users\malib\AppData\Local\Programs\MiKTeX\tex/latex/graphics\graphics.sty
+Package: graphics 2024/08/06 v1.4g Standard LaTeX Graphics (DPC,SPQR)
+
+(C:\Users\malib\AppData\Local\Programs\MiKTeX\tex/latex/graphics\trig.sty
+Package: trig 2023/12/02 v1.11 sin cos tan (DPC)
+)
+(C:\Users\malib\AppData\Local\Programs\MiKTeX\tex/latex/graphics-cfg\graphics.c
+fg
+File: graphics.cfg 2016/06/04 v1.11 sample graphics configuration
+)
+Package graphics Info: Driver file: pdftex.def on input line 106.
+
+(C:\Users\malib\AppData\Local\Programs\MiKTeX\tex/latex/graphics-def\pdftex.def
+File: pdftex.def 2025/09/29 v1.2d Graphics/color driver for pdftex
+))
+\Gin@req@height=\dimen153
+\Gin@req@width=\dimen154
+) (C:\Users\malib\AppData\Local\Programs\MiKTeX\tex/latex/base\ifthen.sty
+Package: ifthen 2024/03/16 v1.1e Standard LaTeX ifthen package (DPC)
+)
+\c@r@tfl@t=\count290
+\rotFPtop=\skip53
+\rotFPbot=\skip54
+\rot@float@box=\box54
+\rot@mess@toks=\toks20
+)
+(C:\Users\malib\AppData\Local\Programs\MiKTeX\tex/latex/diagbox\diagbox.sty
+Package: diagbox 2020/02/09 v2.3 Making table heads with diagonal lines
+
+(C:\Users\malib\AppData\Local\Programs\MiKTeX\tex/latex/pict2e\pict2e.sty
+Package: pict2e 2020/09/30 v0.4b Improved picture commands (HjG,RN,JT)
+
+(C:\Users\malib\AppData\Local\Programs\MiKTeX\tex/latex/pict2e\pict2e.cfg
+File: pict2e.cfg 2016/02/05 v0.1u pict2e configuration for teTeX/TeXLive
+)
+Package pict2e Info: Driver file: pdftex.def on input line 112.
+Package pict2e Info: Driver file for pict2e: p2e-pdftex.def on input line 114.
+
+(C:\Users\malib\AppData\Local\Programs\MiKTeX\tex/latex/pict2e\p2e-pdftex.def
+File: p2e-pdftex.def 2016/02/05 v0.1u Driver-dependant file (RN,HjG,JT)
+)
+\pIIe@GRAPH=\toks21
+\@arclen=\dimen155
+\@arcrad=\dimen156
+\pIIe@tempdima=\dimen157
+\pIIe@tempdimb=\dimen158
+\pIIe@tempdimc=\dimen159
+\pIIe@tempdimd=\dimen160
+\pIIe@tempdime=\dimen161
+\pIIe@tempdimf=\dimen162
+) (C:\Users\malib\AppData\Local\Programs\MiKTeX\tex/latex/tools\calc.sty
+Package: calc 2025/03/01 v4.3b Infix arithmetic (KKT,FJ)
+\calc@Acount=\count291
+\calc@Bcount=\count292
+\calc@Adimen=\dimen163
+\calc@Bdimen=\dimen164
+\calc@Askip=\skip55
+\calc@Bskip=\skip56
+LaTeX Info: Redefining \setlength on input line 86.
+LaTeX Info: Redefining \addtolength on input line 87.
+\calc@Ccount=\count293
+\calc@Cskip=\skip57
+)
+(C:\Users\malib\AppData\Local\Programs\MiKTeX\tex/latex/tools\array.sty
+Package: array 2025/09/25 v2.6n Tabular extension package (FMi)
+\col@sep=\dimen165
+\ar@mcellbox=\box55
+\extrarowheight=\dimen166
+\NC@list=\toks22
+\extratabsurround=\skip58
+\backup@length=\skip59
+\ar@cellbox=\box56
+)
+\diagbox@boxa=\box57
+\diagbox@boxb=\box58
+\diagbox@boxm=\box59
+\diagbox@wd=\dimen167
+\diagbox@ht=\dimen168
+\diagbox@insepl=\dimen169
+\diagbox@insepr=\dimen170
+\diagbox@outsepl=\dimen171
+\diagbox@outsepr=\dimen172
+)
+(C:\Users\malib\AppData\Local\Programs\MiKTeX\tex/generic/soul\soul.sty
+Package: soul 2026-03-06 v3.2 Permit use of UTF-8 characters in soul (HO)
+
+(C:\Users\malib\AppData\Local\Programs\MiKTeX\tex/generic/soul\soul-ori.sty
+Package: soul-ori 2026-03-06 v3.2 letterspacing/underlining (mf)
+\SOUL@word=\toks23
+\SOUL@lasttoken=\toks24
+\SOUL@syllable=\toks25
+\SOUL@cmds=\toks26
+\SOUL@buffer=\toks27
+\SOUL@token=\toks28
+\SOUL@syllgoal=\dimen173
+\SOUL@syllwidth=\dimen174
+\SOUL@charkern=\dimen175
+\SOUL@hyphkern=\dimen176
+\SOUL@dimen=\dimen177
+\SOUL@dimeni=\dimen178
+\SOUL@minus=\count294
+\SOUL@comma=\count295
+\SOUL@apo=\count296
+\SOUL@grave=\count297
+\SOUL@spaceskip=\skip60
+\SOUL@ttwidth=\dimen179
+\SOUL@uldp=\dimen180
+\SOUL@ulht=\dimen181
+)
+(C:\Users\malib\AppData\Local\Programs\MiKTeX\tex/generic/infwarerr\infwarerr.s
+ty
+Package: infwarerr 2019/12/03 v1.5 Providing info/warning/error messages (HO)
+)
+(C:\Users\malib\AppData\Local\Programs\MiKTeX\tex/generic/etexcmds\etexcmds.sty
+Package: etexcmds 2019/12/15 v1.7 Avoid name clashes with e-TeX commands (HO)
+(C:\Users\malib\AppData\Local\Programs\MiKTeX\tex/generic/iftex\iftex.sty
+Package: iftex 2024/12/12 v1.0g TeX engine tests
+)))
+(C:\Users\malib\AppData\Local\Programs\MiKTeX\tex/latex/amsfonts\amssymb.sty
+Package: amssymb 2013/01/14 v3.01 AMS font symbols
+
+(C:\Users\malib\AppData\Local\Programs\MiKTeX\tex/latex/amsfonts\amsfonts.sty
+Package: amsfonts 2013/01/14 v3.01 Basic AMSFonts support
+\@emptytoks=\toks29
+\symAMSa=\mathgroup4
+\symAMSb=\mathgroup5
+LaTeX Font Info:    Redeclaring math symbol \hbar on input line 98.
+LaTeX Font Info:    Overwriting math alphabet `\mathfrak' in version `bold'
+(Font)                  U/euf/m/n --> U/euf/b/n on input line 106.
+)) (C:\Users\malib\AppData\Local\Programs\MiKTeX\tex/latex/graphics\lscape.sty
+Package: lscape 2020/05/28 v3.02 Landscape Pages (DPC)
+)
+(C:\Users\malib\AppData\Local\Programs\MiKTeX\tex/latex/tools\longtable.sty
+Package: longtable 2025-10-13 v4.24 Multi-page Table package (DPC)
+\LTleft=\skip61
+\LTright=\skip62
+\LTpre=\skip63
+\LTpost=\skip64
+\LTchunksize=\count298
+\LTcapwidth=\dimen182
+\LT@head=\box60
+\LT@firsthead=\box61
+\LT@foot=\box62
+\LT@lastfoot=\box63
+\LT@gbox=\box64
+\LT@cols=\count299
+\LT@rows=\count300
+\c@LT@tables=\count301
+\c@LT@chunks=\count302
+\LT@p@ftn=\toks30
+)
+(C:\Users\malib\AppData\Local\Programs\MiKTeX\tex/latex/base\makeidx.sty
+Package: makeidx 2021/10/04 v1.0m Standard LaTeX package
+)
+(C:\Users\malib\AppData\Local\Programs\MiKTeX\tex/latex/amsmath\amsmath.sty
+Package: amsmath 2025/07/09 v2.17z AMS math features
+\@mathmargin=\skip65
+
+For additional information on amsmath, use the `?' option.
+(C:\Users\malib\AppData\Local\Programs\MiKTeX\tex/latex/amsmath\amstext.sty
+Package: amstext 2024/11/17 v2.01 AMS text
+
+(C:\Users\malib\AppData\Local\Programs\MiKTeX\tex/latex/amsmath\amsgen.sty
+File: amsgen.sty 1999/11/30 v2.0 generic functions
+\@emptytoks=\toks31
+\ex@=\dimen183
+))
+(C:\Users\malib\AppData\Local\Programs\MiKTeX\tex/latex/amsmath\amsbsy.sty
+Package: amsbsy 1999/11/29 v1.2d Bold Symbols
+\pmbraise@=\dimen184
+)
+(C:\Users\malib\AppData\Local\Programs\MiKTeX\tex/latex/amsmath\amsopn.sty
+Package: amsopn 2022/04/08 v2.04 operator names
+)
+\inf@bad=\count303
+LaTeX Info: Redefining \frac on input line 233.
+\uproot@=\count304
+\leftroot@=\count305
+LaTeX Info: Redefining \overline on input line 398.
+LaTeX Info: Redefining \colon on input line 409.
+\classnum@=\count306
+\DOTSCASE@=\count307
+LaTeX Info: Redefining \ldots on input line 495.
+LaTeX Info: Redefining \dots on input line 498.
+LaTeX Info: Redefining \cdots on input line 619.
+\Mathstrutbox@=\box65
+\strutbox@=\box66
+LaTeX Info: Redefining \big on input line 721.
+LaTeX Info: Redefining \Big on input line 722.
+LaTeX Info: Redefining \bigg on input line 723.
+LaTeX Info: Redefining \Bigg on input line 724.
+\big@size=\dimen185
+LaTeX Font Info:    Redeclaring font encoding OML on input line 742.
+LaTeX Font Info:    Redeclaring font encoding OMS on input line 743.
+\macc@depth=\count308
+LaTeX Info: Redefining \bmod on input line 904.
+LaTeX Info: Redefining \pmod on input line 909.
+LaTeX Info: Redefining \smash on input line 939.
+LaTeX Info: Redefining \relbar on input line 969.
+LaTeX Info: Redefining \Relbar on input line 970.
+\c@MaxMatrixCols=\count309
+\dotsspace@=\muskip17
+\c@parentequation=\count310
+\dspbrk@lvl=\count311
+\tag@help=\toks32
+\row@=\count312
+\column@=\count313
+\maxfields@=\count314
+\andhelp@=\toks33
+\eqnshift@=\dimen186
+\alignsep@=\dimen187
+\tagshift@=\dimen188
+\tagwidth@=\dimen189
+\totwidth@=\dimen190
+\lineht@=\dimen191
+\@envbody=\toks34
+\multlinegap=\skip66
+\multlinetaggap=\skip67
+\mathdisplay@stack=\toks35
+LaTeX Info: Redefining \[ on input line 2950.
+LaTeX Info: Redefining \] on input line 2951.
+)
+(C:\Users\malib\AppData\Local\Programs\MiKTeX\tex/latex/makecell\makecell.sty
+Package: makecell 2009/08/03 V0.1e Managing of Tab Column Heads and Cells
+\rotheadsize=\dimen192
+\c@nlinenum=\count315
+\TeXr@lab=\toks36
+)
+(C:\Users\malib\AppData\Local\Programs\MiKTeX\tex/latex/wrapfig\wrapfig.sty
+\wrapoverhang=\dimen193
+\WF@size=\dimen194
+\c@WF@wrappedlines=\count316
+\WF@box=\box67
+\WF@everypar=\toks37
+Package: wrapfig 2003/01/31  v 3.6
+)
+(C:\Users\malib\AppData\Local\Programs\MiKTeX\tex/latex/tools\tabularx.sty
+Package: tabularx 2023/12/11 v2.12a `tabularx' package (DPC)
+\TX@col@width=\dimen195
+\TX@old@table=\dimen196
+\TX@old@col=\dimen197
+\TX@target=\dimen198
+\TX@delta=\dimen199
+\TX@cols=\count317
+\TX@ftn=\toks38
+)
+(C:\Users\malib\AppData\Local\Programs\MiKTeX\tex/latex/xcolor\xcolor.sty
+Package: xcolor 2024/09/29 v3.02 LaTeX color extensions (UK)
+
+(C:\Users\malib\AppData\Local\Programs\MiKTeX\tex/latex/graphics-cfg\color.cfg
+File: color.cfg 2016/01/02 v1.6 sample color configuration
+)
+Package xcolor Info: Driver file: pdftex.def on input line 274.
+(C:\Users\malib\AppData\Local\Programs\MiKTeX\tex/latex/graphics\mathcolor.ltx)
+Package xcolor Info: Model `cmy' substituted by `cmy0' on input line 1349.
+Package xcolor Info: Model `hsb' substituted by `rgb' on input line 1353.
+Package xcolor Info: Model `RGB' extended on input line 1365.
+Package xcolor Info: Model `HTML' substituted by `rgb' on input line 1367.
+Package xcolor Info: Model `Hsb' substituted by `hsb' on input line 1368.
+Package xcolor Info: Model `tHsb' substituted by `hsb' on input line 1369.
+Package xcolor Info: Model `HSB' substituted by `hsb' on input line 1370.
+Package xcolor Info: Model `Gray' substituted by `gray' on input line 1371.
+Package xcolor Info: Model `wave' substituted by `hsb' on input line 1372.
+) (C:\Users\malib\AppData\Local\Programs\MiKTeX\tex/latex/colortbl\colortbl.sty
+Package: colortbl 2024/10/29 v1.0k Color table columns (DPC)
+\everycr=\toks39
+\minrowclearance=\skip68
+\rownum=\count318
+) (C:\Users\malib\AppData\Local\Programs\MiKTeX\tex/latex/enumitem\enumitem.sty
+Package: enumitem 2025/02/06 v3.11 Customized lists
+\labelindent=\skip69
+\enit@outerparindent=\dimen256
+\enit@toks=\toks40
+\enit@inbox=\box68
+\enit@count@id=\count319
+\enitdp@description=\count320
+)
+(C:\Users\malib\AppData\Local\Programs\MiKTeX\tex/latex/pdflscape\pdflscape.sty
+Package: pdflscape 2022-10-27 v0.13 Display of landscape pages in PDF
+
+(C:\Users\malib\AppData\Local\Programs\MiKTeX\tex/latex/pdflscape\pdflscape-nom
+etadata.sty
+Package: pdflscape-nometadata 2022-10-28 v0.13 Display of landscape pages in PD
+F (HO)
+Package pdflscape Info: Auto-detected driver: pdftex on input line 81.
+))
+(C:\Users\malib\AppData\Local\Programs\MiKTeX\tex/latex/placeins\placeins.sty
+Package: placeins 2005/04/18  v 2.2
+)
+(C:\Users\malib\AppData\Local\Programs\MiKTeX\tex/latex/float\float.sty
+Package: float 2001/11/08 v1.3d Float enhancements (AL)
+\c@float@type=\count321
+\float@exts=\toks41
+\float@box=\box69
+\@float@everytoks=\toks42
+\@floatcapt=\box70
+)
+(C:\Users\malib\AppData\Local\Programs\MiKTeX\tex/latex/caption\caption.sty
+Package: caption 2023/08/05 v3.6o Customizing captions (AR)
+
+(C:\Users\malib\AppData\Local\Programs\MiKTeX\tex/latex/caption\caption3.sty
+Package: caption3 2023/07/31 v2.4d caption3 kernel (AR)
+\caption@tempdima=\dimen257
+\captionmargin=\dimen258
+\caption@leftmargin=\dimen259
+\caption@rightmargin=\dimen260
+\caption@width=\dimen261
+\caption@indent=\dimen262
+\caption@parindent=\dimen263
+\caption@hangindent=\dimen264
+Package caption Info: Standard document class detected.
+)
+\c@caption@flags=\count322
+\c@continuedfloat=\count323
+Package caption Info: float package is loaded.
+Package caption Info: longtable package is loaded.
+
+(C:\Users\malib\AppData\Local\Programs\MiKTeX\tex/latex/caption\ltcaption.sty
+Package: ltcaption 2021/01/08 v1.4c longtable captions (AR)
+)
+Package caption Info: rotating package is loaded.
+Package caption Info: wrapfig package is loaded.
+)
+(C:\Users\malib\AppData\Local\Programs\MiKTeX\tex/latex/pgf/frontendlayer\tikz.
+sty
+(C:\Users\malib\AppData\Local\Programs\MiKTeX\tex/latex/pgf/basiclayer\pgf.sty
+(C:\Users\malib\AppData\Local\Programs\MiKTeX\tex/latex/pgf/utilities\pgfrcs.st
+y
+(C:\Users\malib\AppData\Local\Programs\MiKTeX\tex/generic/pgf/utilities\pgfutil
+-common.tex
+\pgfutil@everybye=\toks43
+\pgfutil@tempdima=\dimen265
+\pgfutil@tempdimb=\dimen266
+)
+(C:\Users\malib\AppData\Local\Programs\MiKTeX\tex/generic/pgf/utilities\pgfutil
+-latex.def
+\pgfutil@abb=\box71
+)
+(C:\Users\malib\AppData\Local\Programs\MiKTeX\tex/generic/pgf/utilities\pgfrcs.
+code.tex
+(C:\Users\malib\AppData\Local\Programs\MiKTeX\tex/generic/pgf\pgf.revision.tex)
+Package: pgfrcs 2025-08-29 v3.1.11a (3.1.11a)
+))
+Package: pgf 2025-08-29 v3.1.11a (3.1.11a)
+
+(C:\Users\malib\AppData\Local\Programs\MiKTeX\tex/latex/pgf/basiclayer\pgfcore.
+sty
+(C:\Users\malib\AppData\Local\Programs\MiKTeX\tex/latex/pgf/systemlayer\pgfsys.
+sty
+(C:\Users\malib\AppData\Local\Programs\MiKTeX\tex/generic/pgf/systemlayer\pgfsy
+s.code.tex
+Package: pgfsys 2025-08-29 v3.1.11a (3.1.11a)
+
+(C:\Users\malib\AppData\Local\Programs\MiKTeX\tex/generic/pgf/utilities\pgfkeys
+.code.tex
+\pgfkeys@pathtoks=\toks44
+\pgfkeys@temptoks=\toks45
+
+(C:\Users\malib\AppData\Local\Programs\MiKTeX\tex/generic/pgf/utilities\pgfkeys
+libraryfiltered.code.tex
+\pgfkeys@tmptoks=\toks46
+))
+\pgf@x=\dimen267
+\pgf@y=\dimen268
+\pgf@xa=\dimen269
+\pgf@ya=\dimen270
+\pgf@xb=\dimen271
+\pgf@yb=\dimen272
+\pgf@xc=\dimen273
+\pgf@yc=\dimen274
+\pgf@xd=\dimen275
+\pgf@yd=\dimen276
+\w@pgf@writea=\write4
+\r@pgf@reada=\read4
+\c@pgf@counta=\count324
+\c@pgf@countb=\count325
+\c@pgf@countc=\count326
+\c@pgf@countd=\count327
+\t@pgf@toka=\toks47
+\t@pgf@tokb=\toks48
+\t@pgf@tokc=\toks49
+\pgf@sys@id@count=\count328
+
+(C:\Users\malib\AppData\Local\Programs\MiKTeX\tex/generic/pgf/systemlayer\pgf.c
+fg
+File: pgf.cfg 2025-08-29 v3.1.11a (3.1.11a)
+)
+Driver file for pgf: pgfsys-pdftex.def
+
+(C:\Users\malib\AppData\Local\Programs\MiKTeX\tex/generic/pgf/systemlayer\pgfsy
+s-pdftex.def
+File: pgfsys-pdftex.def 2025-08-29 v3.1.11a (3.1.11a)
+
+(C:\Users\malib\AppData\Local\Programs\MiKTeX\tex/generic/pgf/systemlayer\pgfsy
+s-common-pdf.def
+File: pgfsys-common-pdf.def 2025-08-29 v3.1.11a (3.1.11a)
+)))
+(C:\Users\malib\AppData\Local\Programs\MiKTeX\tex/generic/pgf/systemlayer\pgfsy
+ssoftpath.code.tex
+File: pgfsyssoftpath.code.tex 2025-08-29 v3.1.11a (3.1.11a)
+\pgfsyssoftpath@smallbuffer@items=\count329
+\pgfsyssoftpath@bigbuffer@items=\count330
+)
+(C:\Users\malib\AppData\Local\Programs\MiKTeX\tex/generic/pgf/systemlayer\pgfsy
+sprotocol.code.tex
+File: pgfsysprotocol.code.tex 2025-08-29 v3.1.11a (3.1.11a)
+))
+(C:\Users\malib\AppData\Local\Programs\MiKTeX\tex/generic/pgf/basiclayer\pgfcor
+e.code.tex
+Package: pgfcore 2025-08-29 v3.1.11a (3.1.11a)
+
+(C:\Users\malib\AppData\Local\Programs\MiKTeX\tex/generic/pgf/math\pgfmath.code
+.tex
+(C:\Users\malib\AppData\Local\Programs\MiKTeX\tex/generic/pgf/math\pgfmathutil.
+code.tex)
+(C:\Users\malib\AppData\Local\Programs\MiKTeX\tex/generic/pgf/math\pgfmathparse
+r.code.tex
+\pgfmath@dimen=\dimen277
+\pgfmath@count=\count331
+\pgfmath@box=\box72
+\pgfmath@toks=\toks50
+\pgfmath@stack@operand=\toks51
+\pgfmath@stack@operation=\toks52
+)
+(C:\Users\malib\AppData\Local\Programs\MiKTeX\tex/generic/pgf/math\pgfmathfunct
+ions.code.tex)
+(C:\Users\malib\AppData\Local\Programs\MiKTeX\tex/generic/pgf/math\pgfmathfunct
+ions.basic.code.tex)
+(C:\Users\malib\AppData\Local\Programs\MiKTeX\tex/generic/pgf/math\pgfmathfunct
+ions.trigonometric.code.tex)
+(C:\Users\malib\AppData\Local\Programs\MiKTeX\tex/generic/pgf/math\pgfmathfunct
+ions.random.code.tex)
+(C:\Users\malib\AppData\Local\Programs\MiKTeX\tex/generic/pgf/math\pgfmathfunct
+ions.comparison.code.tex)
+(C:\Users\malib\AppData\Local\Programs\MiKTeX\tex/generic/pgf/math\pgfmathfunct
+ions.base.code.tex)
+(C:\Users\malib\AppData\Local\Programs\MiKTeX\tex/generic/pgf/math\pgfmathfunct
+ions.round.code.tex)
+(C:\Users\malib\AppData\Local\Programs\MiKTeX\tex/generic/pgf/math\pgfmathfunct
+ions.misc.code.tex)
+(C:\Users\malib\AppData\Local\Programs\MiKTeX\tex/generic/pgf/math\pgfmathfunct
+ions.integerarithmetics.code.tex)
+(C:\Users\malib\AppData\Local\Programs\MiKTeX\tex/generic/pgf/math\pgfmathcalc.
+code.tex)
+(C:\Users\malib\AppData\Local\Programs\MiKTeX\tex/generic/pgf/math\pgfmathfloat
+.code.tex
+\c@pgfmathroundto@lastzeros=\count332
+))
+(C:\Users\malib\AppData\Local\Programs\MiKTeX\tex/generic/pgf/math\pgfint.code.
+tex)
+(C:\Users\malib\AppData\Local\Programs\MiKTeX\tex/generic/pgf/basiclayer\pgfcor
+epoints.code.tex
+File: pgfcorepoints.code.tex 2025-08-29 v3.1.11a (3.1.11a)
+\pgf@picminx=\dimen278
+\pgf@picmaxx=\dimen279
+\pgf@picminy=\dimen280
+\pgf@picmaxy=\dimen281
+\pgf@pathminx=\dimen282
+\pgf@pathmaxx=\dimen283
+\pgf@pathminy=\dimen284
+\pgf@pathmaxy=\dimen285
+\pgf@xx=\dimen286
+\pgf@xy=\dimen287
+\pgf@yx=\dimen288
+\pgf@yy=\dimen289
+\pgf@zx=\dimen290
+\pgf@zy=\dimen291
+)
+(C:\Users\malib\AppData\Local\Programs\MiKTeX\tex/generic/pgf/basiclayer\pgfcor
+epathconstruct.code.tex
+File: pgfcorepathconstruct.code.tex 2025-08-29 v3.1.11a (3.1.11a)
+\pgf@path@lastx=\dimen292
+\pgf@path@lasty=\dimen293
+)
+(C:\Users\malib\AppData\Local\Programs\MiKTeX\tex/generic/pgf/basiclayer\pgfcor
+epathusage.code.tex
+File: pgfcorepathusage.code.tex 2025-08-29 v3.1.11a (3.1.11a)
+\pgf@shorten@end@additional=\dimen294
+\pgf@shorten@start@additional=\dimen295
+)
+(C:\Users\malib\AppData\Local\Programs\MiKTeX\tex/generic/pgf/basiclayer\pgfcor
+escopes.code.tex
+File: pgfcorescopes.code.tex 2025-08-29 v3.1.11a (3.1.11a)
+\pgfpic=\box73
+\pgf@hbox=\box74
+\pgf@layerbox@main=\box75
+\pgf@picture@serial@count=\count333
+)
+(C:\Users\malib\AppData\Local\Programs\MiKTeX\tex/generic/pgf/basiclayer\pgfcor
+egraphicstate.code.tex
+File: pgfcoregraphicstate.code.tex 2025-08-29 v3.1.11a (3.1.11a)
+\pgflinewidth=\dimen296
+)
+(C:\Users\malib\AppData\Local\Programs\MiKTeX\tex/generic/pgf/basiclayer\pgfcor
+etransformations.code.tex
+File: pgfcoretransformations.code.tex 2025-08-29 v3.1.11a (3.1.11a)
+\pgf@pt@x=\dimen297
+\pgf@pt@y=\dimen298
+\pgf@pt@temp=\dimen299
+)
+(C:\Users\malib\AppData\Local\Programs\MiKTeX\tex/generic/pgf/basiclayer\pgfcor
+equick.code.tex
+File: pgfcorequick.code.tex 2025-08-29 v3.1.11a (3.1.11a)
+)
+(C:\Users\malib\AppData\Local\Programs\MiKTeX\tex/generic/pgf/basiclayer\pgfcor
+eobjects.code.tex
+File: pgfcoreobjects.code.tex 2025-08-29 v3.1.11a (3.1.11a)
+)
+(C:\Users\malib\AppData\Local\Programs\MiKTeX\tex/generic/pgf/basiclayer\pgfcor
+epathprocessing.code.tex
+File: pgfcorepathprocessing.code.tex 2025-08-29 v3.1.11a (3.1.11a)
+)
+(C:\Users\malib\AppData\Local\Programs\MiKTeX\tex/generic/pgf/basiclayer\pgfcor
+earrows.code.tex
+File: pgfcorearrows.code.tex 2025-08-29 v3.1.11a (3.1.11a)
+\pgfarrowsep=\dimen300
+)
+(C:\Users\malib\AppData\Local\Programs\MiKTeX\tex/generic/pgf/basiclayer\pgfcor
+eshade.code.tex
+File: pgfcoreshade.code.tex 2025-08-29 v3.1.11a (3.1.11a)
+\pgf@max=\dimen301
+\pgf@sys@shading@range@num=\count334
+\pgf@shadingcount=\count335
+)
+(C:\Users\malib\AppData\Local\Programs\MiKTeX\tex/generic/pgf/basiclayer\pgfcor
+eimage.code.tex
+File: pgfcoreimage.code.tex 2025-08-29 v3.1.11a (3.1.11a)
+)
+(C:\Users\malib\AppData\Local\Programs\MiKTeX\tex/generic/pgf/basiclayer\pgfcor
+eexternal.code.tex
+File: pgfcoreexternal.code.tex 2025-08-29 v3.1.11a (3.1.11a)
+\pgfexternal@startupbox=\box76
+)
+(C:\Users\malib\AppData\Local\Programs\MiKTeX\tex/generic/pgf/basiclayer\pgfcor
+elayers.code.tex
+File: pgfcorelayers.code.tex 2025-08-29 v3.1.11a (3.1.11a)
+)
+(C:\Users\malib\AppData\Local\Programs\MiKTeX\tex/generic/pgf/basiclayer\pgfcor
+etransparency.code.tex
+File: pgfcoretransparency.code.tex 2025-08-29 v3.1.11a (3.1.11a)
+)
+(C:\Users\malib\AppData\Local\Programs\MiKTeX\tex/generic/pgf/basiclayer\pgfcor
+epatterns.code.tex
+File: pgfcorepatterns.code.tex 2025-08-29 v3.1.11a (3.1.11a)
+)
+(C:\Users\malib\AppData\Local\Programs\MiKTeX\tex/generic/pgf/basiclayer\pgfcor
+erdf.code.tex
+File: pgfcorerdf.code.tex 2025-08-29 v3.1.11a (3.1.11a)
+)))
+(C:\Users\malib\AppData\Local\Programs\MiKTeX\tex/generic/pgf/modules\pgfmodule
+shapes.code.tex
+File: pgfmoduleshapes.code.tex 2025-08-29 v3.1.11a (3.1.11a)
+\pgfnodeparttextbox=\box77
+)
+(C:\Users\malib\AppData\Local\Programs\MiKTeX\tex/generic/pgf/modules\pgfmodule
+plot.code.tex
+File: pgfmoduleplot.code.tex 2025-08-29 v3.1.11a (3.1.11a)
+)
+(C:\Users\malib\AppData\Local\Programs\MiKTeX\tex/latex/pgf/compatibility\pgfco
+mp-version-0-65.sty
+Package: pgfcomp-version-0-65 2025-08-29 v3.1.11a (3.1.11a)
+\pgf@nodesepstart=\dimen302
+\pgf@nodesepend=\dimen303
+)
+(C:\Users\malib\AppData\Local\Programs\MiKTeX\tex/latex/pgf/compatibility\pgfco
+mp-version-1-18.sty
+Package: pgfcomp-version-1-18 2025-08-29 v3.1.11a (3.1.11a)
+))
+(C:\Users\malib\AppData\Local\Programs\MiKTeX\tex/latex/pgf/utilities\pgffor.st
+y
+(C:\Users\malib\AppData\Local\Programs\MiKTeX\tex/latex/pgf/utilities\pgfkeys.s
+ty
+(C:\Users\malib\AppData\Local\Programs\MiKTeX\tex/generic/pgf/utilities\pgfkeys
+.code.tex))
+(C:\Users\malib\AppData\Local\Programs\MiKTeX\tex/latex/pgf/math\pgfmath.sty
+(C:\Users\malib\AppData\Local\Programs\MiKTeX\tex/generic/pgf/math\pgfmath.code
+.tex))
+(C:\Users\malib\AppData\Local\Programs\MiKTeX\tex/generic/pgf/utilities\pgffor.
+code.tex
+Package: pgffor 2025-08-29 v3.1.11a (3.1.11a)
+\pgffor@iter=\dimen304
+\pgffor@skip=\dimen305
+\pgffor@stack=\toks53
+\pgffor@toks=\toks54
+))
+(C:\Users\malib\AppData\Local\Programs\MiKTeX\tex/generic/pgf/frontendlayer/tik
+z\tikz.code.tex
+Package: tikz 2025-08-29 v3.1.11a (3.1.11a)
+
+(C:\Users\malib\AppData\Local\Programs\MiKTeX\tex/generic/pgf/libraries\pgflibr
+aryplothandlers.code.tex
+File: pgflibraryplothandlers.code.tex 2025-08-29 v3.1.11a (3.1.11a)
+\pgf@plot@mark@count=\count336
+\pgfplotmarksize=\dimen306
+)
+\tikz@lastx=\dimen307
+\tikz@lasty=\dimen308
+\tikz@lastxsaved=\dimen309
+\tikz@lastysaved=\dimen310
+\tikz@lastmovetox=\dimen311
+\tikz@lastmovetoy=\dimen312
+\tikzleveldistance=\dimen313
+\tikzsiblingdistance=\dimen314
+\tikz@figbox=\box78
+\tikz@figbox@bg=\box79
+\tikz@tempbox=\box80
+\tikz@tempbox@bg=\box81
+\tikztreelevel=\count337
+\tikznumberofchildren=\count338
+\tikznumberofcurrentchild=\count339
+\tikz@fig@count=\count340
+
+(C:\Users\malib\AppData\Local\Programs\MiKTeX\tex/generic/pgf/modules\pgfmodule
+matrix.code.tex
+File: pgfmodulematrix.code.tex 2025-08-29 v3.1.11a (3.1.11a)
+\pgfmatrixcurrentrow=\count341
+\pgfmatrixcurrentcolumn=\count342
+\pgf@matrix@numberofcolumns=\count343
+)
+\tikz@expandcount=\count344
+
+(C:\Users\malib\AppData\Local\Programs\MiKTeX\tex/generic/pgf/frontendlayer/tik
+z/libraries\tikzlibrarytopaths.code.tex
+File: tikzlibrarytopaths.code.tex 2025-08-29 v3.1.11a (3.1.11a)
+)))
+(C:\Users\malib\AppData\Local\Programs\MiKTeX\tex/generic/pgf/frontendlayer/tik
+z/libraries\tikzlibrarypositioning.code.tex
+File: tikzlibrarypositioning.code.tex 2025-08-29 v3.1.11a (3.1.11a)
+)
+(C:\Users\malib\AppData\Local\Programs\MiKTeX\tex/generic/pgf/frontendlayer/tik
+z/libraries\tikzlibraryshapes.code.tex
+File: tikzlibraryshapes.code.tex 2025-08-29 v3.1.11a (3.1.11a)
+
+(C:\Users\malib\AppData\Local\Programs\MiKTeX\tex/generic/pgf/frontendlayer/tik
+z/libraries\tikzlibraryshapes.geometric.code.tex
+File: tikzlibraryshapes.geometric.code.tex 2025-08-29 v3.1.11a (3.1.11a)
+
+(C:\Users\malib\AppData\Local\Programs\MiKTeX\tex/generic/pgf/libraries/shapes\
+pgflibraryshapes.geometric.code.tex
+File: pgflibraryshapes.geometric.code.tex 2025-08-29 v3.1.11a (3.1.11a)
+))
+(C:\Users\malib\AppData\Local\Programs\MiKTeX\tex/generic/pgf/frontendlayer/tik
+z/libraries\tikzlibraryshapes.misc.code.tex
+File: tikzlibraryshapes.misc.code.tex 2025-08-29 v3.1.11a (3.1.11a)
+
+(C:\Users\malib\AppData\Local\Programs\MiKTeX\tex/generic/pgf/libraries/shapes\
+pgflibraryshapes.misc.code.tex
+File: pgflibraryshapes.misc.code.tex 2025-08-29 v3.1.11a (3.1.11a)
+))
+(C:\Users\malib\AppData\Local\Programs\MiKTeX\tex/generic/pgf/frontendlayer/tik
+z/libraries\tikzlibraryshapes.symbols.code.tex
+File: tikzlibraryshapes.symbols.code.tex 2025-08-29 v3.1.11a (3.1.11a)
+
+(C:\Users\malib\AppData\Local\Programs\MiKTeX\tex/generic/pgf/libraries/shapes\
+pgflibraryshapes.symbols.code.tex
+File: pgflibraryshapes.symbols.code.tex 2025-08-29 v3.1.11a (3.1.11a)
+))
+(C:\Users\malib\AppData\Local\Programs\MiKTeX\tex/generic/pgf/frontendlayer/tik
+z/libraries\tikzlibraryshapes.arrows.code.tex
+File: tikzlibraryshapes.arrows.code.tex 2025-08-29 v3.1.11a (3.1.11a)
+
+(C:\Users\malib\AppData\Local\Programs\MiKTeX\tex/generic/pgf/libraries/shapes\
+pgflibraryshapes.arrows.code.tex
+File: pgflibraryshapes.arrows.code.tex 2025-08-29 v3.1.11a (3.1.11a)
+))
+(C:\Users\malib\AppData\Local\Programs\MiKTeX\tex/generic/pgf/frontendlayer/tik
+z/libraries\tikzlibraryshapes.callouts.code.tex
+(C:\Users\malib\AppData\Local\Programs\MiKTeX\tex/generic/pgf/libraries/shapes\
+pgflibraryshapes.callouts.code.tex))
+(C:\Users\malib\AppData\Local\Programs\MiKTeX\tex/generic/pgf/frontendlayer/tik
+z/libraries\tikzlibraryshapes.multipart.code.tex
+File: tikzlibraryshapes.multipart.code.tex 2025-08-29 v3.1.11a (3.1.11a)
+
+(C:\Users\malib\AppData\Local\Programs\MiKTeX\tex/generic/pgf/libraries/shapes\
+pgflibraryshapes.multipart.code.tex
+File: pgflibraryshapes.multipart.code.tex 2025-08-29 v3.1.11a (3.1.11a)
+\pgfnodepartlowerbox=\box82
+\pgfnodeparttwobox=\box83
+\pgfnodepartthreebox=\box84
+\pgfnodepartfourbox=\box85
+\pgfnodeparttwentybox=\box86
+\pgfnodepartnineteenbox=\box87
+\pgfnodeparteighteenbox=\box88
+\pgfnodepartseventeenbox=\box89
+\pgfnodepartsixteenbox=\box90
+\pgfnodepartfifteenbox=\box91
+\pgfnodepartfourteenbox=\box92
+\pgfnodepartthirteenbox=\box93
+\pgfnodeparttwelvebox=\box94
+\pgfnodepartelevenbox=\box95
+\pgfnodeparttenbox=\box96
+\pgfnodepartninebox=\box97
+\pgfnodeparteightbox=\box98
+\pgfnodepartsevenbox=\box99
+\pgfnodepartsixbox=\box100
+\pgfnodepartfivebox=\box101
+)))
+(C:\Users\malib\AppData\Local\Programs\MiKTeX\tex/generic/pgf/frontendlayer/tik
+z/libraries\tikzlibrarycalc.code.tex
+File: tikzlibrarycalc.code.tex 2025-08-29 v3.1.11a (3.1.11a)
+)
+(C:\Users\malib\AppData\Local\Programs\MiKTeX\tex/latex/fancyhdr\fancyhdr.sty
+Package: fancyhdr 2025/02/07 v5.2 Extensive control of page headers and footers
+
+\f@nch@headwidth=\skip70
+\f@nch@offset@elh=\skip71
+\f@nch@offset@erh=\skip72
+\f@nch@offset@olh=\skip73
+\f@nch@offset@orh=\skip74
+\f@nch@offset@elf=\skip75
+\f@nch@offset@erf=\skip76
+\f@nch@offset@olf=\skip77
+\f@nch@offset@orf=\skip78
+\f@nch@height=\skip79
+\f@nch@footalignment=\skip80
+\f@nch@widthL=\skip81
+\f@nch@widthC=\skip82
+\f@nch@widthR=\skip83
+\@temptokenb=\toks55
+)
+(C:\Users\malib\AppData\Local\Programs\MiKTeX\tex/latex/etoolbox\etoolbox.sty
+Package: etoolbox 2025/10/02 v2.5m e-TeX tools for LaTeX (JAW)
+\etb@tempcnta=\count345
+)
+(C:\Users\malib\AppData\Local\Programs\MiKTeX\tex/latex/titlesec\titlesec.sty
+Package: titlesec 2025/01/04 v2.17 Sectioning titles
+\ttl@box=\box102
+\beforetitleunit=\skip84
+\aftertitleunit=\skip85
+\ttl@plus=\dimen315
+\ttl@minus=\dimen316
+\ttl@toksa=\toks56
+\titlewidth=\dimen317
+\titlewidthlast=\dimen318
+\titlewidthfirst=\dimen319
+)
+(buics.sty
+Package: buics 2015/03/10 0.9f 
+
+Document Style `BUICS Thesis' 0.9f <2015/03/10>
+(C:\Users\malib\AppData\Local\Programs\MiKTeX\tex/generic/iftex\ifpdf.sty
+Package: ifpdf 2019/10/25 v3.4 ifpdf legacy package. Use iftex instead.
+)
+(C:\Users\malib\AppData\Local\Programs\MiKTeX\tex/latex/base\fontenc.sty
+Package: fontenc 2025/07/18 v2.1d Standard LaTeX package
+)
+(C:\Users\malib\AppData\Local\Programs\MiKTeX\tex/latex/geometry\geometry.sty
+Package: geometry 2026/03/07 v6.0 Page Geometry
+
+(C:\Users\malib\AppData\Local\Programs\MiKTeX\tex/generic/iftex\ifvtex.sty
+Package: ifvtex 2019/10/25 v1.7 ifvtex legacy package. Use iftex instead.
+)
+\Gm@cnth=\count346
+\Gm@cntv=\count347
+\c@Gm@tempcnt=\count348
+\Gm@bindingoffset=\dimen320
+\Gm@wd@mp=\dimen321
+\Gm@odd@mp=\dimen322
+\Gm@even@mp=\dimen323
+\Gm@layoutwidth=\dimen324
+\Gm@layoutheight=\dimen325
+\Gm@layouthoffset=\dimen326
+\Gm@layoutvoffset=\dimen327
+\Gm@dimlist=\toks57
+
+(C:\Users\malib\AppData\Local\Programs\MiKTeX\tex/latex/geometry\geometry.cfg))
+(C:\Users\malib\AppData\Local\Programs\MiKTeX\tex/latex/psnfss\mathptmx.sty
+Package: mathptmx 2020/03/25 PSNFSS-v9.3 Times w/ Math, improved (SPQR, WaS) 
+LaTeX Font Info:    Redeclaring symbol font `operators' on input line 28.
+LaTeX Font Info:    Overwriting symbol font `operators' in version `normal'
+(Font)                  OT1/cmr/m/n --> OT1/ztmcm/m/n on input line 28.
+LaTeX Font Info:    Overwriting symbol font `operators' in version `bold'
+(Font)                  OT1/cmr/bx/n --> OT1/ztmcm/m/n on input line 28.
+LaTeX Font Info:    Redeclaring symbol font `letters' on input line 29.
+LaTeX Font Info:    Overwriting symbol font `letters' in version `normal'
+(Font)                  OML/cmm/m/it --> OML/ztmcm/m/it on input line 29.
+LaTeX Font Info:    Overwriting symbol font `letters' in version `bold'
+(Font)                  OML/cmm/b/it --> OML/ztmcm/m/it on input line 29.
+LaTeX Font Info:    Redeclaring symbol font `symbols' on input line 30.
+LaTeX Font Info:    Overwriting symbol font `symbols' in version `normal'
+(Font)                  OMS/cmsy/m/n --> OMS/ztmcm/m/n on input line 30.
+LaTeX Font Info:    Overwriting symbol font `symbols' in version `bold'
+(Font)                  OMS/cmsy/b/n --> OMS/ztmcm/m/n on input line 30.
+LaTeX Font Info:    Redeclaring symbol font `largesymbols' on input line 31.
+LaTeX Font Info:    Overwriting symbol font `largesymbols' in version `normal'
+(Font)                  OMX/cmex/m/n --> OMX/ztmcm/m/n on input line 31.
+LaTeX Font Info:    Overwriting symbol font `largesymbols' in version `bold'
+(Font)                  OMX/cmex/m/n --> OMX/ztmcm/m/n on input line 31.
+\symbold=\mathgroup6
+\symitalic=\mathgroup7
+LaTeX Font Info:    Redeclaring math alphabet \mathbf on input line 34.
+LaTeX Font Info:    Overwriting math alphabet `\mathbf' in version `normal'
+(Font)                  OT1/cmr/bx/n --> OT1/ptm/bx/n on input line 34.
+LaTeX Font Info:    Overwriting math alphabet `\mathbf' in version `bold'
+(Font)                  OT1/cmr/bx/n --> OT1/ptm/bx/n on input line 34.
+LaTeX Font Info:    Redeclaring math alphabet \mathit on input line 35.
+LaTeX Font Info:    Overwriting math alphabet `\mathit' in version `normal'
+(Font)                  OT1/cmr/m/it --> OT1/ptm/m/it on input line 35.
+LaTeX Font Info:    Overwriting math alphabet `\mathit' in version `bold'
+(Font)                  OT1/cmr/bx/it --> OT1/ptm/m/it on input line 35.
+LaTeX Info: Redefining \hbar on input line 50.
+)
+(C:\Users\malib\AppData\Local\Programs\MiKTeX\tex/latex/courier-scaled\couriers
+.sty
+Package: couriers 2004/07/10 Scaled Courier (HS) 
+) (C:\Users\malib\AppData\Local\Programs\MiKTeX\tex/latex/psnfss\helvet.sty
+Package: helvet 2020/03/25 PSNFSS-v9.3 (WaS) 
+) (C:\Users\malib\AppData\Local\Programs\MiKTeX\tex/latex/url\url.sty
+\Urlmuskip=\muskip18
+Package: url 2013/09/16  ver 3.4  Verb mode for urls, etc.
+)
+(C:\Users\malib\AppData\Local\Programs\MiKTeX\tex/latex/setspace\setspace.sty
+Package: setspace 2022/12/04 v6.7b set line spacing
+)
+(C:\Users\malib\AppData\Local\Programs\MiKTeX\tex/latex/lipsum\lipsum.sty
+(C:\Users\malib\AppData\Local\Programs\MiKTeX\tex/latex/l3packages/l3keys2e\l3k
+eys2e.sty
+(C:\Users\malib\AppData\Local\Programs\MiKTeX\tex/latex/l3kernel\expl3.sty
+Package: expl3 2026-03-20 L3 programming layer (loader) 
+
+(C:\Users\malib\AppData\Local\Programs\MiKTeX\tex/latex/l3backend\l3backend-pdf
+tex.def
+File: l3backend-pdftex.def 2026-02-18 L3 backend support: PDF output (pdfTeX)
+\l__color_backend_stack_int=\count349
+))
+Package: l3keys2e 2025-10-09 LaTeX2e option processing using LaTeX3 keys
+)
+Package: lipsum 2021-09-20 v2.7 150 paragraphs of Lorem Ipsum dummy text
+\g__lipsum_par_int=\count350
+\l__lipsum_a_int=\count351
+\l__lipsum_b_int=\count352
+
+(C:\Users\malib\AppData\Local\Programs\MiKTeX\tex/latex/lipsum\lipsum.ltd.tex))
+(C:\Users\malib\AppData\Local\Programs\MiKTeX\tex/latex/hyperref\backref.sty
+Package: backref 2025-06-21 v1.45 Bibliographical back referencing
+
+(C:\Users\malib\AppData\Local\Programs\MiKTeX\tex/latex/kvoptions\kvoptions.sty
+Package: kvoptions 2022-06-15 v3.15 Key value format for package options (HO)
+(C:\Users\malib\AppData\Local\Programs\MiKTeX\tex/generic/ltxcmds\ltxcmds.sty
+Package: ltxcmds 2023-12-04 v1.26 LaTeX kernel commands for general use (HO)
+)
+(C:\Users\malib\AppData\Local\Programs\MiKTeX\tex/latex/kvsetkeys\kvsetkeys.sty
+Package: kvsetkeys 2022-10-05 v1.19 Key value parser (HO)
+))
+(C:\Users\malib\AppData\Local\Programs\MiKTeX\tex/latex/rerunfilecheck\rerunfil
+echeck.sty
+Package: rerunfilecheck 2025-06-21 v1.11 Rerun checks for auxiliary files (HO)
+
+(C:\Users\malib\AppData\Local\Programs\MiKTeX\tex/generic/pdftexcmds\pdftexcmds
+.sty
+Package: pdftexcmds 2020-06-27 v0.33 Utility functions of pdfTeX for LuaTeX (HO
+)
+Package pdftexcmds Info: \pdf@primitive is available.
+Package pdftexcmds Info: \pdf@ifprimitive is available.
+Package pdftexcmds Info: \pdfdraftmode found.
+)
+(C:\Users\malib\AppData\Local\Programs\MiKTeX\tex/generic/uniquecounter\uniquec
+ounter.sty
+Package: uniquecounter 2019/12/15 v1.4 Provide unlimited unique counter (HO)
+
+(C:\Users\malib\AppData\Local\Programs\MiKTeX\tex/generic/bigintcalc\bigintcalc
+.sty
+Package: bigintcalc 2019/12/15 v1.5 Expandable calculations on big integers (HO
+)
+))
+Package uniquecounter Info: New unique counter `rerunfilecheck' on input line 2
+84.
+))
+(C:\Users\malib\AppData\Local\Programs\MiKTeX\tex/latex/hyperref\hyperref.sty
+Package: hyperref 2026-01-29 v7.01p Hypertext links for LaTeX
+
+(C:\Users\malib\AppData\Local\Programs\MiKTeX\tex/generic/kvdefinekeys\kvdefine
+keys.sty
+Package: kvdefinekeys 2019-12-19 v1.6 Define keys (HO)
+)
+(C:\Users\malib\AppData\Local\Programs\MiKTeX\tex/generic/pdfescape\pdfescape.s
+ty
+Package: pdfescape 2019/12/09 v1.15 Implements pdfTeX's escape features (HO)
+) (C:\Users\malib\AppData\Local\Programs\MiKTeX\tex/latex/hycolor\hycolor.sty
+Package: hycolor 2020-01-27 v1.10 Color options for hyperref/bookmark (HO)
+) (C:\Users\malib\AppData\Local\Programs\MiKTeX\tex/latex/hyperref\nameref.sty
+Package: nameref 2026-01-29 v2.58 Cross-referencing by name of section
+
+(C:\Users\malib\AppData\Local\Programs\MiKTeX\tex/latex/refcount\refcount.sty
+Package: refcount 2019/12/15 v3.6 Data extraction from label references (HO)
+)
+(C:\Users\malib\AppData\Local\Programs\MiKTeX\tex/generic/gettitlestring\gettit
+lestring.sty
+Package: gettitlestring 2019/12/15 v1.6 Cleanup title references (HO)
+)
+\c@section@level=\count353
+)
+(C:\Users\malib\AppData\Local\Programs\MiKTeX\tex/generic/stringenc\stringenc.s
+ty
+Package: stringenc 2019/11/29 v1.12 Convert strings between diff. encodings (HO
+)
+)
+\@linkdim=\dimen328
+\Hy@linkcounter=\count354
+\Hy@pagecounter=\count355
+ (C:\Users\malib\AppData\Local\Programs\MiKTeX\tex/latex/hyperref\pd1enc.def
+File: pd1enc.def 2026-01-29 v7.01p Hyperref: PDFDocEncoding definition (HO)
+Now handling font encoding PD1 ...
+... no UTF-8 mapping file for font encoding PD1
+) (C:\Users\malib\AppData\Local\Programs\MiKTeX\tex/generic/intcalc\intcalc.sty
+Package: intcalc 2019/12/15 v1.3 Expandable calculations with integers (HO)
+)
+\Hy@SavedSpaceFactor=\count356
+ (C:\Users\malib\AppData\Local\Programs\MiKTeX\tex/latex/hyperref\puenc.def
+File: puenc.def 2026-01-29 v7.01p Hyperref: PDF Unicode definition (HO)
+Now handling font encoding PU ...
+... no UTF-8 mapping file for font encoding PU
+)
+Package hyperref Info: Option `plainpages' set `false' on input line 4072.
+Package hyperref Info: Option `pdfpagelabels' set `true' on input line 4072.
+Package hyperref Info: Option `bookmarks' set `true' on input line 4072.
+Package hyperref Info: Option `bookmarksopen' set `true' on input line 4072.
+Package hyperref Info: Option `bookmarksnumbered' set `true' on input line 4072
+.
+Package hyperref Info: Option `breaklinks' set `true' on input line 4072.
+Package hyperref Info: Option `linktocpage' set `true' on input line 4072.
+Package hyperref Info: Option `colorlinks' set `true' on input line 4072.
+Package hyperref Info: Option `hyperindex' set `true' on input line 4072.
+Package hyperref Info: Option `hyperfigures' set `true' on input line 4072.
+Package hyperref Info: Hyper figures ON on input line 4199.
+Package hyperref Info: Link nesting OFF on input line 4206.
+Package hyperref Info: Hyper index ON on input line 4209.
+Package hyperref Info: Plain pages OFF on input line 4216.
+Package hyperref Info: Backreferencing ON on input line 4219.
+Package hyperref Info: Implicit mode ON; LaTeX internals redefined.
+Package hyperref Info: Bookmarks ON on input line 4468.
+\c@Hy@tempcnt=\count357
+LaTeX Info: Redefining \url on input line 4807.
+\XeTeXLinkMargin=\dimen329
+
+(C:\Users\malib\AppData\Local\Programs\MiKTeX\tex/generic/bitset\bitset.sty
+Package: bitset 2019/12/09 v1.3 Handle bit-vector datatype (HO)
+)
+\Fld@menulength=\count358
+\Field@Width=\dimen330
+\Fld@charsize=\dimen331
+Package hyperref Info: Hyper figures ON on input line 6082.
+Package hyperref Info: Link nesting OFF on input line 6089.
+Package hyperref Info: Hyper index ON on input line 6092.
+Package hyperref Info: backreferencing ON on input line 6097.
+Package hyperref Info: Link coloring ON on input line 6102.
+Package hyperref Info: Link coloring with OCG OFF on input line 6109.
+Package hyperref Info: PDF/A mode OFF on input line 6114.
+\Hy@abspage=\count359
+\c@Item=\count360
+\c@Hfootnote=\count361
+)
+Package hyperref Info: Driver: hpdftex.
+
+(C:\Users\malib\AppData\Local\Programs\MiKTeX\tex/latex/hyperref\hpdftex.def
+File: hpdftex.def 2026-01-29 v7.01p Hyperref driver for pdfTeX
+\Fld@listcount=\count362
+\c@bookmark@seq@number=\count363
+\Hy@SectionHShift=\skip86
+)
+\@vivatext=\box103
+\@supervisorstext=\box104
+
+(C:\Users\malib\AppData\Local\Programs\MiKTeX\tex/latex/microtype\microtype.sty
+Package: microtype 2026/03/01 v3.2d Micro-typographical refinements (RS)
+\MT@toks=\toks58
+\MT@tempbox=\box105
+\MT@count=\count364
+LaTeX Info: Redefining \noprotrusionifhmode on input line 1084.
+LaTeX Info: Redefining \leftprotrusion on input line 1085.
+\MT@prot@toks=\toks59
+LaTeX Info: Redefining \rightprotrusion on input line 1104.
+LaTeX Info: Redefining \textls on input line 1449.
+\MT@outer@kern=\dimen332
+LaTeX Info: Redefining \microtypecontext on input line 2053.
+LaTeX Info: Redefining \textmicrotypecontext on input line 2070.
+\MT@listname@count=\count365
+
+(C:\Users\malib\AppData\Local\Programs\MiKTeX\tex/latex/microtype\microtype-pdf
+tex.def
+File: microtype-pdftex.def 2026/03/01 v3.2d Definitions specific to pdftex (RS)
+
+LaTeX Info: Redefining \lsstyle on input line 944.
+LaTeX Info: Redefining \lslig on input line 944.
+\MT@outer@space=\skip87
+)
+Package microtype Info: Loading configuration file microtype.cfg.
+
+(C:\Users\malib\AppData\Local\Programs\MiKTeX\tex/latex/microtype\microtype.cfg
+File: microtype.cfg 2026/03/01 v3.2d microtype main configuration file (RS)
+)
+LaTeX Info: Redefining \microtypesetup on input line 3065.
+)
+Package hyperref Info: Option `plainpages' set `false' on input line 433.
+Package hyperref Info: Option `bookmarksopen' set `false' on input line 433.
+Package hyperref Info: Option `bookmarksnumbered' set `true' on input line 433.
+
+Package hyperref Info: Option `breaklinks' set `true' on input line 433.
+Package hyperref Info: Option `linktocpage' set `true' on input line 433.
+Package hyperref Info: Option `colorlinks' set `true' on input line 433.
+)
+\@indexfile=\write5
+\openout5 = `thesis.idx'.
+
+
+Writing index file thesis.idx
+
+LaTeX Warning: \include should only be used after \begin{document} on input lin
+e 140.
+
+(mymacros.tex)
+LaTeX Font Info:    Trying to load font information for T1+ptm on input line 14
+6.
+
+(C:\Users\malib\AppData\Local\Programs\MiKTeX\tex/latex/psnfss\t1ptm.fd
+File: t1ptm.fd 2001/06/04 font definitions for T1/ptm.
+)
+(thesis.aux)
+\openout1 = `thesis.aux'.
+
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 146.
+LaTeX Font Info:    ... okay on input line 146.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 146.
+LaTeX Font Info:    ... okay on input line 146.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 146.
+LaTeX Font Info:    ... okay on input line 146.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 146.
+LaTeX Font Info:    ... okay on input line 146.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 146.
+LaTeX Font Info:    ... okay on input line 146.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 146.
+LaTeX Font Info:    ... okay on input line 146.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 146.
+LaTeX Font Info:    ... okay on input line 146.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 146.
+LaTeX Font Info:    ... okay on input line 146.
+LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 146.
+LaTeX Font Info:    ... okay on input line 146.
+
+(C:\Users\malib\AppData\Local\Programs\MiKTeX\tex/context/base/mkii\supp-pdf.mk
+ii
+[Loading MPS to PDF converter (version 2006.09.02).]
+\scratchcounter=\count366
+\scratchdimen=\dimen333
+\scratchbox=\box106
+\nofMPsegments=\count367
+\nofMParguments=\count368
+\everyMPshowfont=\toks60
+\MPscratchCnt=\count369
+\MPscratchDim=\dimen334
+\MPnumerator=\count370
+\makeMPintoPDFobject=\count371
+\everyMPtoPDFconversion=\toks61
+)
+(C:\Users\malib\AppData\Local\Programs\MiKTeX\tex/latex/epstopdf-pkg\epstopdf-b
+ase.sty
+Package: epstopdf-base 2020-01-24 v2.11 Base part for package epstopdf
+Package epstopdf-base Info: Redefining graphics rule for `.eps' on input line 4
+85.
+
+(C:\Users\malib\AppData\Local\Programs\MiKTeX\tex/latex/00miktex\epstopdf-sys.c
+fg
+File: epstopdf-sys.cfg 2021/03/18 v2.0 Configuration of epstopdf for MiKTeX
+))
+Package caption Info: Begin \AtBeginDocument code.
+Package caption Info: hyperref package is loaded.
+Package caption Info: End \AtBeginDocument code.
+
+*geometry* driver: auto-detecting
+*geometry* detected driver: pdftex
+*geometry* verbose mode - [ preamble ] result:
+* driver: pdftex
+* paper: a4paper
+* layout: <same size as paper>
+* layoutoffset:(h,v)=(0.0pt,0.0pt)
+* modes: includehead includefoot 
+* h-part:(L,W,R)=(99.58464pt, 426.79135pt, 71.13188pt)
+* v-part:(T,H,B)=(56.9055pt, 731.23584pt, 56.9055pt)
+* \paperwidth=597.50787pt
+* \paperheight=845.04684pt
+* \textwidth=426.79135pt
+* \textheight=661.23584pt
+* \oddsidemargin=27.31465pt
+* \evensidemargin=27.31465pt
+* \topmargin=-15.36449pt
+* \headheight=15.5pt
+* \headsep=25.0pt
+* \topskip=11.0pt
+* \footskip=30.0pt
+* \marginparwidth=50.0pt
+* \marginparsep=10.0pt
+* \columnsep=10.0pt
+* \skip\footins=10.0pt plus 4.0pt minus 2.0pt
+* \hoffset=0.0pt
+* \voffset=0.0pt
+* \mag=1000
+* \@twocolumnfalse
+* \@twosidefalse
+* \@mparswitchfalse
+* \@reversemarginfalse
+* (1in=72.27pt=25.4mm, 1cm=28.453pt)
+
+Package hyperref Info: Link coloring ON on input line 146.
+(thesis.out) (thesis.out)
+\@outlinefile=\write6
+\openout6 = `thesis.out'.
+
+LaTeX Info: Redefining \microtypecontext on input line 146.
+Package microtype Info: Applying patch `item' on input line 146.
+Package microtype Info: Applying patch `toc' on input line 146.
+Package microtype Info: Applying patch `eqnum' on input line 146.
+Package microtype Info: Applying patch `footnote' on input line 146.
+Package microtype Info: Applying patch `verbatim' on input line 146.
+LaTeX Info: Redefining \microtypesetup on input line 146.
+Package microtype Info: Generating PDF output.
+Package microtype Info: Character protrusion enabled (level 2).
+Package microtype Info: Using default protrusion set `alltext'.
+Package microtype Info: Automatic font expansion enabled (level 2),
+(microtype)             stretch: 20, shrink: 20, step: 1, non-selected.
+Package microtype Info: Using default expansion set `alltext-nott'.
+Package microtype Info: Patching command `\showhyphens'.
+Package microtype Info: No adjustment of tracking.
+Package microtype Info: No adjustment of interword spacing.
+Package microtype Info: No adjustment of character kerning.
+
+(C:\Users\malib\AppData\Local\Programs\MiKTeX\tex/latex/microtype\mt-ptm.cfg
+File: mt-ptm.cfg 2006/04/20 v1.7 microtype config. file: Times (RS)
+)
+\@crestbox=\box107
+<figures/BUI-Logo.jpg, id=498, 566.115pt x 676.02562pt>
+File: figures/BUI-Logo.jpg Graphic file (type jpg)
+<use figures/BUI-Logo.jpg>
+Package pdftex.def Info: figures/BUI-Logo.jpg  used on input line 199.
+(pdftex.def)             Requested size: 113.221pt x 135.20271pt.
+LaTeX Font Info:    Trying to load font information for OT1+ztmcm on input line
+ 199.
+
+(C:\Users\malib\AppData\Local\Programs\MiKTeX\tex/latex/psnfss\ot1ztmcm.fd
+File: ot1ztmcm.fd 2000/01/03 Fontinst v1.801 font definitions for OT1/ztmcm.
+)
+Package microtype Info: Loading generic protrusion settings for font family
+(microtype)             `ztmcm' (encoding: OT1).
+(microtype)             For optimal results, create family-specific settings.
+(microtype)             See the microtype manual for details.
+LaTeX Font Info:    Trying to load font information for OML+ztmcm on input line
+ 199.
+
+(C:\Users\malib\AppData\Local\Programs\MiKTeX\tex/latex/psnfss\omlztmcm.fd
+File: omlztmcm.fd 2000/01/03 Fontinst v1.801 font definitions for OML/ztmcm.
+)
+LaTeX Font Info:    Trying to load font information for OMS+ztmcm on input line
+ 199.
+
+(C:\Users\malib\AppData\Local\Programs\MiKTeX\tex/latex/psnfss\omsztmcm.fd
+File: omsztmcm.fd 2000/01/03 Fontinst v1.801 font definitions for OMS/ztmcm.
+)
+LaTeX Font Info:    Trying to load font information for OMX+ztmcm on input line
+ 199.
+
+(C:\Users\malib\AppData\Local\Programs\MiKTeX\tex/latex/psnfss\omxztmcm.fd
+File: omxztmcm.fd 2000/01/03 Fontinst v1.801 font definitions for OMX/ztmcm.
+)
+(C:\Users\malib\AppData\Local\Programs\MiKTeX\tex/latex/microtype\mt-msa.cfg
+File: mt-msa.cfg 2006/02/04 v1.1 microtype config. file: AMS symbols (a) (RS)
+)
+(C:\Users\malib\AppData\Local\Programs\MiKTeX\tex/latex/microtype\mt-msb.cfg
+File: mt-msb.cfg 2005/06/01 v1.0 microtype config. file: AMS symbols (b) (RS)
+)
+LaTeX Font Info:    Trying to load font information for OT1+ptm on input line 1
+99.
+
+(C:\Users\malib\AppData\Local\Programs\MiKTeX\tex/latex/psnfss\ot1ptm.fd
+File: ot1ptm.fd 2001/06/04 font definitions for OT1/ptm.
+)
+LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <14.4> not available
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 199.
+LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <10.95> not available
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 199.
+LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <8> not available
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 199.
+
+[-3
+
+
+{C:/Users/malib/AppData/Local/MiKTeX/fonts/map/pdftex/pdftex.map}{C:/Users/mali
+b/AppData/Local/Programs/MiKTeX/fonts/enc/dvips/base/8r.enc} <./figures/BUI-Log
+o.jpg>]
+LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <12> not available
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 201.
+LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <9> not available
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 201.
+LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <7> not available
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 201.
+ [-2
+
+
+
+] (abstract.tex) (acknows.tex [1
+
+
+]) (quote.tex [2
+
+]) [3
+
+]
+(thesis.toc [4
+
+
+] [5])
+\tf@toc=\write7
+\openout7 = `thesis.toc'.
+
+ [6] (thesis.lof)
+\tf@lof=\write8
+\openout8 = `thesis.lof'.
+
+ [7
+
+
+] [8] (thesis.lot)
+\tf@lot=\write9
+\openout9 = `thesis.lot'.
+
+ (abbrevs.tex
+[9
+
+
+]) [10
+
+] (chapter1.tex
+Chapter 1.
+
+LaTeX Warning: Citation `/' on page 1 undefined on input line 4.
+
+[1
+
+
+] [2]
+LaTeX Font Info:    Trying to load font information for TS1+ptm on input line 1
+6.
+
+(C:\Users\malib\AppData\Local\Programs\MiKTeX\tex/latex/psnfss\ts1ptm.fd
+File: ts1ptm.fd 2001/06/04 font definitions for TS1/ptm.
+)
+[3])
+Runaway argument?
+{Indus Bazar -A B2B Marketplace Application. The system provides a se\ETC.
+! File ended while scanning use of \textbf .
+<inserted text> 
+                \par 
+l.237 \input{chapter1}
+                      
+I suspect you have forgotten a `}', causing me
+to read past where you wanted me to stop.
+I'll try to recover; but if the error is serious,
+you'd better type `E' or `X' now and fix your file.
+
+(chapter2.tex [4]
+Chapter 2.
+[5
+
+] [6]
+ignored: Infinite glue shrinkage found in box being split [7]
+ignored: Infinite glue shrinkag
+e found in box being split [8]
+<figures/pictures project/tradehub.png, id=933, 1155.1155pt x 546.24075pt>
+File: figures/pictures project/tradehub.png Graphic file (type png)
+<use figures/pictures project/tradehub.png>
+Package pdftex.def Info: figures/pictures project/tradehub.png  used on input l
+ine 102.
+(pdftex.def)             Requested size: 392.64725pt x 185.67772pt.
+ [9 <./figures/pictures project/tradehub.png>]
+<figures/pictures project/bulkexchange.png, id=942, 1155.1155pt x 552.26324pt>
+File: figures/pictures project/bulkexchange.png Graphic file (type png)
+<use figures/pictures project/bulkexchange.png>
+Package pdftex.def Info: figures/pictures project/bulkexchange.png  used on inp
+ut line 126.
+(pdftex.def)             Requested size: 392.64725pt x 187.72488pt.
+ [10 <./figures/pictures project/bulkexchange.png>]
+<figures/pictures project/pakwholesales.png, id=950, 1155.1155pt x 551.05875pt>
+
+File: figures/pictures project/pakwholesales.png Graphic file (type png)
+<use figures/pictures project/pakwholesales.png>
+Package pdftex.def Info: figures/pictures project/pakwholesales.png  used on in
+put line 150.
+(pdftex.def)             Requested size: 392.64725pt x 187.31544pt.
+ [11 <./figures/pictures project/pakwholesales.png>]
+LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <5> not available
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 180.
+ [12] [13] [14]) (chapter3.tex [15]
+Chapter 3.
+[16
+
+] [17] [18] [19] [20] [21]
+! Missing } inserted.
+<inserted text> 
+                }
+l.205 \end{itemize}
+                   
+I've inserted something that you may have forgotten.
+(See the <inserted text> above.)
+With luck, this will get me unwedged. But if you
+really didn't forget anything, try typing `2' now; then
+my insertion and my current dilemma will both disappear.
+
+[22] [23] [24]
+<figures/pictures project/customer_usecase.png, id=1030, 1126.2075pt x 628.5984
+3pt>
+File: figures/pictures project/customer_usecase.png Graphic file (type png)
+<use figures/pictures project/customer_usecase.png>
+Package pdftex.def Info: figures/pictures project/customer_usecase.png  used on
+ input line 309.
+(pdftex.def)             Requested size: 405.45047pt x 226.30486pt.
+ [25 <./figures/pictures project/customer_usecase.png>]
+<figures/pictures project/seller_usecase.png, id=1038, 411.33675pt x 307.74976p
+t>
+File: figures/pictures project/seller_usecase.png Graphic file (type png)
+<use figures/pictures project/seller_usecase.png>
+Package pdftex.def Info: figures/pictures project/seller_usecase.png  used on i
+nput line 346.
+(pdftex.def)             Requested size: 362.77525pt x 271.43108pt.
+ [26 <./figures/pictures project/seller_usecase.png>]
+LaTeX Info: Symbol \textrightarrow not provided by
+            font family ptm in TS1 encoding.
+            Default family used instead on input line 398.
+
+(C:\Users\malib\AppData\Local\Programs\MiKTeX\tex/latex/microtype\mt-cmr.cfg
+File: mt-cmr.cfg 2013/05/19 v2.2 microtype config. file: Computer Modern Roman 
+(RS)
+)
+[27]
+LaTeX Info: Symbol \textrightarrow not provided by
+            font family ptm in TS1 encoding.
+            Default family used instead on input line 429.
+LaTeX Info: Symbol \textrightarrow not provided by
+            font family ptm in TS1 encoding.
+            Default family used instead on input line 429.
+LaTeX Info: Symbol \textrightarrow not provided by
+            font family ptm in TS1 encoding.
+            Default family used instead on input line 462.
+ [28]
+LaTeX Info: Symbol \textrightarrow not provided by
+            font family ptm in TS1 encoding.
+            Default family used instead on input line 497.
+ [29]
+LaTeX Info: Symbol \textrightarrow not provided by
+            font family ptm in TS1 encoding.
+            Default family used instead on input line 530.
+ [30]
+LaTeX Info: Symbol \textrightarrow not provided by
+            font family ptm in TS1 encoding.
+            Default family used instead on input line 562.
+ [31]
+LaTeX Info: Symbol \textrightarrow not provided by
+            font family ptm in TS1 encoding.
+            Default family used instead on input line 593.
+LaTeX Info: Symbol \textrightarrow not provided by
+            font family ptm in TS1 encoding.
+            Default family used instead on input line 595.
+ [32]
+LaTeX Info: Symbol \textrightarrow not provided by
+            font family ptm in TS1 encoding.
+            Default family used instead on input line 628.
+ [33]
+LaTeX Info: Symbol \textrightarrow not provided by
+            font family ptm in TS1 encoding.
+            Default family used instead on input line 661.
+ [34]
+LaTeX Info: Symbol \textrightarrow not provided by
+            font family ptm in TS1 encoding.
+            Default family used instead on input line 694.
+ [35]
+LaTeX Info: Symbol \textrightarrow not provided by
+            font family ptm in TS1 encoding.
+            Default family used instead on input line 725.
+ [36]
+LaTeX Info: Symbol \textrightarrow not provided by
+            font family ptm in TS1 encoding.
+            Default family used instead on input line 756.
+ [37]
+LaTeX Info: Symbol \textrightarrow not provided by
+            font family ptm in TS1 encoding.
+            Default family used instead on input line 787.
+ [38]
+LaTeX Info: Symbol \textrightarrow not provided by
+            font family ptm in TS1 encoding.
+            Default family used instead on input line 820.
+LaTeX Info: Symbol \textrightarrow not provided by
+            font family ptm in TS1 encoding.
+            Default family used instead on input line 820.
+ [39]) (chapter4.tex [40]
+Chapter 4.
+[41
+
+]
+<figures/pictures project/Architecture.png, id=1138, 620.3175pt x 468.24937pt>
+File: figures/pictures project/Architecture.png Graphic file (type png)
+<use figures/pictures project/Architecture.png>
+Package pdftex.def Info: figures/pictures project/Architecture.png  used on inp
+ut line 26.
+(pdftex.def)             Requested size: 469.47308pt x 354.37993pt.
+
+Overfull \hbox (42.68173pt too wide) in paragraph at lines 26--27
+ [][] 
+ []
+
+
+LaTeX Warning: Reference `fig:system architecture' on page 42 undefined on inpu
+t line 31.
+
+[42 <./figures/pictures project/Architecture.png>] [43]
+Overfull \hbox (4.23721pt too wide) in paragraph at lines 70--71
+\T1/ptm/m/n/10.95 (-20) tiered pric-ing dis-play, multi-image gallery and selle
+r prod-uct man-age-ment (add/edit/deactivate). 
+ []
+
+LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <6> not available
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 72.
+[44]
+<figures/pictures project/Customer_Activity_Diagram.png, id=1156, 496.85625pt x
+ 1032.85875pt>
+File: figures/pictures project/Customer_Activity_Diagram.png Graphic file (type
+ png)
+<use figures/pictures project/Customer_Activity_Diagram.png>
+Package pdftex.def Info: figures/pictures project/Customer_Activity_Diagram.png
+  used on input line 104.
+(pdftex.def)             Requested size: 307.29028pt x 638.80556pt.
+
+
+LaTeX Warning: Float too large for page by 1.16971pt on input line 107.
+
+[45] [46 <./figures/pictures project/Customer_Activity_Diagram.png>]
+<figures/pictures project/Seller_Activity.png, id=1167, 449.68pt x 1075.01625pt
+>
+File: figures/pictures project/Seller_Activity.png Graphic file (type png)
+<use figures/pictures project/Seller_Activity.png>
+Package pdftex.def Info: figures/pictures project/Seller_Activity.png  used on 
+input line 122.
+(pdftex.def)             Requested size: 260.34297pt x 622.41084pt.
+ [47]
+[48 <./figures/pictures project/Seller_Activity.png>]
+<figures/pictures project/component_diagram.png, id=1178, 944.52875pt x 723.703
+75pt>
+File: figures/pictures project/component_diagram.png Graphic file (type png)
+<use figures/pictures project/component_diagram.png>
+Package pdftex.def Info: figures/pictures project/component_diagram.png  used o
+n input line 141.
+(pdftex.def)             Requested size: 426.79135pt x 327.0109pt.
+ [49]
+<figures/pictures project/deployment_diagram.png, id=1185, 1377.145pt x 786.94p
+t>
+File: figures/pictures project/deployment_diagram.png Graphic file (type png)
+<use figures/pictures project/deployment_diagram.png>
+Package pdftex.def Info: figures/pictures project/deployment_diagram.png  used 
+on input line 155.
+(pdftex.def)             Requested size: 426.79135pt x 243.87683pt.
+ [50 <./figures/pictures project/component_diagram.png (PNG copy)>] [51 <./figu
+res/pictures project/deployment_diagram.png (PNG copy)>]
+<figures/pictures project/SEQUENCE1.png, id=1195, 814.04124pt x 786.94pt>
+File: figures/pictures project/SEQUENCE1.png Graphic file (type png)
+<use figures/pictures project/SEQUENCE1.png>
+Package pdftex.def Info: figures/pictures project/SEQUENCE1.png  used on input 
+line 170.
+(pdftex.def)             Requested size: 426.79425pt x 412.58533pt.
+
+
+Package caption Warning: The option `hypcap=true' will be ignored for this
+(caption)                particular \caption on input line 171.
+See the caption package documentation for explanation.
+
+<figures/pictures project/SEQUENCE2.png, id=1197, 803.0pt x 923.45pt>
+File: figures/pictures project/SEQUENCE2.png Graphic file (type png)
+<use figures/pictures project/SEQUENCE2.png>
+Package pdftex.def Info: figures/pictures project/SEQUENCE2.png  used on input 
+line 180.
+(pdftex.def)             Requested size: 426.801pt x 490.82115pt.
+
+Package caption Warning: The option `hypcap=true' will be ignored for this
+(caption)                particular \caption on input line 181.
+See the caption package documentation for explanation.
+
+[52
+
+ <./figures/pictures project/SEQUENCE1.png>] [53 <./figures/pictures project/SE
+QUENCE2.png>]
+<figures/pictures project/SEQUENCE3.png, id=1209, 797.98125pt x 857.2025pt>
+File: figures/pictures project/SEQUENCE3.png Graphic file (type png)
+<use figures/pictures project/SEQUENCE3.png>
+Package pdftex.def Info: figures/pictures project/SEQUENCE3.png  used on input 
+line 190.
+(pdftex.def)             Requested size: 426.7879pt x 458.46147pt.
+
+
+Package caption Warning: The option `hypcap=true' will be ignored for this
+(caption)                particular \caption on input line 191.
+See the caption package documentation for explanation.
+
+[54 <./figures/pictures project/SEQUENCE3.png>]
+<figures/pictures project/SEQUENCE4.png, id=1216, 888.31876pt x 682.55pt>
+File: figures/pictures project/SEQUENCE4.png Graphic file (type png)
+<use figures/pictures project/SEQUENCE4.png>
+Package pdftex.def Info: figures/pictures project/SEQUENCE4.png  used on input 
+line 199.
+(pdftex.def)             Requested size: 426.78125pt x 327.92232pt.
+
+
+Package caption Warning: The option `hypcap=true' will be ignored for this
+(caption)                particular \caption on input line 200.
+See the caption package documentation for explanation.
+
+[55 <./figures/pictures project/SEQUENCE4.png>]
+<figures/pictures project/SEQUENCE5.png, id=1224, 613.29124pt x 657.45625pt>
+File: figures/pictures project/SEQUENCE5.png Graphic file (type png)
+<use figures/pictures project/SEQUENCE5.png>
+Package pdftex.def Info: figures/pictures project/SEQUENCE5.png  used on input 
+line 209.
+(pdftex.def)             Requested size: 426.79297pt x 457.52768pt.
+
+
+Package caption Warning: The option `hypcap=true' will be ignored for this
+(caption)                particular \caption on input line 210.
+See the caption package documentation for explanation.
+
+[56 <./figures/pictures project/SEQUENCE5.png>]
+<figures/pictures project/SEQUENCE6.png, id=1231, 886.31125pt x 682.55pt>
+File: figures/pictures project/SEQUENCE6.png Graphic file (type png)
+<use figures/pictures project/SEQUENCE6.png>
+Package pdftex.def Info: figures/pictures project/SEQUENCE6.png  used on input 
+line 219.
+(pdftex.def)             Requested size: 426.80402pt x 328.6826pt.
+
+
+Package caption Warning: The option `hypcap=true' will be ignored for this
+(caption)                particular \caption on input line 220.
+See the caption package documentation for explanation.
+
+[57 <./figures/pictures project/SEQUENCE6.png>]
+<figures/pictures project/UML_CLASS1.png, id=1238, 1413.28pt x 866.23625pt>
+File: figures/pictures project/UML_CLASS1.png Graphic file (type png)
+<use figures/pictures project/UML_CLASS1.png>
+Package pdftex.def Info: figures/pictures project/UML_CLASS1.png  used on input
+ line 235.
+(pdftex.def)             Requested size: 405.45047pt x 248.50568pt.
+<figures/pictures project/UML_CLASS2.png, id=1240, 649.42625pt x 643.40375pt>
+File: figures/pictures project/UML_CLASS2.png Graphic file (type png)
+<use figures/pictures project/UML_CLASS2.png>
+Package pdftex.def Info: figures/pictures project/UML_CLASS2.png  used on input
+ line 244.
+(pdftex.def)             Requested size: 405.45047pt x 401.69438pt.
+ [58 <./figures/pictures project/UML_CLASS1.png>] [59 <./figures/pictures proje
+ct/UML_CLASS2.png>]
+<figures/pictures project/frontend/login.jpeg, id=1252, 577.15625pt x 1284.8pt>
+
+File: figures/pictures project/frontend/login.jpeg Graphic file (type jpg)
+<use figures/pictures project/frontend/login.jpeg>
+Package pdftex.def Info: figures/pictures project/frontend/login.jpeg  used on 
+input line 260.
+(pdftex.def)             Requested size: 170.71393pt x 380.03215pt.
+ [60 <./figures/pictures project/frontend/login.jpeg>]
+<figures/pictures project/frontend/signup.jpeg, id=1258, 577.15625pt x 1284.8pt
+>
+File: figures/pictures project/frontend/signup.jpeg Graphic file (type jpg)
+<use figures/pictures project/frontend/signup.jpeg>
+Package pdftex.def Info: figures/pictures project/frontend/signup.jpeg  used on
+ input line 270.
+(pdftex.def)             Requested size: 170.71393pt x 380.03215pt.
+ [61 <./figures/pictures project/frontend/signup.jpeg>]
+<figures/pictures project/frontend/email verification.jpeg, id=1265, 577.15625p
+t x 1284.8pt>
+File: figures/pictures project/frontend/email verification.jpeg Graphic file (t
+ype jpg)
+<use figures/pictures project/frontend/email verification.jpeg>
+Package pdftex.def Info: figures/pictures project/frontend/email verification.j
+peg  used on input line 279.
+(pdftex.def)             Requested size: 170.71393pt x 380.03215pt.
+ [62 <./figures/pictures project/frontend/email verification.jpeg>]
+<figures/pictures project/frontend/customer dashboard.jpeg, id=1271, 577.15625p
+t x 1284.8pt>
+File: figures/pictures project/frontend/customer dashboard.jpeg Graphic file (t
+ype jpg)
+<use figures/pictures project/frontend/customer dashboard.jpeg>
+Package pdftex.def Info: figures/pictures project/frontend/customer dashboard.j
+peg  used on input line 290.
+(pdftex.def)             Requested size: 170.71393pt x 380.03215pt.
+ [63
+
+ <./figures/pictures project/frontend/customer dashboard.jpeg>]
+<figures/pictures project/frontend/discover.jpeg, id=1277, 577.15625pt x 1284.8
+pt>
+File: figures/pictures project/frontend/discover.jpeg Graphic file (type jpg)
+<use figures/pictures project/frontend/discover.jpeg>
+Package pdftex.def Info: figures/pictures project/frontend/discover.jpeg  used 
+on input line 300.
+(pdftex.def)             Requested size: 128.0387pt x 285.029pt.
+
+[64
+
+ <./figures/pictures project/frontend/discover.jpeg>]
+<figures/pictures project/frontend/product description.jpeg, id=1283, 577.15625
+pt x 1284.8pt>
+File: figures/pictures project/frontend/product description.jpeg Graphic file (
+type jpg)
+<use figures/pictures project/frontend/product description.jpeg>
+Package pdftex.def Info: figures/pictures project/frontend/product description.
+jpeg  used on input line 309.
+(pdftex.def)             Requested size: 170.71393pt x 380.03215pt.
+ [65 <./figures/pictures project/frontend/product description.jpeg>]
+<figures/pictures project/frontend/cart items.jpeg, id=1289, 577.15625pt x 1284
+.8pt>
+File: figures/pictures project/frontend/cart items.jpeg Graphic file (type jpg)
+
+<use figures/pictures project/frontend/cart items.jpeg>
+Package pdftex.def Info: figures/pictures project/frontend/cart items.jpeg  use
+d on input line 318.
+(pdftex.def)             Requested size: 128.0387pt x 285.029pt.
+ [66 <./figures/pictures project/frontend/cart items.jpeg>]
+<figures/pictures project/frontend/order summary.jpeg, id=1295, 577.15625pt x 1
+284.8pt>
+File: figures/pictures project/frontend/order summary.jpeg Graphic file (type j
+pg)
+<use figures/pictures project/frontend/order summary.jpeg>
+Package pdftex.def Info: figures/pictures project/frontend/order summary.jpeg  
+used on input line 327.
+(pdftex.def)             Requested size: 170.71393pt x 380.03215pt.
+ [67 <./figures/pictures project/frontend/order summary.jpeg>]
+<figures/pictures project/frontend/my orders.jpeg, id=1302, 577.15625pt x 1284.
+8pt>
+File: figures/pictures project/frontend/my orders.jpeg Graphic file (type jpg)
+<use figures/pictures project/frontend/my orders.jpeg>
+Package pdftex.def Info: figures/pictures project/frontend/my orders.jpeg  used
+ on input line 336.
+(pdftex.def)             Requested size: 170.71393pt x 380.03215pt.
+ [68 <./figures/pictures project/frontend/my orders.jpeg>]
+<figures/pictures project/frontend/request for qouta.jpeg, id=1308, 577.15625pt
+ x 1284.8pt>
+File: figures/pictures project/frontend/request for qouta.jpeg Graphic file (ty
+pe jpg)
+<use figures/pictures project/frontend/request for qouta.jpeg>
+Package pdftex.def Info: figures/pictures project/frontend/request for qouta.jp
+eg  used on input line 345.
+(pdftex.def)             Requested size: 170.71393pt x 380.03215pt.
+ [69 <./figures/pictures project/frontend/request for qouta.jpeg>]
+<figures/pictures project/sellerside/rfq market place.jpeg, id=1314, 1224.575pt
+ x 2722.17pt>
+File: figures/pictures project/sellerside/rfq market place.jpeg Graphic file (t
+ype jpg)
+<use figures/pictures project/sellerside/rfq market place.jpeg>
+Package pdftex.def Info: figures/pictures project/sellerside/rfq market place.j
+peg  used on input line 355.
+(pdftex.def)             Requested size: 170.71393pt x 379.48126pt.
+
+
+LaTeX Warning: Reference `fig:open-rfqs-screen' on page 70 undefined on input l
+ine 360.
+
+[70 <./figures/pictures project/sellerside/rfq market place.jpeg>]
+<figures/pictures project/sellerside/messages.jpeg, id=1319, 577.15625pt x 1284
+.8pt>
+File: figures/pictures project/sellerside/messages.jpeg Graphic file (type jpg)
+
+<use figures/pictures project/sellerside/messages.jpeg>
+Package pdftex.def Info: figures/pictures project/sellerside/messages.jpeg  use
+d on input line 364.
+(pdftex.def)             Requested size: 170.71393pt x 380.03215pt.
+<figures/pictures project/sellerside/seller store.png, id=1321, 181.8795pt x 38
+6.6445pt>
+File: figures/pictures project/sellerside/seller store.png Graphic file (type p
+ng)
+<use figures/pictures project/sellerside/seller store.png>
+Package pdftex.def Info: figures/pictures project/sellerside/seller store.png  
+used on input line 372.
+(pdftex.def)             Requested size: 170.71393pt x 362.9149pt.
+ [71 <./figures/pictures project/sellerside/messages.jpeg>] [72 <./figures/pict
+ures project/sellerside/seller store.png>]
+<figures/pictures project/sellerside/my orders.jpeg, id=1332, 577.15625pt x 128
+4.8pt>
+File: figures/pictures project/sellerside/my orders.jpeg Graphic file (type jpg
+)
+<use figures/pictures project/sellerside/my orders.jpeg>
+Package pdftex.def Info: figures/pictures project/sellerside/my orders.jpeg  us
+ed on input line 382.
+(pdftex.def)             Requested size: 170.71393pt x 380.03215pt.
+ [73 <./figures/pictures project/sellerside/my orders.jpeg>]
+<figures/pictures project/sellerside/add products.jpeg, id=1339, 577.15625pt x 
+1284.8pt>
+File: figures/pictures project/sellerside/add products.jpeg Graphic file (type 
+jpg)
+<use figures/pictures project/sellerside/add products.jpeg>
+Package pdftex.def Info: figures/pictures project/sellerside/add products.jpeg 
+ used on input line 392.
+(pdftex.def)             Requested size: 170.71393pt x 380.03215pt.
+ [74 <./figures/pictures project/sellerside/add products.jpeg>]
+<figures/pictures project/sellerside/create account for seller.jpeg, id=1345, 5
+77.15625pt x 1284.8pt>
+File: figures/pictures project/sellerside/create account for seller.jpeg Graphi
+c file (type jpg)
+<use figures/pictures project/sellerside/create account for seller.jpeg>
+Package pdftex.def Info: figures/pictures project/sellerside/create account for
+ seller.jpeg  used on input line 401.
+(pdftex.def)             Requested size: 170.71393pt x 380.03215pt.
+
+[75 <./figures/pictures project/sellerside/create account for seller.jpeg>]
+<figures/pictures project/sellerside/my products.jpeg, id=1351, 1224.575pt x 27
+22.17pt>
+File: figures/pictures project/sellerside/my products.jpeg Graphic file (type j
+pg)
+<use figures/pictures project/sellerside/my products.jpeg>
+Package pdftex.def Info: figures/pictures project/sellerside/my products.jpeg  
+used on input line 410.
+(pdftex.def)             Requested size: 170.71393pt x 379.48126pt.
+
+[76 <./figures/pictures project/sellerside/my products.jpeg>]
+<figures/pictures project/sellerside/edit products.jpeg, id=1357, 577.15625pt x
+ 1284.8pt>
+File: figures/pictures project/sellerside/edit products.jpeg Graphic file (type
+ jpg)
+<use figures/pictures project/sellerside/edit products.jpeg>
+Package pdftex.def Info: figures/pictures project/sellerside/edit products.jpeg
+  used on input line 419.
+(pdftex.def)             Requested size: 170.71393pt x 380.03215pt.
+ [77 <./figures/pictures project/sellerside/edit products.jpeg>]
+<figures/pictures project/sellerside/rfq details.jpeg, id=1363, 577.15625pt x 1
+284.8pt>
+File: figures/pictures project/sellerside/rfq details.jpeg Graphic file (type j
+pg)
+<use figures/pictures project/sellerside/rfq details.jpeg>
+Package pdftex.def Info: figures/pictures project/sellerside/rfq details.jpeg  
+used on input line 428.
+(pdftex.def)             Requested size: 170.71393pt x 380.03215pt.
+<figures/pictures project/sellerside/submit qouta.jpeg, id=1365, 577.15625pt x 
+1284.8pt>
+File: figures/pictures project/sellerside/submit qouta.jpeg Graphic file (type 
+jpg)
+<use figures/pictures project/sellerside/submit qouta.jpeg>
+Package pdftex.def Info: figures/pictures project/sellerside/submit qouta.jpeg 
+ used on input line 436.
+(pdftex.def)             Requested size: 170.71393pt x 380.03215pt.
+ [78 <./figures/pictures project/sellerside/rfq details.jpeg>] [79 <./figures/p
+ictures project/sellerside/submit qouta.jpeg>]
+<figures/pictures project/sellerside/my qoutas.jpeg, id=1376, 577.15625pt x 128
+4.8pt>
+File: figures/pictures project/sellerside/my qoutas.jpeg Graphic file (type jpg
+)
+<use figures/pictures project/sellerside/my qoutas.jpeg>
+Package pdftex.def Info: figures/pictures project/sellerside/my qoutas.jpeg  us
+ed on input line 446.
+(pdftex.def)             Requested size: 170.71393pt x 380.03215pt.
+<figures/pictures project/sellerside/order info.jpeg, id=1378, 577.15625pt x 12
+84.8pt>
+File: figures/pictures project/sellerside/order info.jpeg Graphic file (type jp
+g)
+<use figures/pictures project/sellerside/order info.jpeg>
+Package pdftex.def Info: figures/pictures project/sellerside/order info.jpeg  u
+sed on input line 455.
+(pdftex.def)             Requested size: 170.71393pt x 380.03215pt.
+ [80 <./figures/pictures project/sellerside/my qoutas.jpeg>])
+(chapter5.tex [81 <./figures/pictures project/sellerside/order info.jpeg>]
+Chapter 5.
+File: figures/pictures project/Architecture.png Graphic file (type png)
+<use figures/pictures project/Architecture.png>
+Package pdftex.def Info: figures/pictures project/Architecture.png  used on inp
+ut line 12.
+(pdftex.def)             Requested size: 426.79135pt x 322.16357pt.
+[82
+
+] [83] [84] [85] [86] [87] [88] [89]
+LaTeX Font Info:    Trying to load font information for T1+pcrs on input line 1
+47.
+
+(C:\Users\malib\AppData\Local\Programs\MiKTeX\tex/latex/courier-scaled\t1pcrs.f
+d
+File: t1pcrs.fd 2004/07/09 scalable font definitions for T1/pcrs.
+)
+LaTeX Font Info:    Font shape `T1/pcrs/m/n' will be
+(Font)              scaled to size 10.40245pt on input line 147.
+Package microtype Info: Loading generic protrusion settings for font family
+(microtype)             `pcrs' (encoding: T1).
+(microtype)             For optimal results, create family-specific settings.
+(microtype)             See the microtype manual for details.
+
+Overfull \hbox (34.96pt too wide) in paragraph at lines 147--148
+[]\T1/ptm/b/n/10.95 (-20) Result Caching: \T1/ptm/m/n/10.95 (-20) Gen-er-ated s
+um-maries are stored in a cache col-lec-tion named \T1/pcrs/m/n/10.95 review_su
+mmaries\T1/ptm/m/n/10.95 (-20) ,
+ []
+
+
+Overfull \hbox (89.40527pt too wide) in paragraph at lines 155--156
+\T1/ptm/m/n/10.95 (-20) sages (\T1/pcrs/m/n/10.95 send-chat-event-notification\
+T1/ptm/m/n/10.95 (-20) ), and new RFQ or quote ac-tiv-i-ties (\T1/pcrs/m/n/10.9
+5 send-rfq-notification\T1/ptm/m/n/10.95 (-20) ). 
+ []
+
+
+Overfull \hbox (36.45459pt too wide) in paragraph at lines 157--158
+\T1/ptm/m/n/10.95 (-20) ti-fi-ca-tions across all app states^^Vforeground (\T1/
+pcrs/m/n/10.95 onMessage\T1/ptm/m/n/10.95 (-20) ), back-ground (\T1/pcrs/m/n/10
+.95 onBackgroundMessage\T1/ptm/m/n/10.95 (-20) ),
+ []
+
+[90]
+Overfull \hbox (87.58502pt too wide) in paragraph at lines 173--174
+[]\T1/ptm/b/n/10.95 (-20) Secure Pay-ment Key Han-dling: \T1/ptm/m/n/10.95 (-20
+) The Stripe se-cret key re-mains con-fined within the \T1/pcrs/m/n/10.95 creat
+e-payment-intent
+ []
+
+[91]
+Underfull \hbox (badness 10000) in paragraph at lines 205--205
+[]|\T1/ptm/m/n/10.95 (+20) Development En-vi-ron-
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 215--215
+[]|\T1/ptm/m/n/10.95 (+20) Appwrite Databases
+ []
+
+
+Underfull \hbox (badness 1946) in paragraph at lines 227--228
+\T1/ptm/m/n/10.95 (+20) and pro-to-typ-ing for all ap-pli-ca-tion
+ []
+
+
+Overfull \hbox (9.14719pt too wide) in paragraph at lines 201--233
+ [][] 
+ []
+
+[92]) (chapter6.tex [93] [94]
+Chapter 6.
+LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <10> not available
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 20.
+LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <7.4> not available
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 20.
+
+Underfull \hbox (badness 10000) in paragraph at lines 34--34
+[]|\T1/ptm/m/n/10 (+20) Android De-vice / Em-u-la-tor, Flut-ter SDK, Ap-p-write
+ Cloud
+ []
+
+[95
+
+] [96] [97]
+LaTeX Font Info:    Font shape `T1/pcrs/m/n' will be
+(Font)              scaled to size 9.49997pt on input line 144.
+ [98] [99]
+ignored: Infinite glue shrinkage found in box being split [100]
+ignored: Infinite glue s
+hrinkage found in box being split [101] [102]
+Underfull \hbox (badness 5893) in paragraph at lines 460--461
+[]\T1/ptm/m/n/10 (+20) Verify Stripe pay-ment sheet ini-tialised us-ing clientS
+e-cret from
+ []
+
+
+ignored: Infinite glue shrinkage found in box being split [103]
+ignored: Infinite glue shrinkage f
+ound in box being split [104] [105] [106] [107] [108] [109]
+ignored: Infinite glue shrink
+age found in box being split [110] [111] [112]
+Underfull \hbox (badness 10000) in paragraph at lines 894--895
+[]\T1/ptm/m/n/10 (+20) All three no-ti-fi-ca-tion cloud func-tions de-ployed:
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 894--895
+\T1/pcrs/m/n/10 send-order-notification\T1/ptm/m/n/10 (+20) , \T1/pcrs/m/n/10 s
+end-chat-notification\T1/ptm/m/n/10 (+20) ,
+ []
+
+[113]
+Underfull \hbox (badness 3078) in paragraph at lines 946--946
+[]|\T1/ptm/m/n/10 (+20) App cold start to Lo-gin
+ []
+
+
+Underfull \hbox (badness 8056) in paragraph at lines 956--956
+[]|\T1/ptm/m/n/10 (+20) Appwrite func-tion la-
+ []
+
+
+Underfull \hbox (badness 3838) in paragraph at lines 958--958
+[]|\T1/ptm/m/n/10 (+20) Appwrite Re-al-time la-
+ []
+
+
+Underfull \hbox (badness 8056) in paragraph at lines 960--960
+[]|\T1/ptm/m/n/10 (+20) Appwrite func-tion la-
+ []
+
+
+Underfull \hbox (badness 3503) in paragraph at lines 964--964
+[]|\T1/ptm/m/n/10 (+20) Push no-ti-fi-ca-tion de-liv-ery
+ []
+
+
+Overfull \hbox (7.3208pt too wide) in paragraph at lines 941--969
+ [][] 
+ []
+
+[114] [115]) (chapter7.tex [116]
+Chapter 7.
+[117
+
+]) (chapter8.tex) (appendix1.tex [118]
+Appendix A.
+[119
+
+] [120]) [121] (thesis.bbl (thesis.brf)
+\tf@brf=\write10
+\openout10 = `thesis.brf'.
+
+) [122
+
+
+]
+No file thesis.ind.
+(thesis.aux)
+ ***********
+LaTeX2e <2025-11-01>
+L3 programming layer <2026-03-20>
+ ***********
+
+
+LaTeX Warning: There were undefined references.
+
+Package rerunfilecheck Info: File `thesis.out' has not changed.
+(rerunfilecheck)             Checksum: 23036D2599058297E96B2036ED94ED4E;26617.
+Package rerunfilecheck Info: File `thesis.brf' has not changed.
+(rerunfilecheck)             Checksum: 11CF07953176C9CB09F639B0DAACF722;3730.
+ ) 
+Here is how much of TeX's memory you used:
+ 33235 strings out of 467691
+ 635262 string characters out of 5414987
+ 1173938 words of memory out of 5000000
+ 60444 multiletter control sequences out of 15000+600000
+ 751183 words of font info for 598 fonts, out of 8000000 for 9000
+ 1141 hyphenation exceptions out of 8191
+ 90i,12n,94p,2460b,767s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ <C:\Users\malib\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\tcrm
+1095.pk><C:/Users/malib/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfon
+ts/cm/cmsy10.pfb><C:/Users/malib/AppData/Local/Programs/MiKTeX/fonts/type1/urw/
+courier/ucrr8a.pfb><C:/Users/malib/AppData/Local/Programs/MiKTeX/fonts/type1/ur
+w/times/utmb8a.pfb><C:/Users/malib/AppData/Local/Programs/MiKTeX/fonts/type1/ur
+w/times/utmr8a.pfb><C:/Users/malib/AppData/Local/Programs/MiKTeX/fonts/type1/ur
+w/times/utmr8a.pfb><C:/Users/malib/AppData/Local/Programs/MiKTeX/fonts/type1/ur
+w/times/utmri8a.pfb>
+Output written on thesis.pdf (134 pages, 6447991 bytes).
+PDF statistics:
+ 1903 PDF objects out of 2073 (max. 8388607)
+ 509 named destinations out of 1000 (max. 500000)
+ 133298 words of extra memory for PDF output out of 154059 (max. 10000000)
+

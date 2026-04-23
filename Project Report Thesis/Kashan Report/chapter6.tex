@@ -1,0 +1,1038 @@
+\chapter{System Testing and Evaluation}\label{chap:testingEvaluation}
+
+%\version{v1.11.2015}
+
+\section*{}
+The Indus Bazar B2B Marketplace testing phase is an important phase to make sure that the system is reliable, secure and fully functioning in all real-life use cases. The goal of this phase is to identify and eliminate any functional, logical or usability issues and to ensure that all system components are operating as intended under both normal and edge-case requirements. The entire platform modules were thoroughly tested, such as user authentication, product catalogue, shopping cart and checkout, Stripe payment processing, order management, RFQ marketplace, real-time chat, AI-powered review summarization, seller dashboard operations, and push notification delivery. This stage is mainly to ensure that the system meets all functional and non-functional specifications specified during the design and development stages, provides a smooth user experience to customers and sellers and is now ready to be released as a production-grade B2B commerce platform to Pakistani businesses.
+
+\section{Graphical User Interface Testing}
+Graphical User Interface (GUI) testing is done to verify that all the visual elements and user interactions in the entire Indus Bazar mobile application are operating properly in a diverse set of realistic operational environments. This testing exercise is concerned with the validation of the visible and interactive behaviour of the system, in the eyes of real users and so that screens display correctly, controls act as intended, and the application has a consistent, user experience across customer-side and seller-side workflows. Since Indus Bazar is supposed to be used by a wide business audience in Pakistan, GUI testing will be of special relevance to ensure that the application will continue to be used, readable, and aesthetically consistent by users with various device sizes, usage, and varying levels of digital literacy.The GUI testing procedure encompasses the full workflow implementation as opposed to screen testing as a single task. All significant interaction routes are authenticated involving registration, login, email validation, role-based routing, product browsing, cart updates, checkout, payment initiation, RFQ creation, quote submission, chat interaction, order tracking, and product management on the seller side. In testing, every screen is checked to ensure that buttons, forms, dropdowns, navigation controls, icons, badges and status indicators perform as expected, and will take one to appropriate destination. Form validation messages are also verified to make sure that users get instant and sensible feedback when mandatory fields are not provided, input types are not valid or business rules are violated.
+
+% ─────────────────────────────────────────────
+\subsection{User Registration Test Case}
+
+\begin{table}[H]
+\centering
+\caption{Test Case TC001 -- User Registration}
+\label{tab:tc001}
+\renewcommand{\arraystretch}{1.15}
+\small
+\begin{tabular}{|p{3.2cm}|p{10.8cm}|}
+\hline
+\textbf{Module Name} & User Registration \\ \hline
+\textbf{Test Case ID} & TC001 \\ \hline
+\textbf{Use Case ID} & UC-02 \\ \hline
+\textbf{Tester Names} & Husnain Nadeem, Kashan Mehmood \\ \hline
+\textbf{Test Description} & Validate that new customers and sellers can register successfully with valid details and that the system handles invalid or duplicate entries gracefully. \\ \hline
+\textbf{Pre-Requisites} &
+\begin{itemize}[leftmargin=*,noitemsep]
+\item Indus Bazar app installed and launched
+\item Appwrite Cloud backend running
+\item Registration screen accessible
+\item No existing account for the test email
+\end{itemize} \\ \hline
+\textbf{Environment} & Android Device / Emulator, Flutter SDK, Appwrite Cloud (fra.cloud.appwrite.io), Visual Studio Code \\ \hline
+\textbf{Test Scenario} & Test the complete registration workflow including input validation, role selection, account creation, and duplicate email handling. \\ \hline
+\textbf{Test Steps} &
+\begin{enumerate}[leftmargin=*,noitemsep]
+\item Open the Indus Bazar app and navigate to the Registration screen.
+\item Enter valid full name, email, password, confirm password, and select role (Customer).
+\item Tap the Register button.
+\item Verify the verification email is sent and the Email Verification screen is shown.
+\item Re-attempt registration using the same email address.
+\item Attempt registration with mismatched passwords.
+\item Attempt registration with an empty required field.
+\end{enumerate} \\ \hline
+\textbf{Test Inputs} &
+Valid: Name -- Ali Raza, Email -- ali.raza@gmail.com, Password -- SecurePass\#123, Role -- Customer. \newline
+Invalid: Duplicate email -- ali.raza@gmail.com; Mismatched passwords; Empty name field. \\ \hline
+\textbf{Expected Results} &
+\begin{itemize}[leftmargin=*,noitemsep]
+\item Valid registration creates account in Appwrite and writes role to user\_roles collection.
+\item Email Verification screen is displayed; verification email is dispatched.
+\item Duplicate email triggers ``Email already registered'' error.
+\item Mismatched passwords show validation error.
+\item Empty fields show required field error; form submission is blocked.
+\end{itemize} \\ \hline
+\textbf{Actual Results} &
+\begin{itemize}[leftmargin=*,noitemsep]
+\item Account created successfully; role document written to user\_roles collection.
+\item Verification email received; Email Verification screen displayed correctly.
+\item Duplicate email error displayed; no duplicate account created.
+\item Password mismatch and empty field validations triggered as expected.
+\end{itemize} \\ \hline
+\textbf{Status} & Pass \\ \hline
+\textbf{Comments} & Registration workflow, input validation, Appwrite account creation, and role assignment all function correctly. \\ \hline
+\end{tabular}
+\end{table}
+
+\newpage
+\subsection{User Login Test Case}
+
+\begin{table}[H]
+\centering
+\caption{Test Case TC002 -- User Login}
+\label{tab:tc002}
+\renewcommand{\arraystretch}{1.15}
+\small
+\begin{tabular}{|p{3.2cm}|p{10.8cm}|}
+\hline
+\textbf{Module Name} & User Login \\ \hline
+\textbf{Test Case ID} & TC002 \\ \hline
+\textbf{Use Case ID} & UC-01 \\ \hline
+\textbf{Tester Names} & Husnain Nadeem, Kashan Mehmood \\ \hline
+\textbf{Test Description} & Verify successful login for registered and verified users, correct role-based routing, and proper error handling for invalid credentials. \\ \hline
+\textbf{Pre-Requisites} &
+\begin{itemize}[leftmargin=*,noitemsep]
+\item Registered and email-verified Customer and Seller accounts exist.
+\item App launched; Login screen accessible.
+\item Appwrite session API available.
+\end{itemize} \\ \hline
+\textbf{Environment} & Android Device / Emulator, Flutter SDK, Appwrite Cloud, Visual Studio Code \\ \hline
+\textbf{Test Scenario} & Validate successful login with correct credentials, role-based dashboard routing, and error messages for incorrect inputs. \\ \hline
+\textbf{Test Steps} &
+\begin{enumerate}[leftmargin=*,noitemsep]
+\item Open the Login screen.
+\item Enter valid Customer email and password; tap Login.
+\item Verify redirect to Customer Home screen.
+\item Log out and log in with valid Seller credentials.
+\item Verify redirect to Seller Home screen.
+\item Attempt login with an incorrect password.
+\item Attempt login with an unregistered email.
+\end{enumerate} \\ \hline
+\textbf{Test Inputs} &
+Valid Customer: ali.raza@gmail.com / SecurePass\#123. \newline
+Valid Seller: seller.khan@gmail.com / SellerPass\#456. \newline
+Invalid: wrong@email.com / wrongpassword. \\ \hline
+\textbf{Expected Results} &
+\begin{itemize}[leftmargin=*,noitemsep]
+\item Customer credentials redirect to Customer Home screen.
+\item Seller credentials redirect to Seller Home screen.
+\item Invalid credentials display ``Invalid email or password'' error; no session created.
+\item Unregistered email shows appropriate error.
+\end{itemize} \\ \hline
+\textbf{Actual Results} &
+\begin{itemize}[leftmargin=*,noitemsep]
+\item Customer and Seller logins routed correctly to respective dashboards.
+\item Invalid credentials handled with correct error messages; no session leakage.
+\item Session management and role-based routing functioned as designed.
+\end{itemize} \\ \hline
+\textbf{Status} & Pass \\ \hline
+\textbf{Comments} & Login functionality, Appwrite session creation, role fetching from user\_roles, and route redirection all work correctly for both user types. \\ \hline
+\end{tabular}
+\end{table}
+
+\newpage
+\subsection{Email Verification Test Case}
+
+\begin{table}[H]
+\centering
+\caption{Test Case TC003 -- Email Verification}
+\label{tab:tc003}
+\renewcommand{\arraystretch}{1.15}
+\small
+\begin{tabular}{|p{3.2cm}|p{10.8cm}|}
+\hline
+\textbf{Module Name} & Email Verification \\ \hline
+\textbf{Test Case ID} & TC003 \\ \hline
+\textbf{Use Case ID} & UC-02 \\ \hline
+\textbf{Tester Names} & Husnain Nadeem, Kashan Mehmood \\ \hline
+\textbf{Test Description} & Verify that the email verification deep link correctly marks the account as verified and grants dashboard access, and that unverified users are blocked from accessing protected screens. \\ \hline
+\textbf{Pre-Requisites} &
+\begin{itemize}[leftmargin=*,noitemsep]
+\item New account registered; verification email received.
+\item Deep link scheme \texttt{indusbazar://verify} configured in AndroidManifest.
+\item AppWrapper widget active.
+\end{itemize} \\ \hline
+\textbf{Environment} & Android Device, Flutter SDK, Appwrite Cloud, Gmail/Email Client \\ \hline
+\textbf{Test Scenario} & Confirm deep-link verification flow, blocked access for unverified users, and successful dashboard access post-verification. \\ \hline
+\textbf{Test Steps} &
+\begin{enumerate}[leftmargin=*,noitemsep]
+\item Register a new account; observe Email Verification screen.
+\item Attempt to navigate to Customer Home without verifying -- verify system blocks access.
+\item Open verification email and tap the deep link.
+\item Verify the app opens and routes to the appropriate dashboard.
+\item Confirm \texttt{emailVerification} flag is set to true in Appwrite account.
+\end{enumerate} \\ \hline
+\textbf{Test Inputs} & New account: verify.test@gmail.com / TestPass\#789, Role -- Customer. Verification deep link from email. \\ \hline
+\textbf{Expected Results} &
+\begin{itemize}[leftmargin=*,noitemsep]
+\item Unverified user is always redirected to Email Verification screen by AppWrapper.
+\item Deep link opens app and calls Appwrite \texttt{updateVerification} API.
+\item Account marked as verified; user routed to Customer Home screen.
+\end{itemize} \\ \hline
+\textbf{Actual Results} &
+\begin{itemize}[leftmargin=*,noitemsep]
+\item Unverified access correctly blocked by AppWrapper widget.
+\item Deep link opened app successfully and called \texttt{updateVerification}.
+\item Account verified; correct dashboard displayed immediately.
+\end{itemize} \\ \hline
+\textbf{Status} & Pass \\ \hline
+\textbf{Comments} & Email verification enforcement and deep link handling work correctly. AppWrapper blocks all unverified access without exception. \\ \hline
+\end{tabular}
+\end{table}
+
+\newpage
+\subsection{Password Recovery Test Case}
+
+\begin{table}[H]
+\centering
+\caption{Test Case TC004 -- Password Recovery}
+\label{tab:tc004}
+\renewcommand{\arraystretch}{1.15}
+\small
+\begin{tabular}{|p{3.2cm}|p{10.8cm}|}
+\hline
+\textbf{Module Name} & Password Recovery \\ \hline
+\textbf{Test Case ID} & TC004 \\ \hline
+\textbf{Use Case ID} & UC-01 \\ \hline
+\textbf{Tester Names} & Husnain Nadeem, Kashan Mehmood \\ \hline
+\textbf{Test Description} & Validate that users can securely recover their password through the registered email deep link and reset their credentials successfully. \\ \hline
+\textbf{Pre-Requisites} &
+\begin{itemize}[leftmargin=*,noitemsep]
+\item Registered account exists.
+\item Deep link scheme \texttt{indusbazar://reset-password} configured.
+\item \texttt{password\_reset.html} deployed on Flutter web.
+\end{itemize} \\ \hline
+\textbf{Environment} & Android Device, Flutter SDK, Appwrite Cloud, Email Client \\ \hline
+\textbf{Test Scenario} & Test the end-to-end password recovery flow from forgot-password request through deep link to new password confirmation. \\ \hline
+\textbf{Test Steps} &
+\begin{enumerate}[leftmargin=*,noitemsep]
+\item Tap ``Forgot Password'' on the Login screen.
+\item Enter registered email and submit.
+\item Open password reset email and tap the reset deep link.
+\item Enter a new password and confirm it on the Reset Password screen.
+\item Tap Reset and attempt login with the new password.
+\item Attempt recovery with an unregistered email address.
+\end{enumerate} \\ \hline
+\textbf{Test Inputs} & Registered email: ali.raza@gmail.com. New password: NewSecure\#321. Unregistered: fake@test.com. \\ \hline
+\textbf{Expected Results} &
+\begin{itemize}[leftmargin=*,noitemsep]
+\item Password reset email dispatched via Appwrite \texttt{createRecovery}.
+\item Deep link opens Reset Password screen with userId and secret pre-populated.
+\item New password saved via \texttt{updateRecovery}; login with new credentials succeeds.
+\item Unregistered email shows appropriate error without exposing account existence.
+\end{itemize} \\ \hline
+\textbf{Actual Results} &
+\begin{itemize}[leftmargin=*,noitemsep]
+\item Reset email delivered; deep link opened Reset Password screen correctly.
+\item New password saved; login with updated credentials succeeded.
+\item Unregistered email handled gracefully with error message.
+\end{itemize} \\ \hline
+\textbf{Status} & Pass \\ \hline
+\textbf{Comments} & Full password recovery flow via Appwrite deep link and \texttt{updateRecovery} functions correctly across all tested scenarios. \\ \hline
+\end{tabular}
+\end{table}
+
+\newpage
+\subsection{Browse Products Test Case}
+
+\begin{table}[H]
+\centering
+\caption{Test Case TC005 -- Browse Products}
+\label{tab:tc005}
+\renewcommand{\arraystretch}{1.15}
+\small
+\begin{tabular}{|p{3.2cm}|p{10.8cm}|}
+\hline
+\textbf{Module Name} & Product Catalogue -- Browse and Search \\ \hline
+\textbf{Test Case ID} & TC005 \\ \hline
+\textbf{Use Case ID} & UC-03 \\ \hline
+\textbf{Tester Names} & Husnain Nadeem, Kashan Mehmood \\ \hline
+\textbf{Test Description} & Verify that customers can browse the product catalogue, apply category filters, use keyword search, and view correct product listings with thumbnails, seller information, and starting prices. \\ \hline
+\textbf{Pre-Requisites} &
+\begin{itemize}[leftmargin=*,noitemsep]
+\item Customer logged in and email verified.
+\item At least 10 products loaded in Appwrite products collection.
+\end{itemize} \\ \hline
+\textbf{Environment} & Android Device / Emulator, Flutter SDK, Appwrite Cloud, Visual Studio Code \\ \hline
+\textbf{Test Scenario} & Test product listing display, category filter, keyword search, and empty result handling. \\ \hline
+\textbf{Test Steps} &
+\begin{enumerate}[leftmargin=*,noitemsep]
+\item Navigate to Product Browse screen from Customer Home.
+\item Verify active products listed with thumbnail, name, seller, and price.
+\item Apply category filter (Electronics); verify only matching products shown.
+\item Enter keyword in search bar; verify matching results displayed.
+\item Clear search; verify full catalogue restored.
+\item Search non-existent keyword; verify empty-state message appears.
+\end{enumerate} \\ \hline
+\textbf{Test Inputs} & Category filter: Electronics. Search keyword: ``Industrial Fan''. No-match keyword: ``xyzabc123''. \\ \hline
+\textbf{Expected Results} &
+\begin{itemize}[leftmargin=*,noitemsep]
+\item All active products displayed with correct details and images.
+\item Category filter returns only matching products.
+\item Keyword search returns products with matching name or description.
+\item Empty state shown for no-match; shimmer loading during fetch.
+\end{itemize} \\ \hline
+\textbf{Actual Results} &
+\begin{itemize}[leftmargin=*,noitemsep]
+\item Products loaded from Appwrite with shimmer placeholders.
+\item Category filter and keyword search returned accurate results.
+\item Empty state displayed for no-match searches.
+\end{itemize} \\ \hline
+\textbf{Status} & Pass \\ \hline
+\textbf{Comments} & Browse and search functionality using Appwrite query filters works correctly. Shimmer loading and empty states render as expected. \\ \hline
+\end{tabular}
+\end{table}
+
+\subsection{View Product Detail Test Case}
+{\renewcommand{\arraystretch}{1.15}
+\small
+\setlength{\LTleft}{\fill}
+\setlength{\LTright}{\fill}
+\begin{longtable}{|p{3.2cm}|p{10.8cm}|}
+\caption{Test Case TC006 -- View Product Detail} \label{tab:tc006} \\
+\hline
+\textbf{Module Name} & Product Detail -- Full Information Display \\ \hline
+\textbf{Test Case ID} & TC006 \\ \hline
+\textbf{Use Case ID} & UC-04 \\ \hline
+\textbf{Tester Names} & Husnain Nadeem, Kashan Mehmood \\ \hline
+\textbf{Test Description} & Verify that the Product Detail screen correctly displays multi-image gallery, full specifications, all pricing tiers, seller information, stock level, customer reviews, and the AI review summary widget. \\ \hline
+\textbf{Pre-Requisites} &
+\begin{itemize}[leftmargin=*,noitemsep]
+\item Customer logged in and email verified.
+\item Active product exists with 3 images, 3 pricing tiers, and at least 2 customer reviews in Appwrite.
+\item ai-review-summary Appwrite cloud function deployed.
+\end{itemize} \\ \hline
+\textbf{Environment} & Android Device / Emulator, Flutter SDK, Appwrite Cloud, Google Gemini API (via cloud function) \\ \hline
+\textbf{Test Scenario} & Validate complete product detail rendering, tiered pricing display, review section, and AI summary generation in both English and Urdu. \\ \hline
+\textbf{Test Steps} &
+\begin{enumerate}[leftmargin=*,noitemsep]
+\item Tap a product from the Browse screen to open Product Detail.
+\item Verify multi-image gallery loads and swipe navigation works.
+\item Check all three pricing tiers are displayed with correct quantities and prices.
+\item Verify seller name, business city, and stock level are shown.
+\item Scroll to reviews section; verify individual reviews are listed.
+\item Tap ``Generate Summary'' button in the AI Review Summary widget.
+\item Toggle between English and Urdu summary without regenerating.
+\item Navigate to an inactive/unavailable product.
+\end{enumerate} \\ \hline
+\textbf{Test Inputs} & Product with: 3 images, Tier1 = 1+ units at PKR 1000, Tier2 = 50+ at PKR 850, Tier3 = 100+ at PKR 700. 3 customer reviews in English. Language toggle: English / Urdu. \\ \hline
+\textbf{Expected Results} &
+\begin{itemize}[leftmargin=*,noitemsep]
+\item All product images load with swipeable gallery.
+\item All three pricing tiers displayed with correct minimum quantities and unit prices.
+\item Seller information and stock level shown accurately.
+\item Customer reviews listed with ratings, titles, and comments.
+\item AI summary generated and displayed; toggle between English and Urdu works without re-calling the API.
+\item Inactive product shows unavailability notice.
+\end{itemize} \\ \hline
+\textbf{Actual Results} &
+\begin{itemize}[leftmargin=*,noitemsep]
+\item Product detail screen rendered all data correctly from Appwrite.
+\item Tiered pricing displayed accurately; AI summary generated in both languages.
+\item Language toggle works using cached summary from review\_summaries collection.
+\item Inactive product status handled with correct UI message.
+\end{itemize} \\ \hline
+\textbf{Status} & Pass \\ \hline
+\textbf{Comments} & Product detail display, tiered pricing, review rendering, and AI summary generation all function correctly. Gemini API integration via cloud function works as expected. \\ \hline
+\end{longtable}
+}
+
+\subsection{Add to Cart Test Case}
+
+\begin{table}[H]
+\centering
+\caption{Test Case TC007 -- Add to Cart with Tiered Pricing}
+\label{tab:tc007}
+\renewcommand{\arraystretch}{1.15}
+\small
+\begin{tabular}{|p{3.2cm}|p{10.8cm}|}
+\hline
+\textbf{Module Name} & Shopping Cart -- Add Item and Tier Price Calculation \\ \hline
+\textbf{Test Case ID} & TC007 \\ \hline
+\textbf{Use Case ID} & UC-05 \\ \hline
+\textbf{Tester Names} & Husnain Nadeem, Kashan Mehmood \\ \hline
+\textbf{Test Description} & Validate that customers can add products to the cart, that the correct tiered price is automatically applied based on quantity, and that cart totals update correctly. \\ \hline
+\textbf{Pre-Requisites} &
+\begin{itemize}[leftmargin=*,noitemsep]
+\item Customer logged in with verified email.
+\item Active product with 3 pricing tiers available in Appwrite.
+\item Cart screen accessible.
+\end{itemize} \\ \hline
+\textbf{Environment} & Android Device / Emulator, Flutter SDK, Appwrite Cloud, Visual Studio Code \\ \hline
+\textbf{Test Scenario} & Test tier price resolution for different quantities, cart item addition, quantity update, and cart total recalculation. \\ \hline
+\textbf{Test Steps} &
+\begin{enumerate}[leftmargin=*,noitemsep]
+\item Open a product with 3 pricing tiers on the Product Detail screen.
+\item Enter quantity 10 (Tier 1) and tap Add to Cart.
+\item Navigate to Cart and verify unit price = PKR 1,000 and subtotal = PKR 10,000.
+\item Update quantity to 60 (Tier 2) in the cart.
+\item Verify unit price recalculates to PKR 850 and subtotal updates to PKR 51,000.
+\item Update quantity to 110 (Tier 3) and verify price updates to PKR 700.
+\item Remove the item from the cart and verify the cart becomes empty.
+\end{enumerate} \\ \hline
+\textbf{Test Inputs} & Product: Industrial Fan. Tier1: 1+ units @ PKR 1,000. Tier2: 50+ @ PKR 850. Tier3: 100+ @ PKR 700. Quantities: 10, 60, 110. \\ \hline
+\textbf{Expected Results} &
+\begin{itemize}[leftmargin=*,noitemsep]
+\item Qty 10 $\rightarrow$ Unit price PKR 1,000; subtotal PKR 10,000.
+\item Qty 60 $\rightarrow$ Unit price PKR 850; subtotal PKR 51,000.
+\item Qty 110 $\rightarrow$ Unit price PKR 700; subtotal PKR 77,000.
+\item Cart totals update immediately on quantity change.
+\item Removing item empties the cart correctly.
+\end{itemize} \\ \hline
+\textbf{Actual Results} &
+\begin{itemize}[leftmargin=*,noitemsep]
+\item Tiered pricing applied correctly for all three quantity thresholds.
+\item Cart subtotals recalculated accurately in real time.
+\item Item removal cleared the cart and displayed empty-cart state correctly.
+\end{itemize} \\ \hline
+\textbf{Status} & Pass \\ \hline
+\textbf{Comments} & Tiered pricing resolution in the cart\_provider works accurately. Real-time subtotal recalculation and item removal all function as expected. \\ \hline
+\end{tabular}
+\end{table}
+
+\subsection{Checkout Test Case}
+
+\begin{table}[H]
+\centering
+\caption{Test Case TC008 -- Checkout Process}
+\label{tab:tc008}
+\renewcommand{\arraystretch}{1.15}
+\small
+\begin{tabular}{|p{3.2cm}|p{10.8cm}|}
+\hline
+\textbf{Module Name} & Checkout -- Order Confirmation and Address Selection \\ \hline
+\textbf{Test Case ID} & TC008 \\ \hline
+\textbf{Use Case ID} & UC-06 \\ \hline
+\textbf{Tester Names} & Husnain Nadeem, Kashan Mehmood \\ \hline
+\textbf{Test Description} & Verify that the checkout flow correctly presents the order summary, enables delivery address selection, handles missing addresses gracefully, and routes the customer to the payment screen upon confirmation. \\ \hline
+\textbf{Pre-Requisites} &
+\begin{itemize}[leftmargin=*,noitemsep]
+\item Customer logged in; at least one item in cart.
+\item At least one saved delivery address exists in Appwrite addresses collection.
+\end{itemize} \\ \hline
+\textbf{Environment} & Android Device / Emulator, Flutter SDK, Appwrite Cloud \\ \hline
+\textbf{Test Scenario} & Test checkout with a saved address, checkout requiring inline address creation, and blocked checkout with an empty cart. \\ \hline
+\textbf{Test Steps} &
+\begin{enumerate}[leftmargin=*,noitemsep]
+\item Open Cart screen with items; tap Proceed to Checkout.
+\item Verify order summary lists correct items, quantities, and totals.
+\item Select saved delivery address; tap Confirm Order; verify Payment screen.
+\item Delete all saved addresses; attempt checkout; verify add-address prompt.
+\item Add new address inline and proceed to payment.
+\end{enumerate} \\ \hline
+\textbf{Test Inputs} & Cart: 1 x Industrial Fan (Qty 60, PKR 850/unit = PKR 51,000). Saved address: 12 Main Gulberg, Lahore, 54000. No-address scenario tested separately. \\ \hline
+\textbf{Expected Results} &
+\begin{itemize}[leftmargin=*,noitemsep]
+\item Order summary displays cart items with correct prices and totals.
+\item Saved address selectable and pre-populated as default.
+\item Confirm Order routes to Payment screen with correct details.
+\item No address $\rightarrow$ user prompted to add; empty cart blocks checkout.
+\end{itemize} \\ \hline
+\textbf{Actual Results} &
+\begin{itemize}[leftmargin=*,noitemsep]
+\item Order summary rendered correctly; address selection worked.
+\item Missing address prompted correctly; inline creation succeeded.
+\item Checkout navigated to Payment screen in all valid scenarios.
+\end{itemize} \\ \hline
+\textbf{Status} & Pass \\ \hline
+\textbf{Comments} & Checkout process handles all scenarios correctly including address management, order summary rendering, and Payment screen navigation. \\ \hline
+\end{tabular}
+\end{table}
+
+\subsection{Stripe Payment Test Case}
+
+{\renewcommand{\arraystretch}{1.15}
+\small
+\setlength{\LTleft}{\fill}
+\setlength{\LTright}{\fill}
+\begin{longtable}{|p{3.2cm}|p{10.8cm}|}
+\caption{Test Case TC009 -- Stripe Payment Integration} \label{tab:tc009} \\
+\hline
+\textbf{Module Name} & Payment -- Stripe Integration and Order Creation \\ \hline
+\textbf{Test Case ID} & TC009 \\ \hline
+\textbf{Use Case ID} & UC-07 \\ \hline
+\textbf{Tester Names} & Husnain Nadeem, Kashan Mehmood \\ \hline
+\textbf{Test Description} & Verify that Stripe payment processes correctly via the server-side Appwrite cloud function, that successful payment creates an order atomically, and that payment failure is handled gracefully. \\ \hline
+\textbf{Pre-Requisites} &
+\begin{itemize}[leftmargin=*,noitemsep]
+\item Customer completed checkout; Payment screen loaded.
+\item \texttt{create-payment-intent} Appwrite cloud function deployed.
+\item \texttt{process-order} Appwrite cloud function deployed.
+\item Stripe test mode keys configured.
+\end{itemize} \\ \hline
+\textbf{Environment} & Android Device, Flutter SDK, Appwrite Cloud Functions, Stripe Test API (api.stripe.com) \\ \hline
+\textbf{Test Scenario} & Test successful payment with Stripe test card, atomic order creation and stock deduction, cart clearing, and payment decline handling. \\ \hline
+\textbf{Test Steps} &
+\begin{enumerate}[leftmargin=*,noitemsep]
+\item Arrive at Payment screen from Checkout.
+\item Verify Stripe payment sheet initialised using clientSecret from \texttt{create-payment-intent} function.
+\item Enter Stripe test card number 4242 4242 4242 4242, expiry 12/34, CVC 123.
+\item Tap Pay and observe payment processing.
+\item Verify order created in Appwrite orders collection and product stock deducted.
+\item Verify cart is cleared after successful payment.
+\item Verify seller receives FCM push notification for new order.
+\item Repeat with Stripe decline card 4000 0000 0000 0002.
+\end{enumerate} \\ \hline
+\textbf{Test Inputs} & Success card: 4242 4242 4242 4242 / 12/34 / 123. \newline Decline card: 4000 0000 0000 0002. \newline Order total: PKR 51,000. \\ \hline
+\textbf{Expected Results} &
+\begin{itemize}[leftmargin=*,noitemsep]
+\item PaymentIntent created server-side; Stripe payment sheet displays correctly.
+\item Successful payment: order created with status ``pending'' in orders collection.
+\item Product stock deducted atomically by \texttt{process-order} function.
+\item Cart cleared after successful payment; confirmation screen shown.
+\item Seller receives push notification for new order.
+\item Declined card: error message shown; order not created; cart preserved.
+\end{itemize} \\ \hline
+\textbf{Actual Results} &
+\begin{itemize}[leftmargin=*,noitemsep]
+\item Stripe payment sheet loaded from server-side clientSecret correctly.
+\item Successful payment created order and deducted stock atomically.
+\item Cart cleared; order confirmation displayed; seller push notification received.
+\item Declined payment showed error message; cart and stock unaffected.
+\end{itemize} \\ \hline
+\textbf{Status} & Pass \\ \hline
+\textbf{Comments} & Stripe integration via Appwrite cloud functions ensures the secret key remains server-side. Atomic order creation and stock deduction function correctly. \\ \hline
+\end{longtable}
+}
+
+\subsection{Create RFQ Test Case}
+
+\begin{table}[H]
+\centering
+\caption{Test Case TC010 -- Create RFQ}
+\label{tab:tc010}
+\renewcommand{\arraystretch}{1.15}
+\small
+\begin{tabular}{|p{3.2cm}|p{10.8cm}|}
+\hline
+\textbf{Module Name} & RFQ Marketplace -- Create Request for Quotation \\ \hline
+\textbf{Test Case ID} & TC010 \\ \hline
+\textbf{Use Case ID} & UC-08 \\ \hline
+\textbf{Tester Names} & Husnain Nadeem, Kashan Mehmood \\ \hline
+\textbf{Test Description} & Verify that customers can create and submit a valid RFQ to the marketplace, that the RFQ is visible to sellers, that sellers receive a push notification, and that validation errors block incomplete submissions. \\ \hline
+\textbf{Pre-Requisites} &
+\begin{itemize}[leftmargin=*,noitemsep]
+\item Customer logged in with verified email.
+\item At least one registered Seller account with FCM token active.
+\item \texttt{rfq-actions} and \texttt{send-rfq-notification} Appwrite cloud functions deployed.
+\end{itemize} \\ \hline
+\textbf{Environment} & Android Device / Emulator, Flutter SDK, Appwrite Cloud, Firebase FCM \\ \hline
+\textbf{Test Scenario} & Test successful RFQ creation, marketplace visibility, push notification delivery, and validation for incomplete form fields. \\ \hline
+\textbf{Test Steps} &
+\begin{enumerate}[leftmargin=*,noitemsep]
+\item Navigate to the RFQ Marketplace screen as a Customer.
+\item Tap Create RFQ; fill in product name, category, quantity, delivery city, deadline, target price range, and specifications.
+\item Submit the RFQ.
+\item Verify the new RFQ appears in the open RFQs list with status ``open''.
+\item Log in as a Seller; verify the RFQ appears in Open RFQs screen.
+\item Verify the Seller received an FCM push notification.
+\item Attempt to submit an RFQ with the product name field empty.
+\end{enumerate} \\ \hline
+\textbf{Test Inputs} & Product: Cotton Fabric, Category: Textiles, Quantity: 500 metres, City: Faisalabad, Deadline: 7 days, Target Price: PKR 200--300/metre, Specs: 100\% pure cotton. \newline Invalid: empty product name. \\ \hline
+\textbf{Expected Results} &
+\begin{itemize}[leftmargin=*,noitemsep]
+\item RFQ created in Appwrite rfqs collection with status ``open'' and 7-day expiry.
+\item RFQ visible on Open RFQs screen for all sellers.
+\item Seller receives FCM push notification for new RFQ.
+\item Incomplete form submission blocked with validation error message.
+\end{itemize} \\ \hline
+\textbf{Actual Results} &
+\begin{itemize}[leftmargin=*,noitemsep]
+\item RFQ document created in Appwrite with correct data and status ``open''.
+\item RFQ visible to Seller on Open RFQs screen.
+\item Push notification received on Seller device.
+\item Empty product name field validation error triggered correctly.
+\end{itemize} \\ \hline
+\textbf{Status} & Pass \\ \hline
+\textbf{Comments} & RFQ creation, marketplace publication, push notification dispatch, and form validation all work as expected. \\ \hline
+\end{tabular}
+\end{table}
+
+\subsection{Submit Quote Test Case}
+
+\begin{table}[H]
+\centering
+\caption{Test Case TC011 -- Submit Quote (Seller)}
+\label{tab:tc011}
+\renewcommand{\arraystretch}{1.15}
+\small
+\begin{tabular}{|p{3.2cm}|p{10.8cm}|}
+\hline
+\textbf{Module Name} & RFQ Marketplace -- Seller Quote Submission \\ \hline
+\textbf{Test Case ID} & TC011 \\ \hline
+\textbf{Use Case ID} & UC-12 \\ \hline
+\textbf{Tester Names} & Husnain Nadeem, Kashan Mehmood \\ \hline
+\textbf{Test Description} & Verify that a seller can view open RFQs, submit a complete and valid quote, that the quote is visible to the customer, and that the customer receives a push notification. \\ \hline
+\textbf{Pre-Requisites} &
+\begin{itemize}[leftmargin=*,noitemsep]
+\item Seller logged in with verified email.
+\item An open RFQ exists in Appwrite rfqs collection.
+\item \texttt{rfq-actions} Appwrite cloud function deployed.
+\item Customer account has a registered FCM push token.
+\end{itemize} \\ \hline
+\textbf{Environment} & Android Device / Emulator, Flutter SDK, Appwrite Cloud, Firebase FCM \\ \hline
+\textbf{Test Scenario} & Test quote form completion, submission, customer notification, and validation for missing required fields. \\ \hline
+\textbf{Test Steps} &
+\begin{enumerate}[leftmargin=*,noitemsep]
+\item Log in as Seller; navigate to Open RFQs screen.
+\item Tap an open RFQ to view full details.
+\item Tap Submit Quote; fill in unit price, total price, estimated delivery days, and optional notes.
+\item Submit the quote.
+\item Log in as Customer; verify the quote appears in the RFQ Quotes screen.
+\item Verify the Customer received an FCM push notification for a new quote.
+\item Attempt to submit a quote with unit price field empty.
+\end{enumerate} \\ \hline
+\textbf{Test Inputs} & Unit Price: PKR 250/metre, Total Price: PKR 125,000, Delivery Days: 10, Notes: Premium cotton, fast delivery. \newline Invalid: empty unit price. \\ \hline
+\textbf{Expected Results} &
+\begin{itemize}[leftmargin=*,noitemsep]
+\item Quote document created in rfq\_quotes collection with status ``pending''.
+\item Quote visible to the requesting Customer on RFQ Quotes screen.
+\item Customer receives FCM push notification for new quote.
+\item Empty unit price field triggers validation error; submission blocked.
+\end{itemize} \\ \hline
+\textbf{Actual Results} &
+\begin{itemize}[leftmargin=*,noitemsep]
+\item Quote saved in rfq\_quotes collection with correct data and pending status.
+\item Customer-side RFQ Quotes screen displayed the new quote correctly.
+\item Customer push notification received on device.
+\item Validation correctly blocked submission with empty required fields.
+\end{itemize} \\ \hline
+\textbf{Status} & Pass \\ \hline
+\textbf{Comments} & Seller quote submission workflow, Appwrite rfq-actions function, and push notification delivery to customer all function correctly. \\ \hline
+\end{tabular}
+\end{table}
+
+\newpage
+\subsection{Accept Quote Test Case}
+
+\begin{table}[H]
+\centering
+\caption{Test Case TC012 -- Accept Quote}
+\label{tab:tc012}
+\renewcommand{\arraystretch}{1.15}
+\small
+\begin{tabular}{|p{3.2cm}|p{10.8cm}|}
+\hline
+\textbf{Module Name} & RFQ Marketplace -- Customer Quote Acceptance \\ \hline
+\textbf{Test Case ID} & TC012 \\ \hline
+\textbf{Use Case ID} & UC-09 \\ \hline
+\textbf{Tester Names} & Husnain Nadeem, Kashan Mehmood \\ \hline
+\textbf{Test Description} & Verify that a customer can view all submitted quotes against their RFQ, accept the preferred quote, that competing quotes are rejected automatically, and that the accepted quote converts to a checkout-ready order flow. \\ \hline
+\textbf{Pre-Requisites} &
+\begin{itemize}[leftmargin=*,noitemsep]
+\item Customer has an active RFQ with at least two submitted quotes from different sellers.
+\item \texttt{rfq-actions} Appwrite cloud function deployed.
+\item Both seller accounts have registered FCM tokens.
+\end{itemize} \\ \hline
+\textbf{Environment} & Android Device / Emulator, Flutter SDK, Appwrite Cloud, Firebase FCM \\ \hline
+\textbf{Test Scenario} & Test quote comparison, acceptance, automatic rejection of competing quotes, seller notification, and transition to checkout/payment flow. \\ \hline
+\textbf{Test Steps} &
+\begin{enumerate}[leftmargin=*,noitemsep]
+\item Log in as Customer; navigate to My RFQs screen.
+\item Open the RFQ with submitted quotes; view the RFQ Quotes screen.
+\item Compare two quotes side by side (price, lead time, notes).
+\item Tap Accept on the preferred quote.
+\item Verify the accepted quote status changes to ``accepted''.
+\item Verify all other quotes for the same RFQ are marked ``rejected''.
+\item Verify RFQ status changes to ``accepted''.
+\item Verify both sellers receive FCM push notifications (accepted/rejected).
+\item Verify the accepted quote transitions to the checkout/payment flow.
+\end{enumerate} \\ \hline
+\textbf{Test Inputs} & RFQ for 500 metres Cotton Fabric. Quote A: PKR 250/metre, 10 days. Quote B: PKR 280/metre, 7 days. Accept Quote A. \\ \hline
+\textbf{Expected Results} &
+\begin{itemize}[leftmargin=*,noitemsep]
+\item Accepted quote status updated to ``accepted'' in rfq\_quotes collection.
+\item Competing quote status updated to ``rejected'' automatically.
+\item RFQ document status updated to ``accepted''.
+\item Accepted seller notified; competing seller notified of rejection.
+\item Customer routed to checkout with accepted quote pricing pre-applied.
+\end{itemize} \\ \hline
+\textbf{Actual Results} &
+\begin{itemize}[leftmargin=*,noitemsep]
+\item Quote accepted and rejected statuses updated correctly in Appwrite.
+\item RFQ status changed to ``accepted''; no further bids possible.
+\item Both sellers received appropriate FCM push notifications.
+\item Checkout flow launched with the negotiated pricing pre-populated.
+\end{itemize} \\ \hline
+\textbf{Status} & Pass \\ \hline
+\textbf{Comments} & Quote acceptance lifecycle, automatic competing-quote rejection, and transition to checkout all function correctly via the rfq-actions cloud function. \\ \hline
+\end{tabular}
+\end{table}
+
+\newpage
+\subsection{Real-Time Chat Test Case}
+
+\begin{table}[H]
+\centering
+\caption{Test Case TC013 -- Real-Time Chat}
+\label{tab:tc013}
+\renewcommand{\arraystretch}{1.15}
+\small
+\begin{tabular}{|p{3.2cm}|p{10.8cm}|}
+\hline
+\textbf{Module Name} & Real-Time Chat -- Buyer and Seller Messaging \\ \hline
+\textbf{Test Case ID} & TC013 \\ \hline
+\textbf{Use Case ID} & UC-10 \\ \hline
+\textbf{Tester Names} & Husnain Nadeem, Kashan Mehmood \\ \hline
+\textbf{Test Description} & Validate that real-time text and image messaging between Customer and Seller works correctly, that messages are delivered instantly via Appwrite Realtime, unread counters update correctly, and push notifications are dispatched. \\ \hline
+\textbf{Pre-Requisites} &
+\begin{itemize}[leftmargin=*,noitemsep]
+\item Customer and Seller accounts logged in on separate devices / emulators.
+\item Appwrite Realtime subscription active.
+\item \texttt{send-chat-notification} cloud function deployed.
+\item Both users have registered FCM tokens.
+\end{itemize} \\ \hline
+\textbf{Environment} & Two Android Devices / Emulators, Flutter SDK, Appwrite Cloud (Realtime), Firebase FCM \\ \hline
+\textbf{Test Scenario} & Test conversation creation, real-time text message delivery, image message sharing, unread counter behaviour, and push notification dispatch. \\ \hline
+\textbf{Test Steps} &
+\begin{enumerate}[leftmargin=*,noitemsep]
+\item Customer opens a product; taps Chat with Seller.
+\item Verify a new conversation document is created in the conversations collection.
+\item Customer sends a text message.
+\item Verify message appears on Seller's chat screen in real time without refresh.
+\item Verify Customer's message appears in Seller's unread counter.
+\item Seller sends a reply with an image attachment.
+\item Verify image message delivered and displayed on Customer's screen.
+\item Customer opens the chat; verify unread counter resets to zero.
+\item Close the app on Seller device; Customer sends a message and verify FCM push notification received on Seller device.
+\end{enumerate} \\ \hline
+\textbf{Test Inputs} & Text message: ``What is the minimum bulk order quantity?'' Image: product specification photo (JPEG, 500 KB). \\ \hline
+\textbf{Expected Results} &
+\begin{itemize}[leftmargin=*,noitemsep]
+\item Conversation document created keyed by (customerId, sellerId, productId).
+\item Text messages delivered in real time via Appwrite Realtime WebSocket.
+\item Image uploaded to Appwrite Storage and displayed in chat.
+\item Unread counter increments per new message; resets on chat open.
+\item FCM push notification received when recipient's app is in background.
+\end{itemize} \\ \hline
+\textbf{Actual Results} &
+\begin{itemize}[leftmargin=*,noitemsep]
+\item Conversation created and messages delivered in real time with no polling.
+\item Image uploaded to product\_images bucket and rendered in chat correctly.
+\item Unread counters incremented and reset accurately.
+\item Background FCM push notification received on Seller device.
+\end{itemize} \\ \hline
+\textbf{Status} & Pass \\ \hline
+\textbf{Comments} & Appwrite Realtime WebSocket delivers messages instantly. Image messaging, unread counter logic, and FCM background notifications all function correctly. \\ \hline
+\end{tabular}
+\end{table}
+
+\newpage
+\subsection{Manage Products Test Case}
+
+\begin{table}[H]
+\centering
+\caption{Test Case TC014 -- Manage Products (Seller)}
+\label{tab:tc014}
+\renewcommand{\arraystretch}{1.15}
+\small
+\begin{tabular}{|p{3.2cm}|p{10.8cm}|}
+\hline
+\textbf{Module Name} & Seller Dashboard -- Product Management \\ \hline
+\textbf{Test Case ID} & TC014 \\ \hline
+\textbf{Use Case ID} & UC-11 \\ \hline
+\textbf{Tester Names} & Husnain Nadeem, Kashan Mehmood \\ \hline
+\textbf{Test Description} & Verify that sellers can add new product listings with images and tiered pricing, edit existing products, deactivate listings, and that all changes are immediately reflected in the customer product catalogue. \\ \hline
+\textbf{Pre-Requisites} &
+\begin{itemize}[leftmargin=*,noitemsep]
+\item Seller logged in with verified email.
+\item Seller Products screen accessible; Storage bucket available.
+\end{itemize} \\ \hline
+\textbf{Environment} & Android Device / Emulator, Flutter SDK, Appwrite Cloud, Appwrite Storage \\ \hline
+\textbf{Test Scenario} & Test add product with 3 images and 3 pricing tiers, edit product price, deactivate listing, and validate mandatory field enforcement. \\ \hline
+\textbf{Test Steps} &
+\begin{enumerate}[leftmargin=*,noitemsep]
+\item Navigate to Seller Products; tap Add Product; fill in details and upload 3 images.
+\item Set 3 pricing tiers: Tier1 = 1+ @ PKR 1,000; Tier2 = 50+ @ PKR 850; Tier3 = 100+ @ PKR 700.
+\item Tap Save; verify product in Seller list. Log in as Customer; verify in catalogue.
+\item Return as Seller; edit Tier1 to PKR 950; verify Customer catalogue updates.
+\item Deactivate product; verify removal from Customer catalogue.
+\item Attempt to add product with empty name field.
+\end{enumerate} \\ \hline
+\textbf{Test Inputs} & New product: Cotton Fabric Roll, Textiles, Stock 1000 units, 3 images (JPEG). Edit: Tier1 to PKR 950. Invalid: empty product name. \\ \hline
+\textbf{Expected Results} &
+\begin{itemize}[leftmargin=*,noitemsep]
+\item Product saved in Appwrite products collection with images in Storage.
+\item New product immediately visible in Customer catalogue.
+\item Edited price reflected immediately; deactivated product removed.
+\item Empty name field triggers validation error; form not submitted.
+\end{itemize} \\ \hline
+\textbf{Actual Results} &
+\begin{itemize}[leftmargin=*,noitemsep]
+\item Product added with images and tiered pricing saved correctly.
+\item Customer catalogue reflected new and edited products immediately.
+\item Deactivation removed product; validation blocked empty field.
+\end{itemize} \\ \hline
+\textbf{Status} & Pass \\ \hline
+\textbf{Comments} & Product add, edit, and deactivate operations using Appwrite products collection and Storage bucket all function correctly with real-time catalogue updates. \\ \hline
+\end{tabular}
+\end{table}
+\newpage
+\subsection{View Seller Orders Test Case}
+{\renewcommand{\arraystretch}{1.15}
+\small
+\setlength{\LTleft}{\fill}
+\setlength{\LTright}{\fill}
+\begin{longtable}{|p{3.2cm}|p{10.8cm}|}
+\caption{Test Case TC015 -- View Seller Orders and Update Status} \label{tab:tc015} \\
+\hline
+\textbf{Module Name} & Seller Dashboard -- Order Management and Fulfilment \\ \hline
+\textbf{Test Case ID} & TC015 \\ \hline
+\textbf{Use Case ID} & UC-13 \\ \hline
+\textbf{Tester Names} & Husnain Nadeem, Kashan Mehmood \\ \hline
+\textbf{Test Description} & Verify that sellers can view all incoming orders, access order details, progress orders through the complete fulfilment lifecycle, and that customers receive push notifications at each status change. \\ \hline
+\textbf{Pre-Requisites} &
+\begin{itemize}[leftmargin=*,noitemsep]
+\item Seller logged in; at least one customer order exists in Appwrite orders collection.
+\item \texttt{seller-order-actions} Appwrite cloud function deployed.
+\item \texttt{send-order-notification} Appwrite cloud function deployed.
+\item Customer account has a registered FCM token.
+\end{itemize} \\ \hline
+\textbf{Environment} & Android Device / Emulator, Flutter SDK, Appwrite Cloud Functions, Firebase FCM \\ \hline
+\textbf{Test Scenario} & Test order list display, order detail view, status progression through all lifecycle stages, and customer FCM notification at each stage. \\ \hline
+\textbf{Test Steps} &
+\begin{enumerate}[leftmargin=*,noitemsep]
+\item Navigate to Seller Orders screen; verify all incoming orders are listed with product, customer, quantity, total, and current status.
+\item Tap an order to open Seller Order Detail screen; verify all line items, delivery address, and customer notes are shown.
+\item Update order status from Pending $\rightarrow$ Confirmed; verify change and customer push notification.
+\item Update status from Confirmed $\rightarrow$ Shipped; verify and confirm customer notification.
+\item Update status from Shipped $\rightarrow$ Delivered; verify and confirm customer notification.
+\item Navigate to Orders screen as Customer; verify status changes are reflected.
+\item Attempt to revert status backwards (Delivered $\rightarrow$ Shipped) and verify system prevents it.
+\end{enumerate} \\ \hline
+\textbf{Test Inputs} & Order: 1 x Industrial Fan, Qty 60, Total PKR 51,000, delivery address in Lahore, status = Pending. Status progression: Pending $\rightarrow$ Confirmed $\rightarrow$ Shipped $\rightarrow$ Delivered. \\ \hline
+\textbf{Expected Results} &
+\begin{itemize}[leftmargin=*,noitemsep]
+\item All orders listed with correct product, quantity, total, and status.
+\item Order detail view shows all line items, delivery address, and notes.
+\item Each status update saved via seller-order-actions function.
+\item Customer receives FCM push notification at each status change.
+\item Customer Orders screen reflects the latest status immediately.
+\item Backwards status change not permitted by the system.
+\end{itemize} \\ \hline
+\textbf{Actual Results} &
+\begin{itemize}[leftmargin=*,noitemsep]
+\item Orders listed and detail view rendered correctly.
+\item Status updated through full lifecycle by seller-order-actions function.
+\item Customer received push notifications at Confirmed, Shipped, and Delivered stages.
+\item Customer Orders screen updated to reflect each status transition.
+\item Backwards status reversion correctly prevented by the cloud function.
+\end{itemize} \\ \hline
+\textbf{Status} & Pass \\ \hline
+\textbf{Comments} & Order management and fulfilment lifecycle via seller-order-actions cloud function, including RLS bypass and push notification dispatch, all work correctly. \\ \hline
+\end{longtable}
+}
+
+\newpage
+\subsection{AI-Powered Review Summarization Test Case}
+
+\begin{table}[H]
+\centering
+\caption{Test Case TC016 -- AI-Powered Review Summarization}
+\label{tab:tc016}
+\renewcommand{\arraystretch}{1.15}
+\small
+\begin{tabular}{|p{3.2cm}|p{10.8cm}|}
+\hline
+\textbf{Module Name} & AI Review Summary -- Bilingual Summary Generation \\ \hline
+\textbf{Test Case ID} & TC016 \\ \hline
+\textbf{Use Case ID} & UC-14 \\ \hline
+\textbf{Tester Names} & Husnain Nadeem, Kashan Mehmood \\ \hline
+\textbf{Test Description} & Verify that the AI review summary widget generates concise bilingual summaries in English and Urdu via the Google Gemini API, that results are cached in Appwrite, and that the toggle between languages works without re-calling the API. \\ \hline
+\textbf{Pre-Requisites} &
+\begin{itemize}[leftmargin=*,noitemsep]
+\item Product has at least 3 verified-purchase customer reviews in Appwrite.
+\item \texttt{ai-review-summary} Appwrite cloud function deployed with Google Gemini API key configured.
+\item review\_summaries Appwrite collection available.
+\end{itemize} \\ \hline
+\textbf{Environment} & Android Device / Emulator, Flutter SDK, Appwrite Cloud Functions, Google Gemini API \\ \hline
+\textbf{Test Scenario} & Test summary generation for English and Urdu, caching behaviour on second request, widget hidden for products with no reviews, and API error handling. \\ \hline
+\textbf{Test Steps} &
+\begin{enumerate}[leftmargin=*,noitemsep]
+\item Open a product with 3+ reviews; locate AI Review Summary widget.
+\item Tap ``Generate Summary'' with English selected.
+\item Verify English summary is displayed on screen.
+\item Toggle to Urdu; verify Urdu summary displayed without new API call.
+\item Navigate away and return to the same product.
+\item Tap ``Generate Summary'' again; verify result loads from cache (review\_summaries collection).
+\item Open a product with zero reviews; verify AI summary widget is hidden.
+\item Disconnect internet; attempt to generate summary; verify error message and Retry button shown.
+\end{enumerate} \\ \hline
+\textbf{Test Inputs} & Product with 3 reviews in English. Language options: English, Urdu. No-review product tested separately. Offline scenario simulated. \\ \hline
+\textbf{Expected Results} &
+\begin{itemize}[leftmargin=*,noitemsep]
+\item English summary generated and displayed from Gemini API.
+\item Urdu summary displayed on toggle using cached bilingual result.
+\item Second request for the same product returns cached summary instantly.
+\item AI summary widget hidden when product has no reviews.
+\item Offline / API error shows error message with Retry button.
+\end{itemize} \\ \hline
+\textbf{Actual Results} &
+\begin{itemize}[leftmargin=*,noitemsep]
+\item English and Urdu summaries generated correctly via Gemini API.
+\item Language toggle used cached result; no redundant API call made.
+\item Cached summary loaded instantly on repeat request.
+\item Zero-review product hid AI summary widget correctly.
+\item Offline error message and Retry button displayed as expected.
+\end{itemize} \\ \hline
+\textbf{Status} & Pass \\ \hline
+\textbf{Comments} & AI review summarization using Google Gemini via Appwrite cloud function works correctly. Caching, language toggle, and error handling all function as designed. \\ \hline
+\end{tabular}
+\end{table}
+
+\newpage
+\subsection{Push Notifications Test Case}
+
+\begin{table}[H]
+\centering
+\caption{Test Case TC017 -- Push Notification Delivery}
+\label{tab:tc017}
+\renewcommand{\arraystretch}{1.15}
+\small
+\begin{tabular}{|p{3.2cm}|p{10.8cm}|}
+\hline
+\textbf{Module Name} & Push Notifications -- FCM Delivery Across All Events \\ \hline
+\textbf{Test Case ID} & TC017 \\ \hline
+\textbf{Use Case ID} & UC-01, UC-07, UC-08, UC-10, UC-13 \\ \hline
+\textbf{Tester Names} & Husnain Nadeem, Kashan Mehmood \\ \hline
+\textbf{Test Description} & Verify that push notifications are correctly delivered for all key platform events including new orders, order status changes, new chat messages, new RFQs, and new quotes, in both foreground and background app states. \\ \hline
+\textbf{Pre-Requisites} &
+\begin{itemize}[leftmargin=*,noitemsep]
+\item Customer and Seller accounts with registered FCM tokens.
+\item All three notification cloud functions deployed: \texttt{send-order-notification}, \texttt{send-chat-notification}, \texttt{send-rfq-notification}.
+\item Firebase Cloud Messaging configured in \texttt{google-services.json}.
+\end{itemize} \\ \hline
+\textbf{Environment} & Two Android Devices, Flutter SDK, Appwrite Cloud Functions, Firebase Cloud Messaging (fcm.googleapis.com) \\ \hline
+\textbf{Test Scenario} & Test push notifications for all 5 event types in foreground, background, and terminated app states, plus notification tap deep-link routing. \\ \hline
+\textbf{Test Steps} &
+\begin{enumerate}[leftmargin=*,noitemsep]
+\item Place a new order -- verify Seller receives new order notification (app in foreground).
+\item Seller updates order to Confirmed -- verify Customer receives status notification (app in background).
+\item Customer sends a chat message -- verify Seller receives chat notification (app terminated).
+\item Customer posts a new RFQ -- verify Seller receives RFQ notification.
+\item Seller submits a quote -- verify Customer receives new quote notification.
+\item Tap each notification; verify deep-link routing to the correct screen.
+\item Log out; verify FCM token is unregistered from Appwrite push targets.
+\end{enumerate} \\ \hline
+\textbf{Test Inputs} & Events: new order, order status change (confirmed), new chat message, new RFQ, new quote. App states: foreground, background, terminated. \\ \hline
+\textbf{Expected Results} &
+\begin{itemize}[leftmargin=*,noitemsep]
+\item All 5 event types deliver FCM push notifications to the correct recipient.
+\item Notifications delivered in all three app lifecycle states.
+\item Tapping each notification routes to the correct screen via deep-link.
+\item FCM token removed from Appwrite push targets on logout.
+\end{itemize} \\ \hline
+\textbf{Actual Results} &
+\begin{itemize}[leftmargin=*,noitemsep]
+\item All event-type notifications delivered correctly to target devices.
+\item Notifications received in foreground, background, and terminated states.
+\item Deep-link tap routing to order detail, chat, and RFQ list all functioned correctly.
+\item FCM token unregistered from Appwrite on logout as expected.
+\end{itemize} \\ \hline
+\textbf{Status} & Pass \\ \hline
+\textbf{Comments} & FCM push notification delivery via Appwrite Messaging cloud functions works across all event types and app lifecycle states. Deep-link routing and token cleanup on logout are both functional. \\ \hline
+\end{tabular}
+\end{table}
+
+\newpage
+\section{Non-Functional Testing}
+Non-functional testing tests the quality characteristics of the Indus Bazar platform in a way other than mere functionality in features. This section deals with performance, security, and usability testing to ensure that the system fulfills the non-functional requirements outlined in Chapter 3, such as responsiveness, data protection, scalability, and usability by Pakistani business users of different technical capabilities.
+\subsection{Performance Testing}
+They were tested on the responsiveness, loading time, and real-time communication latency of the Indus Bazar platform during regular and peak usage. The goal was to ensure that the platform provides all core user journeys with a consistently fast and smooth experience.
+
+\begin{table}[H]
+\centering
+\caption{Performance Test Results}
+\label{tab:performance_testing}
+\renewcommand{\arraystretch}{1.3}
+\small
+\begin{tabular}{|p{4cm}|p{3.5cm}|p{3.5cm}|p{2.5cm}|}
+\hline
+\rowcolor{lightgray}
+\textbf{Test Scenario} & \textbf{Metric Measured} & \textbf{Result} & \textbf{Status} \\
+\hline
+App cold start to Login screen & Launch time & Under 2.5 seconds & Pass \\
+\hline
+Product catalogue load (50 products) & Screen load time & Under 1.8 seconds & Pass \\
+\hline
+Product detail screen render & Screen load time & Under 1.2 seconds & Pass \\
+\hline
+Cart tier price recalculation & UI update latency & Under 200 milliseconds & Pass \\
+\hline
+Stripe payment sheet init & PaymentIntent creation & Under 3 seconds & Pass \\
+\hline
+Order creation after payment & Appwrite function latency & Under 2 seconds & Pass \\
+\hline
+Real-time chat message delivery & Appwrite Realtime latency & Under 500 milliseconds & Pass \\
+\hline
+RFQ creation and publication & Appwrite function latency & Under 2.5 seconds & Pass \\
+\hline
+AI review summary generation & Gemini API + function & Under 6 seconds & Pass \\
+\hline
+Push notification delivery (FCM) & End-to-end delivery time & Under 3 seconds & Pass \\
+\hline
+Image upload (500 KB product image) & Appwrite Storage upload & Under 4 seconds & Pass \\
+\hline
+\end{tabular}
+\end{table}
+Every performance standard was achieved in a normal network (4G LTE). Appwrite Cloud managed infrastructure in Frankfurt area, Riverpod reactive state management and Flutter GPU-accelerated rendering helped to keep the transitions to the screens and real-time data updates consistently fast during the application.
+\subsection{Security Testing}
+Security testing was conducted to ensure that the Indus Bazar platform safeguards user data, business information, and financial transactions against unauthorised access, data leakage and typical attack vectors. The following are the major security controls that were confirmed.
+
+\begin{table}[H]
+\centering
+\caption{Security Test Results}
+\label{tab:security_testing}
+\renewcommand{\arraystretch}{1.3}
+\small
+\begin{tabular}{|p{4.5cm}|p{5.5cm}|p{2.5cm}|}
+\hline
+\rowcolor{lightgray}
+\textbf{Security Control} & \textbf{Test Description} & \textbf{Status} \\
+\hline
+Email Verification Enforcement & Attempted access to Customer Home without email verification; AppWrapper correctly redirected to Verification screen in all attempts. & Pass \\
+\hline
+Role-Based Access Control & Attempted to access Seller dashboard with a Customer session token; system correctly denied access and returned error. & Pass \\
+\hline
+Stripe Secret Key Protection & Inspected client-side network traffic; Stripe secret key was never present in any client request or Flutter app bundle. & Pass \\
+\hline
+Appwrite Row-Level Security & Attempted to read another user's orders, cart, and addresses using a different authenticated session; Appwrite returned permission denied errors for all attempts. & Pass \\
+\hline
+Server-Side Stock Deduction & Attempted to modify stock deduction amount by intercepting the process-order function call; server-side validation rejected the tampered request. & Pass \\
+\hline
+FCM Token Logout Cleanup & Verified that FCM push token is deleted from Appwrite push targets on user logout; no notifications delivered to device after logout. & Pass \\
+\hline
+Password Security & Verified all passwords are managed exclusively by Appwrite's authentication layer; no plaintext passwords stored in any Appwrite collection. & Pass \\
+\hline
+Deep Link Security & Verified that the email verification and password reset deep links cannot be replayed; Appwrite tokens are single-use and expire after consumption. & Pass \\
+\hline
+\end{tabular}
+\end{table}
+
+All critical security controls were validated. The utilization of document-level Row-Level Security of Appwrite, server-side cloud functions on all privileged operations, and the strict enforcement of email verification of AppWrapper as a whole make the platform meet the security requirements of the system specification.
+
+\subsection{Usability Testing}
+To measure the ease of use, the learnability, and the overall satisfaction of the Indus Bazar platform, usability testing with a representative sample of five Pakistani business users (two retailers, two wholesalers, and one small manufacturer) was carried out. The participants were requested to perform a series of representative tasks after being assigned the tasks without any prior training and give feedback on their experience.
+
+\begin{table}[H]
+\centering
+\caption{Usability Test Task Completion Results}
+\label{tab:usability_testing}
+\renewcommand{\arraystretch}{1.3}
+\small
+\begin{tabular}{|p{5.5cm}|p{2.5cm}|p{2.5cm}|p{2.5cm}|}
+\hline
+\rowcolor{lightgray}
+\textbf{Task} & \textbf{Avg. Completion Time} & \textbf{Success Rate} & \textbf{Status} \\
+\hline
+Register a new account and verify email & 2.8 minutes & 5 / 5 (100\%) & Pass \\
+\hline
+Browse products and apply a category filter & 1.2 minutes & 5 / 5 (100\%) & Pass \\
+\hline
+Add a product to cart and view tiered pricing & 1.5 minutes & 5 / 5 (100\%) & Pass \\
+\hline
+Complete checkout and make a payment & 3.1 minutes & 4 / 5 (80\%) & Pass \\
+\hline
+Create a new RFQ and submit it & 2.4 minutes & 4 / 5 (80\%) & Pass \\
+\hline
+Send a message to a seller via chat & 1.0 minutes & 5 / 5 (100\%) & Pass \\
+\hline
+Switch the app language from English to Urdu & 0.5 minutes & 5 / 5 (100\%) & Pass \\
+\hline
+\end{tabular}
+\end{table}
+
+The respondents noted that the mobile interface was easy to use and navigate, and the bilingual (English/Urdu) support was greatly appreciated. The tiered pricing feature on the product detail screen was mentioned as one of the outstanding features when making B2B decisions. Other minor usability problems were found during the checkout process and RFQ generation and were fixed, which led to the 80 percent success rate during the first attempt of those tasks increasing to 100 percent with subsequent attempts.
+
