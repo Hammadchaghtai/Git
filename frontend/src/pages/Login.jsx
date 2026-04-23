@@ -29,7 +29,7 @@ export default function Login() {
       const timer = setTimeout(() => {
         setError('');
         window.location.reload();
-      }, 3000);
+      }, 5000);
       return () => clearTimeout(timer);
     }
   }, [error]);
@@ -42,13 +42,14 @@ export default function Login() {
     const result = await login(username, password);
 
     if (result.success) {
-      sessionStorage.setItem('pending_login', JSON.stringify({
-        username: result.username,
-        role: result.role || null,
-        needs_setup: result.needs_setup || false,
-        requires_2fa: result.requires_2fa ?? true,
-      }));
-      navigate('/verify-otp');
+      if (result.requires_2fa) {
+        sessionStorage.setItem('pending_login', JSON.stringify({
+          username: result.username,
+        }));
+        navigate('/verify-otp');
+      } else {
+        navigate('/');
+      }
     } else {
       // Store error and refresh first as requested
       sessionStorage.setItem('login_error', result.message || 'Invalid Username or Password!');
@@ -77,8 +78,8 @@ export default function Login() {
       </button>
 
       <div className={`w-full max-w-[400px] rounded-xl p-10 shadow-xl text-center transition-colors duration-500 ${isDarkMode
-        ? 'bg-slate-800 border border-slate-700'
-        : 'bg-white'
+          ? 'bg-slate-800 border border-slate-700'
+          : 'bg-white'
         }`}>
         {/* Shield Icon */}
         <div className="mb-5 flex justify-center">
@@ -113,8 +114,8 @@ export default function Login() {
               onChange={(e) => setUsername(e.target.value)}
               placeholder="Enter username"
               className={`w-full rounded-lg border px-4 py-2.5 text-sm focus:border-[#38bdf8] focus:outline-none focus:ring-2 focus:ring-[#38bdf8]/20 transition-colors duration-300 ${isDarkMode
-                ? 'bg-slate-900 border-slate-600 text-slate-200 placeholder-slate-500'
-                : 'bg-gray-50 border-gray-200 text-gray-900 placeholder-gray-400'
+                  ? 'bg-slate-900 border-slate-600 text-slate-200 placeholder-slate-500'
+                  : 'bg-gray-50 border-gray-200 text-gray-900 placeholder-gray-400'
                 }`}
               required
             />
@@ -131,8 +132,8 @@ export default function Login() {
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Enter password"
                 className={`w-full rounded-lg border px-4 py-2.5 pr-10 text-sm focus:border-[#38bdf8] focus:outline-none focus:ring-2 focus:ring-[#38bdf8]/20 transition-colors duration-300 ${isDarkMode
-                  ? 'bg-slate-900 border-slate-600 text-slate-200 placeholder-slate-500'
-                  : 'bg-gray-50 border-gray-200 text-gray-900 placeholder-gray-400'
+                    ? 'bg-slate-900 border-slate-600 text-slate-200 placeholder-slate-500'
+                    : 'bg-gray-50 border-gray-200 text-gray-900 placeholder-gray-400'
                   }`}
                 required
               />
@@ -150,8 +151,8 @@ export default function Login() {
             type="submit"
             disabled={loading}
             className={`w-full rounded-lg py-3 text-sm font-semibold text-white transition-all duration-300 cursor-pointer disabled:opacity-60 ${isDarkMode
-              ? 'bg-sky-600 hover:bg-sky-700 shadow-lg shadow-sky-900/30'
-              : 'bg-[#0f172a] hover:bg-[#1e293b]'
+                ? 'bg-sky-600 hover:bg-sky-700 shadow-lg shadow-sky-900/30'
+                : 'bg-[#0f172a] hover:bg-[#1e293b]'
               }`}
           >
             {loading ? 'Authenticating...' : 'Sign In'}

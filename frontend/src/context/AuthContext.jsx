@@ -21,7 +21,6 @@ export function AuthProvider({ children }) {
             email: res.data.email,
             role: res.data.role,
             needs_setup: res.data.needs_setup,
-            account_expiry_date: res.data.account_expiry_date,
           };
           setUser(userData);
           localStorage.setItem('grc_user', JSON.stringify(userData));
@@ -74,7 +73,6 @@ export function AuthProvider({ children }) {
         username: meRes.data.username,
         role: meRes.data.role,
         needs_setup: meRes.data.needs_setup,
-        account_expiry_date: meRes.data.account_expiry_date,
       };
     } catch (err) {
       const detail = err?.response?.data?.detail || 'Invalid username or password.';
@@ -97,7 +95,7 @@ export function AuthProvider({ children }) {
   };
 
   const updateUser = (updates) => {
-     setUser(prev => ({...prev, ...updates}));
+    setUser(prev => ({ ...prev, ...updates }));
   };
 
   const value = {

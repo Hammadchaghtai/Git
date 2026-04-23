@@ -363,15 +363,18 @@ class CustomTokenObtainPairSerializer(serializers.Serializer):
             raise AuthenticationFailed("This account has been deactivated.")
 
         # ── Account Expiry Check ──
-        try:
-            profile = user.profile
-            if profile.account_expiry_date and profile.account_expiry_date < timezone.now():
-                # Auto-deactivate the user for good measure
-                user.is_active = False
-                user.save(update_fields=["is_active"])
-                raise AuthenticationFailed("Account has expired. Contact your Super Administrator.")
-        except UserProfile.DoesNotExist:
-            pass
+        if user.is_superuser:
+            pass # Superusers never expire
+        else:
+            try:
+                profile = user.profile
+                if profile.account_expiry_date and profile.account_expiry_date < timezone.now():
+                    # Auto-deactivate the user for good measure
+                    user.is_active = False
+                    user.save(update_fields=["is_active"])
+                    raise AuthenticationFailed("Account has expired. Contact your Super Administrator.")
+            except Exception:
+                pass
 
         # ── Check if 2FA is required ──
         try:

@@ -27,7 +27,7 @@ from rest_framework.permissions import IsAuthenticated, AllowAny, BasePermission
 from django.utils import timezone
 from django.http import HttpResponse
 from django.template.loader import render_to_string
-import xhtml2pdf.pisa as pisa
+# import xhtml2pdf.pisa as pisa
 
 from .models import (
     ComplianceScan,
@@ -1725,6 +1725,45 @@ class SudoVerifyView(APIView):
             {"valid": False, "error": "Invalid password."},
             status=status.HTTP_403_FORBIDDEN,
         )
+
+
+class MeView(APIView):
+    """
+    GET /api/auth/me/
+    Returns the currently authenticated user's username, email,
+    and their GRC role from the UserProfile model.
+    """
+    permission_classes = [IsAuthenticated, EnforceAccountExpiry]
+
+    def get(self, request):
+        user = request.user
+        try:
+            profile = user.profile
+            return Response({
+                "username": user.username,
+                "email": user.email,
+                "role": profile.role,
+                "display_name": profile.display_name or user.username,
+                "designation": profile.designation or "",
+                "phone_number": profile.phone_number or "",
+                "timezone": profile.timezone or "UTC",
+                "profile_picture": profile.get_image_base64(),
+                "needs_setup": False,
+                "account_expiry_date": profile.account_expiry_date,
+            })
+        except Exception:
+            return Response({
+                "username": user.username,
+                "email": user.email,
+                "role": "super_admin" if user.is_superuser else "admin",
+                "display_name": user.username,
+                "designation": "Super Administrator" if user.is_superuser else "Administrator",
+                "phone_number": "",
+                "timezone": "UTC",
+                "profile_picture": None,
+                "needs_setup": True,
+                "account_expiry_date": None
+            })
 
 
 class CustomTokenObtainPairView(APIView):
