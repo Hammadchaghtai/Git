@@ -1,154 +1,322 @@
-import { useEffect, useState, Fragment } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import API from '../api/axios';
-import { ChevronDown, ChevronRight, ExternalLink, Shield, BookOpen, Layers, Zap, Info, Link as LinkIcon } from 'lucide-react';
+import { 
+  Shield, BookOpen, Layers, Zap, Info, Link as LinkIcon, 
+  ChevronDown, Activity, LayoutGrid, X, FileText, CheckCircle2
+} from 'lucide-react';
 
 export default function Frameworks() {
   const [frameworks, setFrameworks] = useState([]);
   const [controls, setControls] = useState([]);
+  const [scores, setScores] = useState({});
   const [loading, setLoading] = useState(true);
   const [expandedFw, setExpandedFw] = useState(null);
+  const [filterMode, setFilterMode] = useState('all');
+  const [selectedControl, setSelectedControl] = useState(null);
 
   useEffect(() => {
     Promise.all([
       API.get('frameworks/'),
-      API.get('controls/?page_size=200'),
+      API.get('controls/?page_size=500'),
+      API.get('dashboard-summary/'),
+      API.get('scan-results/?page_size=1000'), // Fetch all recent scan results for status
     ])
-      .then(([fwRes, ctrlRes]) => {
+      .then(([fwRes, ctrlRes, dashRes, scanRes]) => {
         setFrameworks(fwRes.data.results || fwRes.data);
         setControls(ctrlRes.data.results || ctrlRes.data);
+        
+        // Map scores by framework ID for 100% accuracy
+        const scoreMap = {};
+        if (dashRes.data.framework_scores) {
+          dashRes.data.framework_scores.forEach(fs => {
+            scoreMap[fs.framework_id] = fs.score;
+          });
+        }
+        setScores(scoreMap);
+
+        // 1. Map top_failed_controls for FAIL status
+        const statusMap = {};
+        if (dashRes.data.top_failed_controls) {
+          dashRes.data.top_failed_controls.forEach(fc => {
+            const key = `${fc.control_code}-${fc.framework_name}`.toLowerCase().trim();
+            statusMap[key] = 'FAIL';
+          });
+        }
+
+        // 2. Map actual scan results to distinguish between PASS and PENDING
+        const results = scanRes.data.results || scanRes.data;
+        results.forEach(res => {
+          const key = `${res.control_code}-${res.framework_name}`.toLowerCase().trim();
+          // Only set to PASS if it's not already marked as FAIL from the top_failed list
+          if (statusMap[key] !== 'FAIL' && res.is_passed) {
+            statusMap[key] = 'PASS';
+          }
+        });
+        setControlStatuses(statusMap);
       })
       .catch((err) => console.error(err))
       .finally(() => setLoading(false));
   }, []);
 
+  const [controlStatuses, setControlStatuses] = useState({});
+
   const toggleExpand = (id) => setExpandedFw(expandedFw === id ? null : id);
+
+  const getStatusBadge = (ctrl, fwName) => {
+    if (!ctrl.wazuh_mappings?.length) {
+      return { label: 'MANUAL', class: 'bg-slate-50 text-slate-400 border-slate-200 dark:bg-slate-800 dark:border-slate-700' };
+    }
+    
+    const key = `${ctrl.control_code}-${fwName}`.toLowerCase().trim();
+    const status = controlStatuses[key];
+    
+    if (status === 'FAIL') {
+      return { label: 'FAIL', class: 'bg-red-50 text-red-600 border-red-200 dark:bg-red-500/10 dark:text-red-400 dark:border-red-500/20' };
+    }
+    if (status === 'PASS') {
+      return { label: 'PASS', class: 'bg-emerald-50 text-emerald-600 border-emerald-200 dark:bg-emerald-500/10 dark:text-emerald-400 dark:border-emerald-500/20' };
+    }
+    
+    // If it has mapping but no explicit pass/fail in the latest data, it's PENDING
+    return { label: 'PENDING', class: 'bg-blue-50 text-blue-600 border-blue-200 dark:bg-blue-500/10 dark:text-blue-400 dark:border-blue-500/20' };
+  };
 
   if (loading) {
     return (
-      <div className="flex h-full items-center justify-center">
-        <div className="h-12 w-12 animate-spin rounded-full border-4 border-slate-200 border-t-brand-600" />
+      <div className="flex h-full items-center justify-center min-h-[400px]">
+        <div className="relative">
+          <div className="h-12 w-12 animate-spin rounded-full border-4 border-slate-100 border-t-brand-600" />
+          <Shield className="absolute inset-0 m-auto h-5 w-5 text-brand-600" />
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="max-w-7xl mx-auto">
-      <div className="mb-10">
-        <h1 className="text-4xl font-black text-slate-900 dark:text-white tracking-tight">Compliance Frameworks</h1>
-        <p className="text-slate-500 font-medium mt-1">Regulatory catalogs and security controls mapped to technical telemetry.</p>
+    <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-6">
+      {/* Header Section - Scaled Down */}
+      <div className="mb-8 flex flex-col lg:flex-row lg:items-end justify-between gap-6">
+        <div>
+          <div className="flex items-center gap-3 mb-2">
+            <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-brand-600 text-white shadow-lg shadow-brand-600/20">
+              <Shield className="w-5 h-5" />
+            </div>
+            <div>
+              <span className="text-[9px] font-black uppercase tracking-[0.2em] text-brand-600 mb-0.5 block">Compliance Registry</span>
+              <h1 className="text-3xl font-black text-slate-900 dark:text-white tracking-tight uppercase">Frameworks</h1>
+            </div>
+          </div>
+          <p className="text-slate-500 dark:text-slate-400 font-medium max-w-xl leading-relaxed text-sm">
+            Regulatory catalogs and security controls mapped to automated technical telemetry.
+          </p>
+        </div>
+
+        <div className="flex items-center gap-4">
+           <div className="px-5 py-2.5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 shadow-sm flex flex-col items-center min-w-[130px]">
+              <span className="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-0.5">Registries</span>
+              <span className="text-xl font-black text-slate-900 dark:text-white">{frameworks.length}</span>
+           </div>
+           <div className="px-5 py-2.5 rounded-2xl bg-slate-900 dark:bg-brand-600 shadow-lg shadow-brand-600/20 flex flex-col items-center min-w-[130px]">
+              <span className="text-[8px] font-black text-slate-400 dark:text-brand-100 uppercase tracking-widest mb-0.5">Controls</span>
+              <span className="text-xl font-black text-white">{controls.length}</span>
+           </div>
+        </div>
       </div>
 
-      {frameworks.length === 0 ? (
-        <div className="cyber-card p-20 text-center">
-          <BookOpen className="mx-auto h-12 w-12 text-slate-200 mb-4" />
-          <p className="text-slate-400 font-black uppercase tracking-widest text-xs">No frameworks cataloged in registry.</p>
-        </div>
-      ) : (
-        <div className="space-y-6">
-          {frameworks.map((fw) => {
-            const fwControls = controls.filter((c) => c.framework === fw.id);
-            const isExpanded = expandedFw === fw.id;
+      <div className="space-y-5">
+        {frameworks.map((fw) => {
+          const isExpanded = expandedFw === fw.id;
+          const fwControls = controls.filter((c) => c.framework === fw.id);
+          
+          // Get Real Compliance Score from dashboard data
+          // Get Real Compliance Score from dashboard data - mapped by ID
+          const percentage = scores[fw.id] !== undefined ? scores[fw.id] : 0;
+          
+          const filteredControls = filterMode === 'automated' 
+            ? fwControls.filter(c => c.wazuh_mappings?.length > 0)
+            : fwControls;
 
-            return (
-              <div
-                key={fw.id}
-                className={`cyber-card transition-all duration-500 ${isExpanded ? 'ring-2 ring-brand-600/20 shadow-2xl shadow-brand-600/10' : ''}`}
+          return (
+            <div key={fw.id} className={`cyber-card overflow-hidden transition-all duration-300 ${isExpanded ? 'ring-2 ring-brand-600/10' : ''}`}>
+              {/* Card Header - Compact */}
+              <div 
+                onClick={() => toggleExpand(fw.id)}
+                className={`px-6 py-5 flex items-center justify-between cursor-pointer transition-all ${isExpanded ? 'bg-slate-50/50 dark:bg-slate-900/40' : 'hover:bg-slate-50/30 dark:hover:bg-slate-800/20'}`}
               >
-                {/* Framework Header */}
-                <button
-                  onClick={() => toggleExpand(fw.id)}
-                  className="flex w-full items-center justify-between px-8 py-6 text-left cursor-pointer hover:bg-slate-50/50 dark:hover:bg-slate-900/50 transition-all"
-                >
-                  <div className="flex items-center gap-6">
-                    <div className={`flex h-14 w-14 items-center justify-center rounded-2xl transition-all ${isExpanded ? 'bg-brand-600 text-white shadow-lg shadow-brand-600/30' : 'bg-brand-50 dark:bg-brand-900/20 text-brand-600'}`}>
-                      <Shield className="h-6 w-6" />
-                    </div>
-                    <div>
-                      <h3 className="text-xl font-black text-slate-900 dark:text-white tracking-tighter uppercase">{fw.name}</h3>
-                      <p className="text-xs font-bold text-slate-400 uppercase tracking-tighter mt-1 flex items-center gap-2">
-                        <Layers className="w-3 h-3" /> Version {fw.version} · {fw.controls_count} Governance Controls
-                      </p>
-                    </div>
+                <div className="flex items-center gap-5">
+                  <div className={`flex h-14 w-14 items-center justify-center rounded-2xl transition-all ${isExpanded ? 'bg-brand-600 text-white shadow-lg shadow-brand-600/20' : 'bg-slate-100 dark:bg-slate-800 text-slate-400'}`}>
+                    <Shield className="h-7 w-7" />
                   </div>
-                  <div className="flex items-center gap-4">
-                    <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800">
-                      <Zap className="h-3.5 w-3.5 text-brand-600" />
-                      <span className="text-[10px] font-black text-slate-600 dark:text-slate-400 uppercase tracking-widest">
-                        {fw.controls_count} ACTIVE
-                      </span>
+                  <div>
+                    <div className="flex items-center gap-3">
+                      <h3 className="text-lg font-black text-slate-900 dark:text-white tracking-tight uppercase leading-none">{fw.name}</h3>
+                      <span className="px-2 py-0.5 rounded-lg text-[8px] font-black bg-white dark:bg-slate-800 text-slate-500 border border-slate-200 dark:border-slate-700 uppercase tracking-widest shadow-sm">V{fw.version || '2022'}</span>
                     </div>
-                    <div className={`p-2 rounded-full transition-all ${isExpanded ? 'bg-brand-600 text-white' : 'bg-slate-100 dark:bg-slate-800 text-slate-400'}`}>
-                      {isExpanded ? <ChevronDown className="h-5 w-5" /> : <ChevronRight className="h-5 w-5" />}
-                    </div>
-                  </div>
-                </button>
-
-                {/* Controls List */}
-                {isExpanded && (
-                  <div className="border-t border-slate-100 dark:border-slate-800 animate-in fade-in slide-in-from-top-4 duration-500">
-                    <div className="px-8 pb-8 pt-6 space-y-3">
-                      <div className="hidden md:flex items-center px-4 mb-2 text-[10px] font-black uppercase tracking-widest text-slate-400">
-                        <span className="w-32">Control Code</span>
-                        <span className="flex-1">Title & Objective</span>
-                        <span className="w-48">Telemetry Integration</span>
-                        <span className="w-24 text-right">Impact</span>
-                        <span className="w-24 text-center">Docs</span>
+                    <div className="flex items-center gap-4 mt-1.5">
+                      <div className="flex items-center gap-1.5">
+                        <Layers className="w-3.5 h-3.5 text-slate-400" />
+                        <span className="text-[9px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest">{fw.controls_count} Governance Controls</span>
                       </div>
-
-                      {fwControls.length > 0 ? fwControls.map((ctrl) => (
-                        <div key={ctrl.id} className="flex flex-col md:flex-row md:items-center px-6 py-4 rounded-2xl bg-white dark:bg-slate-950 border border-slate-100 dark:border-slate-800 transition-all shadow-sm hover:translate-x-1 hover:border-brand-100 dark:hover:border-brand-900/30">
-                          <div className="w-32 flex-shrink-0 mb-2 md:mb-0">
-                            <span className="font-mono text-xs font-black text-brand-700 dark:text-brand-400 bg-brand-50 dark:bg-brand-900/20 px-2 py-1 rounded">
-                              {ctrl.control_code}
-                            </span>
-                          </div>
-
-                          <div className="flex-1 min-w-0 pr-4 mb-2 md:mb-0">
-                            <p className="font-bold text-slate-700 dark:text-slate-200 text-sm leading-relaxed">{ctrl.title}</p>
-                          </div>
-
-                          <div className="w-48 flex-shrink-0 mb-2 md:mb-0">
-                            {ctrl.wazuh_mappings?.length > 0 ? (
-                              <div className="flex flex-wrap gap-1.5">
-                                {ctrl.wazuh_mappings.map(m => (
-                                  <span key={m.id} className="inline-flex items-center gap-1.5 text-[9px] font-black px-2 py-1 rounded-lg bg-slate-50 dark:bg-slate-900 text-slate-500 border border-slate-100 dark:border-slate-800 transition-all hover:border-brand-600/50 cursor-help" title={m.rule_description}>
-                                    <LinkIcon className="w-3 h-3 text-brand-600" /> {m.wazuh_rule_id}
-                                  </span>
-                                ))}
-                              </div>
-                            ) : (
-                              <div className="flex items-center gap-1.5 text-slate-300">
-                                <Info className="w-3 h-3" />
-                                <span className="text-[9px] font-black uppercase tracking-widest">Manual Verification</span>
-                              </div>
-                            )}
-                          </div>
-
-                          <div className="w-24 flex-shrink-0 text-right mb-2 md:mb-0">
-                            <span className={`text-[9px] font-black px-2 py-1 rounded-lg border ${ctrl.weight >= 10 ? 'bg-red-50 text-red-600 border-red-100' : 'bg-slate-50 dark:bg-slate-900 text-slate-500 border-slate-100 dark:border-slate-800'}`}>
-                              W: {ctrl.weight}
-                            </span>
-                          </div>
-
-                          <div className="w-24 flex-shrink-0 flex justify-center">
-                            <a href="https://google.com" target="_blank" rel="noopener noreferrer" className="p-2 rounded-xl text-slate-400 hover:text-brand-600 hover:bg-slate-50 dark:hover:bg-slate-900 transition-all shadow-sm border border-transparent hover:border-slate-100 dark:hover:border-slate-800">
-                              <ExternalLink className="h-4 w-4" />
-                            </a>
-                          </div>
-                        </div>
-                      )) : (
-                        <div className="py-12 text-center bg-white dark:bg-slate-950 rounded-2xl border border-dashed border-slate-200 dark:border-slate-800">
-                           <p className="text-xs font-black text-slate-400 uppercase tracking-widest">No controls registered for this framework.</p>
-                        </div>
-                      )}
+                      <div className="w-1 h-1 rounded-full bg-slate-300 dark:bg-slate-700" />
+                      <div className="flex items-center gap-1.5">
+                        <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" />
+                        <span className="text-[9px] font-black text-emerald-500 uppercase tracking-widest">Active Verification</span>
+                      </div>
                     </div>
                   </div>
-                )}
+                </div>
+
+                <div className="flex items-center gap-8">
+                  <div className="hidden md:flex flex-col items-end gap-1 min-w-[200px]">
+                      <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Compliance Health</span>
+                      <div className="flex items-center gap-3 w-full">
+                        <div className="flex-1 h-1.5 rounded-full bg-slate-100 dark:bg-slate-800 overflow-hidden shadow-inner">
+                            <div 
+                              className="h-full bg-emerald-500 rounded-full shadow-[0_0_8px_rgba(16,185,129,0.4)] transition-all duration-1000 ease-out" 
+                              style={{ width: `${percentage}%` }} 
+                            />
+                        </div>
+                        <span className="text-[11px] font-black text-emerald-600 dark:text-emerald-400 tracking-tighter whitespace-nowrap">{percentage}% Compliant</span>
+                      </div>
+                  </div>
+                  <div className={`p-2 rounded-xl transition-all ${isExpanded ? 'bg-brand-600 text-white rotate-180 shadow-lg shadow-brand-600/20' : 'bg-slate-100 dark:bg-slate-800 text-slate-400'}`}>
+                    <ChevronDown className="h-5 w-5" />
+                  </div>
+                </div>
               </div>
-            );
-          })}
+
+              {/* Expanded Content - Scaled Down */}
+              {isExpanded && (
+                <div className="p-6 pt-2 bg-white dark:bg-slate-950 border-t border-slate-100 dark:border-slate-800 animate-in fade-in slide-in-from-top-4 duration-500">
+                  {/* Detailed Table Header - Medium Aligned */}
+                  <div className="flex items-center gap-7 px-8 mb-4 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 border-b border-slate-50 dark:border-slate-800 pb-3">
+                    <div className="w-24 flex-shrink-0 pl-4">Code</div>
+                    <div className="flex-1">Requirement & Objective</div>
+                    <div className="w-56 text-center">Telemetry Mapping</div>
+                    <div className="w-32 text-center">Live Status</div>
+                    <div className="w-24 text-right">Details</div>
+                  </div>
+
+                  {/* List - Medium structure */}
+                  <div className="space-y-3 max-h-[550px] overflow-y-auto pr-3 custom-scrollbar">
+                    {filteredControls.length > 0 ? filteredControls.map((ctrl, idx) => {
+                      const status = getStatusBadge(ctrl, fw.name);
+                      return (
+                        <div key={ctrl.id} className={`group flex items-center gap-7 px-8 py-4.5 rounded-[1.25rem] border transition-all ${
+                          idx % 2 === 0 ? 'bg-slate-50/50 dark:bg-slate-900/20' : 'bg-white dark:bg-slate-900/40'
+                        } border-slate-100 dark:border-slate-800 hover:border-brand-600/30 hover:shadow-md transition-all`}>
+                          
+                          <div className="w-24 flex-shrink-0">
+                             <div className="inline-flex items-center justify-center px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-brand-600 dark:text-brand-400 font-mono text-[11px] font-black border border-slate-200 dark:border-slate-700 group-hover:bg-brand-600 group-hover:text-white transition-all">
+                                {ctrl.control_code}
+                             </div>
+                          </div>
+
+                          <div className="flex-1">
+                             <h5 className="text-[14px] font-black text-slate-800 dark:text-slate-100 group-hover:text-brand-600 transition-colors uppercase tracking-tight">{ctrl.title}</h5>
+                             <div className="flex items-center gap-2">
+                                <Activity className="w-3 h-3 text-slate-400" />
+                                <p className="text-[10px] text-slate-500 dark:text-slate-400 font-bold uppercase tracking-widest">Compliance Benchmark Mapping</p>
+                             </div>
+                          </div>
+
+                          <div className="w-56 flex justify-center">
+                             {ctrl.wazuh_mappings?.length > 0 ? (
+                               <div className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-sm">
+                                  <div className={`w-1.5 h-1.5 rounded-full ${status.label === 'PASS' ? 'bg-emerald-500' : status.label === 'FAIL' ? 'bg-red-500' : 'bg-blue-500'} animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.4)]`} />
+                                  <span className="text-[10px] font-black text-slate-600 dark:text-slate-300 uppercase font-mono">{ctrl.wazuh_mappings[0].wazuh_rule_id}</span>
+                                  <Zap className="w-3.5 h-3.5 text-brand-500" />
+                               </div>
+                             ) : (
+                               <div className="flex items-center gap-2 text-slate-300 dark:text-slate-700">
+                                  <Info className="w-4 h-4" />
+                                  <span className="text-[9px] font-black uppercase tracking-widest">Manual Audit</span>
+                                </div>
+                             )}
+                          </div>
+
+                          <div className="w-32 flex justify-center pl-6">
+                             <div className={`px-4 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest border transition-all ${status.class}`}>
+                                {status.label}
+                             </div>
+                          </div>
+
+                          <div className="w-24 flex justify-end">
+                             <button 
+                               onClick={() => setSelectedControl(ctrl)}
+                               className="h-10 w-10 flex items-center justify-center rounded-xl bg-white dark:bg-slate-800 text-slate-400 hover:text-white hover:bg-brand-600 border border-slate-200 dark:border-slate-700 transition-all shadow-sm active:scale-95"
+                             >
+                                <FileText className="w-5 h-5" />
+                             </button>
+                          </div>
+                        </div>
+                      );
+                    }) : (
+                      <div className="py-16 text-center rounded-2xl border border-dashed border-slate-100 dark:border-slate-800">
+                         <Activity className="w-8 h-8 text-slate-200 dark:text-slate-800 mx-auto mb-3" />
+                         <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">No matching control requirements found.</p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Compact Control Detail Dialog */}
+      {selectedControl && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-6">
+          <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-md animate-in fade-in duration-300" onClick={() => setSelectedControl(null)} />
+          <div className="relative w-full max-w-xl bg-white dark:bg-slate-900 rounded-[2.5rem] shadow-2xl border border-slate-200 dark:border-slate-800 overflow-hidden animate-in zoom-in-95 duration-500">
+            <div className="p-8 pb-4 flex items-center justify-between border-b border-slate-50 dark:border-slate-800">
+               <div className="flex items-center gap-4">
+                  <div className="h-14 w-14 rounded-2xl bg-brand-600 flex items-center justify-center text-white shadow-xl shadow-brand-600/30">
+                     <FileText className="w-7 h-7" />
+                  </div>
+                  <div>
+                     <span className="text-[9px] font-black text-brand-600 uppercase tracking-[0.2em] mb-0.5 block">Requirement</span>
+                     <h2 className="text-xl font-black text-slate-900 dark:text-white uppercase tracking-tight">{selectedControl.control_code}</h2>
+                  </div>
+               </div>
+               <button onClick={() => setSelectedControl(null)} className="h-10 w-10 flex items-center justify-center rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400 transition-all">
+                  <X className="w-6 h-6" />
+               </button>
+            </div>
+            
+            <div className="p-8 pt-6 space-y-6">
+               <div>
+                  <h3 className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-2">Requirement Title</h3>
+                  <p className="text-xl font-black text-slate-900 dark:text-slate-100 uppercase tracking-tight leading-tight">{selectedControl.title}</p>
+               </div>
+               
+               <div>
+                  <h3 className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-2">Description & Guidance</h3>
+                  <div className="p-6 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 shadow-inner">
+                     <p className="text-[13px] text-slate-600 dark:text-slate-400 leading-relaxed font-medium">
+                        {selectedControl.description || "This control requirement defines the essential governance benchmarks for organizational security. It ensures that technical implementations align with regulatory standards through continuous telemetric monitoring and automated verification cycles."}
+                     </p>
+                  </div>
+               </div>
+
+               <div className="flex items-center justify-between pt-6 border-t border-slate-100 dark:border-slate-800">
+                  <div className={`px-4 py-1.5 rounded-xl text-[9px] font-black uppercase tracking-widest border ${getImpactData(selectedControl.weight).class}`}>
+                     IMPACT: {getImpactData(selectedControl.weight).label}
+                  </div>
+                  <button onClick={() => setSelectedControl(null)} className="btn-primary px-8 py-3 text-[10px] font-black uppercase tracking-widest">Acknowledge</button>
+               </div>
+            </div>
+          </div>
         </div>
       )}
+
+      <style dangerouslySetInnerHTML={{ __html: `
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px; }
+        .dark .custom-scrollbar::-webkit-scrollbar-thumb { background: #334155; }
+      `}} />
     </div>
   );
 }

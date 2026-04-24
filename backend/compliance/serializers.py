@@ -182,11 +182,16 @@ class ScanResultSerializer(serializers.ModelSerializer):
         source="mapping.control.framework.name", read_only=True
     )
 
+    control_id = serializers.IntegerField(
+        source="mapping.control.id", read_only=True
+    )
+
     class Meta:
         model = ScanResult
         fields = [
             "id",
             "is_passed",
+            "control_id",
             "wazuh_rule_id",
             "rule_description",
             "control_code",

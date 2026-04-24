@@ -158,12 +158,29 @@ export default function Reports() {
       const fileName = isAll ? 'Compliance_Report_Combined' : `Compliance_Report_${selectedFwData[0]?.framework_name || 'Export'}`;
       doc.save(`${fileName}_${new Date().toISOString().slice(0, 10)}.pdf`);
       
+      // Log the action to Audit Trail
+      await API.post('audit-logs/', {
+        action: `Generated Compliance Report: ${isAll ? 'Combined' : selectedFwData[0]?.framework_name}`,
+        module: 'Intelligence & Reports',
+        status: 'Success'
+      }).catch(() => {});
+
+      // Refresh logs list to show the new entry
+      API.get('audit-logs/?page_size=50').then(res => setAuditLogs(res.data.results || res.data || []));
+
       const newCount = reportCount + 1;
       localStorage.setItem('grc_report_count', newCount.toString());
       setReportCount(newCount);
       setToast({ msg: 'Compliance report generated and downloaded.', type: 'success' });
     } catch (err) {
       console.error('PDF Error:', err);
+      // Log the Failure to Audit Trail
+      API.post('audit-logs/', {
+        action: `Failed to Generate Compliance Report: ${selectedFw === 'all' ? 'Combined' : 'Specific Framework'}`,
+        module: 'Intelligence & Reports',
+        status: 'Failed'
+      }).catch(() => {});
+      
       setToast({ msg: 'Failed to generate compliance report.', type: 'error' });
     } finally {
       setGenerating(false);
@@ -218,8 +235,26 @@ export default function Reports() {
       }
 
       doc.save(`GRC_Audit_Trail_${new Date().toISOString().slice(0, 10)}.pdf`);
+      
+      // Log the action to Audit Trail
+      await API.post('audit-logs/', {
+        action: 'Exported System Audit Trail (PDF)',
+        module: 'Audit Trail',
+        status: 'Success'
+      }).catch(() => {});
+
+      // Refresh logs list to show the new entry
+      API.get('audit-logs/?page_size=50').then(res => setAuditLogs(res.data.results || res.data || []));
+
       setToast({ msg: 'Audit trail log exported successfully.', type: 'success' });
     } catch (err) {
+      // Log the Failure to Audit Trail
+      API.post('audit-logs/', {
+        action: 'Failed to Export System Audit Trail',
+        module: 'Audit Trail',
+        status: 'Failed'
+      }).catch(() => {});
+
       setToast({ msg: 'Failed to generate audit report.', type: 'error' });
     } finally {
       setGeneratingAudit(false);
@@ -277,7 +312,8 @@ export default function Reports() {
     });
   }, [auditLogs, statusFilter, sortOrder, startDate, endDate]);
 
-  const today = new Date().toISOString().split('T')[0];
+  // Use local date string (YYYY-MM-DD) instead of UTC to avoid timezone lag
+  const today = new Date().toLocaleDateString('en-CA'); 
 
   return (
     <>
@@ -379,7 +415,7 @@ export default function Reports() {
                     <RefreshCw className={`w-3.5 h-3.5 ${isResetting ? 'animate-spin [animation-duration:0.4s]' : ''}`} />
                   </button>
                 )}
-                <p className="text-[10px] font-black uppercase tracking-widest text-slate-500 mb-2 mt-2">Reports Generated This Month</p>
+                <p className="text-[10px] font-black uppercase tracking-widest text-slate-500 mb-2 mt-2">Total Reports Generated</p>
                 <h4 className="text-4xl font-black text-brand-600 dark:text-brand-400 mb-2">{reportCount}</h4>
               </div>
 

@@ -546,12 +546,16 @@ class ScanResultViewSet(viewsets.ReadOnlyModelViewSet):
     filterset_fields = ["is_passed", "scan"]
 
 
-class AuditLogViewSet(viewsets.ReadOnlyModelViewSet):
-    """GET /api/audit-logs/ — read-only access to the audit trail."""
+class AuditLogViewSet(viewsets.ModelViewSet):
+    """Access to the audit trail with support for manual event creation."""
 
     queryset = AuditLog.objects.select_related("user").all()
     serializer_class = AuditLogSerializer
     permission_classes = [IsAuthenticated]
+
+    def perform_create(self, serializer):
+        # Automatically associate the logged-in user with the new audit entry
+        serializer.save(user=self.request.user)
 
 
 # ═══════════════════════════════════════════════════
@@ -1023,22 +1027,42 @@ class GenerateReportView(APIView):
 class GenerateAuditReportView(APIView):
     """
     GET /api/generate-audit-report/
-    Renders a premium server-side PDF of the AuditLog using xhtml2pdf.
+    Supports filtering by start_date, end_date, status, and sort.
     """
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        logs_qs = (
-            AuditLog.objects
-            .select_related("user")
-            .order_by("-timestamp")[:200]
-            .values("timestamp", "user__username", "action", "module", "status")
-        )
+        start_date = request.query_params.get("start_date")
+        end_date = request.query_params.get("end_date")
+        status_filter = request.query_params.get("status")
+        sort_order = request.query_params.get("sort", "latest")
+
+        # Start with all logs
+        queryset = AuditLog.objects.select_related("user")
+
+        # 1. Date Filtering
+        if start_date:
+            queryset = queryset.filter(timestamp__gte=start_date)
+        if end_date:
+            queryset = queryset.filter(timestamp__lte=end_date)
+
+        # 2. Status Filtering
+        if status_filter and status_filter != "all":
+            queryset = queryset.filter(status=status_filter)
+
+        # 3. Sorting
+        if sort_order == "oldest":
+            queryset = queryset.order_by("timestamp")
+        else:
+            queryset = queryset.order_by("-timestamp")
+
+        # Limit to 1000 for PDF performance
+        logs_qs = queryset[:1000].values("timestamp", "user__username", "action", "module", "status")
         logs = list(logs_qs)
 
         total_entries = len(logs)
         success_count = sum(1 for l in logs if l["status"] == "Success")
-        alert_count   = sum(1 for l in logs if l["status"] == "Alert")
+        alert_count   = sum(1 for l in logs if l["status"] == "Alert" or l["status"] == "Failed")
 
         context = {
             "logs": logs,
@@ -1047,6 +1071,11 @@ class GenerateAuditReportView(APIView):
             "alert_count": alert_count,
             "generation_date": timezone.now(),
             "generated_by": request.user.username,
+            "applied_filters": {
+                "status": status_filter or "All",
+                "start": start_date or "All Time",
+                "end": end_date or "Now"
+            }
         }
 
         html = render_to_string("compliance/audit_report.html", context)
