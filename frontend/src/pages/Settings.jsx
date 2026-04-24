@@ -1,12 +1,13 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { Sliders, Bell, User, Lock, ShieldAlert, Mail, Camera, FileText, Eye, EyeOff, Check, X as XIcon, Globe, MapPin, Phone, ShieldCheck, Zap, ArrowRight, Shield, Database, LockKeyhole } from 'lucide-react';
+import { Sliders, Bell, User, Lock, ShieldAlert, Mail, Camera, FileText, Eye, EyeOff, Check, X as XIcon, Globe, MapPin, Phone, ShieldCheck, Zap, ArrowRight, Shield, Database, LockKeyhole, RefreshCw, ChevronDown } from 'lucide-react';
 import API from '../api/axios';
 import Toast from '../components/Toast';
 
 export default function SettingsPage() {
   const { role } = useAuth();
   const [activeTab, setActiveTab] = useState('profile');
+  const [toast, setToast] = useState(null);
 
   const tabs = [
     { id: 'profile', label: 'Identity & Privacy', icon: User },
@@ -16,6 +17,7 @@ export default function SettingsPage() {
 
   return (
     <div className="max-w-5xl mx-auto">
+      {toast && <Toast message={toast.msg} type={toast.type} onClose={() => setToast(null)} />}
       <div className="mb-10">
         <h1 className="text-4xl font-black text-slate-900 dark:text-white tracking-tight">System Preferences</h1>
         <p className="text-slate-500 font-medium mt-1">Configure your professional identity and global platform heuristics.</p>
@@ -43,9 +45,9 @@ export default function SettingsPage() {
       </div>
 
       <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
-        {activeTab === 'profile' && <MyProfileTab />}
-        {activeTab === 'system' && role === 'super_admin' && <SystemSettingsTab />}
-        {activeTab === 'smtp' && role === 'super_admin' && <SMTPConfigurationTab />}
+        {activeTab === 'profile' && <MyProfileTab setToast={setToast} />}
+        {activeTab === 'system' && role === 'super_admin' && <SystemSettingsTab setToast={setToast} />}
+        {activeTab === 'smtp' && role === 'super_admin' && <SMTPConfigurationTab setToast={setToast} />}
       </div>
     </div>
   );
@@ -80,10 +82,9 @@ function PasswordChecklist({ password }) {
   );
 }
 
-function MyProfileTab() {
+function MyProfileTab({ setToast }) {
   const { user, updateUser } = useAuth();
   const [loading, setLoading] = useState(false);
-  const [toast, setToast] = useState(null);
   const fileInputRef = useRef(null);
 
   const [profile, setProfile] = useState({
@@ -100,6 +101,18 @@ function MyProfileTab() {
   const [showOldPwd, setShowOldPwd] = useState(false);
   const [showNewPwd, setShowNewPwd] = useState(false);
   const [showConfirmPwd, setShowConfirmPwd] = useState(false);
+  const [isTzOpen, setIsTzOpen] = useState(false);
+
+  const timezones = [
+    { value: 'UTC', label: 'Universal Time (UTC)' },
+    { value: 'America/New_York', label: 'New York (EST)' },
+    { value: 'Europe/London', label: 'London (GMT)' },
+    { value: 'Asia/Karachi', label: 'Karachi (PKT)' },
+    { value: 'Asia/Dubai', label: 'Dubai (GST)' },
+    { value: 'Asia/Tokyo', label: 'Tokyo (JST)' },
+    { value: 'Australia/Sydney', label: 'Sydney (AEST)' },
+    { value: 'Asia/Singapore', label: 'Singapore (SGT)' }
+  ];
 
   useEffect(() => {
     API.get('auth/me/').then(res => {
@@ -174,16 +187,33 @@ function MyProfileTab() {
         });
         setPwd({ oldPassword: '', newPassword: '', confirmPassword: '' });
       }
-      setToast({ msg: 'Cryptographic profile updated.', type: 'success' });
+      setToast({ msg: 'Profile updated successfully.', type: 'success' });
     } catch (err) {
-      setToast({ msg: typeof err.response?.data === 'object' ? JSON.stringify(err.response.data) : (err.response?.data?.error || 'Update failed.'), type: 'error' });
+      const errorData = err.response?.data;
+      let errorMsg = 'Update failed.';
+      
+      if (typeof errorData === 'object' && errorData !== null) {
+        // If it's a simple { error: "msg" }
+        if (errorData.error) errorMsg = errorData.error;
+        // If it's a validation error { detail: "msg" }
+        else if (errorData.detail) errorMsg = errorData.detail;
+        // If it's a field error { field_name: ["msg"] }
+        else {
+          const firstKey = Object.keys(errorData)[0];
+          const val = errorData[firstKey];
+          errorMsg = Array.isArray(val) ? val[0] : JSON.stringify(val);
+        }
+      } else if (typeof errorData === 'string') {
+        errorMsg = errorData;
+      }
+      
+      setToast({ msg: errorMsg, type: 'error' });
     }
     setLoading(false);
   };
 
   return (
     <form onSubmit={handleSaveAll} className="cyber-card p-10">
-      {toast && <Toast message={toast.msg} type={toast.type} onClose={() => setToast(null)} />}
       
       <div className="mb-12 flex flex-col items-center sm:flex-row sm:justify-start gap-10 border-b border-slate-100 dark:border-slate-800 pb-12">
         <div className="relative h-32 w-32 rounded-3xl border-4 border-white dark:border-slate-900 shadow-2xl bg-slate-100 dark:bg-slate-900 flex items-center justify-center overflow-hidden group">
@@ -214,7 +244,7 @@ function MyProfileTab() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-        <div className="space-y-6">
+        <div className="space-y-6 max-w-md">
           <h4 className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-brand-600 mb-6">
             <User className="h-4 w-4" /> Professional Metadata
           </h4>
@@ -223,7 +253,7 @@ function MyProfileTab() {
               <label className="mb-2 block text-[11px] font-black uppercase tracking-widest text-slate-400">Full Display Name</label>
               <div className="relative group">
                  <User className="absolute left-4 top-3.5 h-4 w-4 text-slate-300 group-focus-within:text-brand-600 transition-colors" />
-                 <input required value={profile.displayName} onChange={e => setProfile({...profile, displayName: e.target.value})} className="input-field pl-12" placeholder="John Doe" />
+                 <input required value={profile.displayName} onChange={e => setProfile({...profile, displayName: e.target.value})} className="input-field pl-12 w-full" placeholder="John Doe" />
               </div>
             </div>
             <div>
@@ -240,7 +270,7 @@ function MyProfileTab() {
                   minLength={7}
                   maxLength={20}
                   placeholder="+92 300 1234567"
-                  className="input-field pl-12"
+                  className="input-field pl-12 w-full"
                  />
               </div>
             </div>
@@ -256,20 +286,52 @@ function MyProfileTab() {
                   }}
                   maxLength={60}
                   placeholder="Senior Security Architect"
-                  className="input-field pl-12"
+                  className="input-field pl-12 w-full"
                  />
               </div>
             </div>
             <div>
               <label className="mb-2 block text-[11px] font-black uppercase tracking-widest text-slate-400">Operational Timezone</label>
-              <div className="relative group">
-                 <MapPin className="absolute left-4 top-3.5 h-4 w-4 text-slate-300 group-focus-within:text-brand-600 transition-colors" />
-                 <select value={profile.timezone} onChange={e => setProfile({...profile, timezone: e.target.value})} className="input-field pl-12 cursor-pointer appearance-none bg-no-repeat bg-[right_1rem_center] bg-[length:1em_1em]">
-                    <option value="UTC">Universal Time (UTC)</option>
-                    <option value="America/New_York">New York (EST)</option>
-                    <option value="Europe/London">London (GMT)</option>
-                    <option value="Asia/Karachi">Karachi (PKT)</option>
-                 </select>
+              <div className="relative">
+                <div 
+                  onClick={() => setIsTzOpen(!isTzOpen)}
+                  className="input-field flex items-center justify-between cursor-pointer hover:border-brand-600/50 transition-all group px-5"
+                >
+                   <div className="flex items-center gap-3">
+                      <MapPin className="h-4 w-4 text-slate-300 group-hover:text-brand-600 transition-colors" />
+                      <span className="text-sm font-bold text-slate-700 dark:text-slate-200 uppercase tracking-tight">
+                         {timezones.find(t => t.value === profile.timezone)?.label || 'UTC'}
+                      </span>
+                   </div>
+                   <ChevronDown className={`w-4 h-4 text-slate-400 transition-transform duration-300 ${isTzOpen ? 'rotate-180' : ''}`} />
+                </div>
+
+                {isTzOpen && (
+                  <>
+                    <div className="fixed inset-0 z-40" onClick={() => setIsTzOpen(false)} />
+                    <div className="absolute top-full left-0 right-0 mt-2 p-1.5 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-2xl shadow-2xl z-50 animate-in fade-in zoom-in-95 duration-200 max-h-60 overflow-y-auto custom-scrollbar">
+                      <div className="space-y-0.5">
+                        {timezones.map((tz) => (
+                          <div 
+                            key={tz.value}
+                            onClick={() => {
+                              setProfile({...profile, timezone: tz.value});
+                              setIsTzOpen(false);
+                            }}
+                            className={`px-4 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest cursor-pointer transition-all flex items-center justify-between ${
+                              profile.timezone === tz.value 
+                                ? 'bg-brand-600 text-white shadow-lg shadow-brand-600/20' 
+                                : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800'
+                            }`}
+                          >
+                            {tz.label}
+                            {profile.timezone === tz.value && <Check className="w-3 h-3" />}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </>
+                )}
               </div>
             </div>
           </div>
@@ -283,8 +345,8 @@ function MyProfileTab() {
             <div>
               <label className="mb-2 block text-[11px] font-black uppercase tracking-widest text-slate-400">Legacy Password</label>
               <div className="relative">
-                <input type={showOldPwd ? "text" : "password"} value={pwd.oldPassword} onChange={e => setPwd({...pwd, oldPassword: e.target.value})} className="input-field pr-12" placeholder="Verify current secret" />
-                <button type="button" onClick={() => setShowOldPwd(!showOldPwd)} className="absolute right-4 top-3.5 text-slate-300 hover:text-slate-500 transition-colors">
+                <input type={showOldPwd ? "text" : "password"} value={pwd.oldPassword} onChange={e => setPwd({...pwd, oldPassword: e.target.value})} className="input-field w-full pr-12" placeholder="Verify current secret" />
+                <button type="button" onClick={() => setShowOldPwd(!showOldPwd)} className="absolute right-4 top-3 text-slate-300 hover:text-slate-500 transition-colors">
                    {showOldPwd ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
               </div>
@@ -292,8 +354,8 @@ function MyProfileTab() {
             <div>
               <label className="mb-2 block text-[11px] font-black uppercase tracking-widest text-slate-400">New Secret Key</label>
               <div className="relative">
-                <input type={showNewPwd ? "text" : "password"} value={pwd.newPassword} onChange={e => setPwd({...pwd, newPassword: e.target.value})} className="input-field pr-12" placeholder="Entropy-heavy string" />
-                <button type="button" onClick={() => setShowNewPwd(!showNewPwd)} className="absolute right-4 top-3.5 text-slate-300 hover:text-slate-500 transition-colors">
+                <input type={showNewPwd ? "text" : "password"} value={pwd.newPassword} onChange={e => setPwd({...pwd, newPassword: e.target.value})} className="input-field w-full pr-12" placeholder="Entropy-heavy string" />
+                <button type="button" onClick={() => setShowNewPwd(!showNewPwd)} className="absolute right-4 top-3 text-slate-300 hover:text-slate-500 transition-colors">
                    {showNewPwd ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
               </div>
@@ -302,8 +364,8 @@ function MyProfileTab() {
             <div>
               <label className="mb-2 block text-[11px] font-black uppercase tracking-widest text-slate-400">Confirm Rotation</label>
               <div className="relative">
-                <input type={showConfirmPwd ? "text" : "password"} value={pwd.confirmPassword} onChange={e => setPwd({...pwd, confirmPassword: e.target.value})} className="input-field pr-12" placeholder="Re-verify rotation" />
-                <button type="button" onClick={() => setShowConfirmPwd(!showConfirmPwd)} className="absolute right-4 top-3.5 text-slate-300 hover:text-slate-500 transition-colors">
+                <input type={showConfirmPwd ? "text" : "password"} value={pwd.confirmPassword} onChange={e => setPwd({...pwd, confirmPassword: e.target.value})} className="input-field w-full pr-12" placeholder="Re-verify rotation" />
+                <button type="button" onClick={() => setShowConfirmPwd(!showConfirmPwd)} className="absolute right-4 top-3 text-slate-300 hover:text-slate-500 transition-colors">
                    {showConfirmPwd ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
               </div>
@@ -316,7 +378,7 @@ function MyProfileTab() {
         <button type="submit" disabled={loading} className="btn-primary w-full sm:w-auto px-10 py-3 rounded-2xl shadow-xl shadow-brand-600/20 group">
           <span className="flex items-center gap-2">
              {loading ? <RefreshCw className="w-5 h-5 animate-spin" /> : <ShieldCheck className="w-5 h-5" />}
-             COMMIT ALL CHANGES
+             SAVE
           </span>
         </button>
       </div>
@@ -324,8 +386,59 @@ function MyProfileTab() {
   );
 }
 
-function SystemSettingsTab() {
-  const [toast, setToast] = useState(null);
+function CustomSelect({ label, value, options, onChange, icon: Icon }) {
+  const [isOpen, setIsOpen] = useState(false);
+  const selectedOption = options.find(o => o.value === value);
+
+  return (
+    <div className="space-y-2">
+      <label className="text-[11px] font-black uppercase tracking-widest text-slate-400 ml-1">{label}</label>
+      <div className="relative">
+        <div 
+          onClick={() => setIsOpen(!isOpen)}
+          className="input-field flex items-center justify-between cursor-pointer hover:border-brand-600/50 transition-all group px-5"
+        >
+          <div className="flex items-center gap-3">
+            {Icon && <Icon className="h-4 w-4 text-slate-300 group-hover:text-brand-600 transition-colors" />}
+            <span className="text-sm font-bold text-slate-700 dark:text-slate-200 uppercase tracking-tight">
+              {selectedOption?.label || 'Select...'}
+            </span>
+          </div>
+          <ChevronDown className={`w-4 h-4 text-slate-400 transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`} />
+        </div>
+
+        {isOpen && (
+          <>
+            <div className="fixed inset-0 z-40" onClick={() => setIsOpen(false)} />
+            <div className="absolute top-full left-0 right-0 mt-2 p-1.5 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-2xl shadow-2xl z-50 animate-in fade-in zoom-in-95 duration-200 overflow-hidden">
+              <div className="space-y-0.5">
+                {options.map((opt) => (
+                  <div 
+                    key={opt.value}
+                    onClick={() => {
+                      onChange(opt.value);
+                      setIsOpen(false);
+                    }}
+                    className={`px-4 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest cursor-pointer transition-all flex items-center justify-between ${
+                      value === opt.value 
+                        ? 'bg-brand-600 text-white shadow-lg shadow-brand-600/20' 
+                        : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800'
+                    }`}
+                  >
+                    {opt.label}
+                    {value === opt.value && <Check className="w-3 h-3" />}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function SystemSettingsTab({ setToast }) {
   const [settings, setSettings] = useState({
     passing_score_threshold: 80,
     scan_frequency: 'weekly',
@@ -344,14 +457,14 @@ function SystemSettingsTab() {
     setSettings(prev => {
       const updated = { ...prev, [key]: value };
       API.patch('settings/', { [key]: value })
-        .then(() => setToast({ msg: 'Heuristics auto-saved.', type: 'success' }))
+        .then(() => setToast({ msg: 'Settings updated successfully.', type: 'success' }))
         .catch(() => {
           setToast({ msg: 'Auto-save failed.', type: 'error' });
           setSettings(prev);
         });
       return updated;
     });
-  }, []);
+  }, [setToast]);
 
   const Toggle = ({ checked, onChange }) => (
     <div 
@@ -362,9 +475,20 @@ function SystemSettingsTab() {
     </div>
   );
 
+  const scanOptions = [
+    { value: 'daily', label: 'High Velocity (Daily)' },
+    { value: 'weekly', label: 'Standard (Weekly)' },
+    { value: 'monthly', label: 'Aggregated (Monthly)' },
+  ];
+
+  const archiveOptions = [
+    { value: '6months', label: 'Short-Term (6M)' },
+    { value: '1year', label: 'Enterprise Std (1Y)' },
+    { value: '3years', label: 'Regulatory Hold (3Y)' },
+  ];
+
   return (
     <div className="max-w-3xl space-y-8">
-      {toast && <Toast message={toast.msg} type={toast.type} onClose={() => setToast(null)} />}
       
       <div className="cyber-card overflow-hidden">
         <div className="bg-gradient-to-br from-brand-600 to-indigo-700 px-8 py-8 relative overflow-hidden">
@@ -398,28 +522,20 @@ function SystemSettingsTab() {
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
-            <div className="space-y-2">
-              <label className="text-[11px] font-black uppercase tracking-widest text-slate-400 ml-1">Default Scan Cadence</label>
-              <div className="relative">
-                 <select value={settings.scan_frequency} onChange={(e) => handleChange('scan_frequency', e.target.value)}
-                  className="input-field cursor-pointer appearance-none bg-no-repeat bg-[right_1rem_center] bg-[length:1em_1em]">
-                  <option value="daily">High Velocity (Daily)</option>
-                  <option value="weekly">Standard (Weekly)</option>
-                  <option value="monthly">Aggregated (Monthly)</option>
-                 </select>
-              </div>
-            </div>
-            <div className="space-y-2">
-              <label className="text-[11px] font-black uppercase tracking-widest text-slate-400 ml-1">Archive Lifecycle</label>
-              <div className="relative">
-                 <select value={settings.audit_log_retention} onChange={(e) => handleChange('audit_log_retention', e.target.value)}
-                  className="input-field cursor-pointer appearance-none bg-no-repeat bg-[right_1rem_center] bg-[length:1em_1em]">
-                  <option value="6months">Short-Term (6M)</option>
-                  <option value="1year">Enterprise Std (1Y)</option>
-                  <option value="3years">Regulatory Hold (3Y)</option>
-                 </select>
-              </div>
-            </div>
+            <CustomSelect 
+              label="Default Scan Cadence" 
+              value={settings.scan_frequency} 
+              options={scanOptions} 
+              onChange={(val) => handleChange('scan_frequency', val)} 
+              icon={Zap}
+            />
+            <CustomSelect 
+              label="Archive Lifecycle" 
+              value={settings.audit_log_retention} 
+              options={archiveOptions} 
+              onChange={(val) => handleChange('audit_log_retention', val)} 
+              icon={Database}
+            />
           </div>
 
           <div className="pt-10 border-t border-slate-100 dark:border-slate-800">
@@ -451,11 +567,10 @@ function SystemSettingsTab() {
   );
 }
 
-function SMTPConfigurationTab() {
+function SMTPConfigurationTab({ setToast }) {
   const [sudoUnlocked, setSudoUnlocked] = useState(false);
   const [sudoPassword, setSudoPassword] = useState('');
   const [error, setError] = useState('');
-  const [toast, setToast] = useState(null);
   const [saving, setSaving] = useState(false);
   const [smtpConfig, setSmtpConfig] = useState({
     host: 'smtp.gmail.com',
@@ -511,7 +626,6 @@ function SMTPConfigurationTab() {
   if (!sudoUnlocked) {
     return (
       <div className="max-w-md mx-auto p-10 rounded-[2.5rem] bg-red-50 dark:bg-red-950/20 border-2 border-red-100 dark:border-red-900/30 shadow-2xl animate-in zoom-in-95 duration-500">
-        {toast && <Toast message={toast.msg} type={toast.type} onClose={() => setToast(null)} />}
         <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-3xl bg-white dark:bg-slate-900 border-2 border-red-200 dark:border-red-900 shadow-lg mb-8">
           <ShieldAlert className="h-10 w-10 text-red-600" />
         </div>
@@ -536,8 +650,7 @@ function SMTPConfigurationTab() {
   }
 
   return (
-    <div className="max-w-2xl cyber-card p-10">
-      {toast && <Toast message={toast.msg} type={toast.type} onClose={() => setToast(null)} />}
+    <div className="max-w-3xl cyber-card p-10">
       <div className="flex items-center gap-4 mb-10 pb-8 border-b border-slate-100 dark:border-slate-800">
         <div className="p-3 rounded-2xl bg-indigo-50 dark:bg-indigo-950 text-indigo-600">
           <Mail className="h-7 w-7" />
@@ -552,25 +665,25 @@ function SMTPConfigurationTab() {
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
           <div className="sm:col-span-2">
             <label className="block text-[11px] font-black text-slate-400 uppercase tracking-widest mb-2 ml-1">Relay Host</label>
-            <input className="input-field" value={smtpConfig.host} onChange={e => setSmtpConfig({...smtpConfig, host: e.target.value})} placeholder="smtp.provider.com" />
+            <input className="input-field w-full" value={smtpConfig.host} onChange={e => setSmtpConfig({...smtpConfig, host: e.target.value})} placeholder="smtp.provider.com" />
           </div>
           <div>
             <label className="block text-[11px] font-black text-slate-400 uppercase tracking-widest mb-2 ml-1">Port</label>
-            <input className="input-field" type="number" value={smtpConfig.port} onChange={e => setSmtpConfig({...smtpConfig, port: Number(e.target.value)})} placeholder="587" />
+            <input className="input-field w-full" type="number" value={smtpConfig.port} onChange={e => setSmtpConfig({...smtpConfig, port: Number(e.target.value)})} placeholder="587" />
           </div>
         </div>
         <div>
           <label className="block text-[11px] font-black text-slate-400 uppercase tracking-widest mb-2 ml-1">Authentication Identity</label>
           <div className="relative group">
              <User className="absolute left-4 top-3.5 h-4 w-4 text-slate-300 group-focus-within:text-brand-600 transition-colors" />
-             <input className="input-field pl-12" value={smtpConfig.username} onChange={e => setSmtpConfig({...smtpConfig, username: e.target.value})} placeholder="admin@security.io" />
+             <input className="input-field pl-12 w-full" value={smtpConfig.username} onChange={e => setSmtpConfig({...smtpConfig, username: e.target.value})} placeholder="admin@security.io" />
           </div>
         </div>
         <div>
           <label className="block text-[11px] font-black text-slate-400 uppercase tracking-widest mb-2 ml-1">Secret Key / Pass</label>
           <div className="relative group">
              <Database className="absolute left-4 top-3.5 h-4 w-4 text-slate-300 group-focus-within:text-brand-600 transition-colors" />
-             <input type="password" className="input-field pl-12" value={smtpConfig.password} onChange={e => setSmtpConfig({...smtpConfig, password: e.target.value})} placeholder={passwordConfigured ? '••••••••••••••••' : 'Secret Key'} />
+             <input type="password" class="input-field pl-12 w-full" value={smtpConfig.password} onChange={e => setSmtpConfig({...smtpConfig, password: e.target.value})} placeholder={passwordConfigured ? '••••••••••••••••' : 'Secret Key'} />
           </div>
         </div>
 
