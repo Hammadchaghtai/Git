@@ -197,7 +197,7 @@ export default function Scans() {
                                <span className="text-xs font-black text-slate-900 dark:text-white uppercase tracking-widest">{activeScan.results.filter((r) => r.is_passed).length} Validated</span>
                             </div>
                             <div className="flex items-center gap-2 rounded-xl bg-white dark:bg-slate-950 px-4 py-2 border border-slate-100 dark:border-slate-800 shadow-sm">
-                               <ShieldAlert className="h-4 w-4 text-rose-500" />
+                               <ShieldAlert className="h-4 w-4 text-red-500" />
                                <span className="text-xs font-black text-slate-900 dark:text-white uppercase tracking-widest">{activeScan.results.filter((r) => !r.is_passed).length} Discrepancies</span>
                             </div>
                           </div>
@@ -231,12 +231,12 @@ export default function Scans() {
                               >
                                 <div className="w-48 flex-shrink-0 mb-2 md:mb-0">
                                   {r.is_passed ? (
-                                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-emerald-50 text-emerald-700 dark:bg-emerald-900/20 dark:text-emerald-400 text-[10px] font-black uppercase tracking-widest">
+                                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-emerald-50 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400 text-[10px] font-black uppercase tracking-widest border border-emerald-100/50 dark:border-emerald-500/20">
                                       <ShieldCheck className="h-3.5 w-3.5" /> SECURE
                                     </span>
                                   ) : (
                                     <div className="flex items-center gap-2">
-                                       <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-rose-50 text-rose-700 dark:bg-rose-900/20 dark:text-rose-400 text-[10px] font-black uppercase tracking-widest">
+                                       <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-red-50 text-red-700 dark:bg-red-500/10 dark:text-red-400 text-[10px] font-black uppercase tracking-widest border border-red-100/50 dark:border-red-500/20">
                                          <ShieldAlert className="h-3.5 w-3.5" /> VULNERABLE
                                        </span>
                                        <ChevronDown className={`h-4 w-4 text-slate-300 transition-transform ${expandedFailures[r.id] ? 'rotate-180' : ''}`} />
@@ -245,7 +245,7 @@ export default function Scans() {
                                 </div>
 
                                 <div className="w-32 flex-shrink-0 mb-2 md:mb-0">
-                                   <span className="font-mono text-[10px] font-black text-brand-700 dark:text-brand-400 bg-brand-50 dark:bg-brand-900/20 px-2 py-1 rounded">
+                                   <span className="font-mono text-[10px] font-black text-brand-700 dark:text-white bg-brand-50 dark:bg-slate-900/80 px-2.5 py-1.5 rounded-lg border border-brand-100 dark:border-sky-500/20 shadow-sm transition-all">
                                       {r.wazuh_rule_id}
                                    </span>
                                 </div>
@@ -263,7 +263,7 @@ export default function Scans() {
                                 </div>
 
                                 <div className="w-32 flex-shrink-0 text-right">
-                                  <span className="text-[9px] font-black uppercase text-brand-600 dark:text-brand-400 tracking-widest bg-brand-50/50 dark:bg-brand-900/10 px-2 py-0.5 rounded-lg border border-brand-100 dark:border-brand-900/20">
+                                  <span className="text-[9px] font-black uppercase text-brand-600 dark:text-white tracking-widest bg-brand-50 dark:bg-slate-900/80 px-3 py-1.5 rounded-xl border border-brand-100 dark:border-sky-500/30 shadow-sm transition-all">
                                     {r.framework_name}
                                   </span>
                                 </div>
@@ -273,7 +273,7 @@ export default function Scans() {
                               {!r.is_passed && expandedFailures[r.id] && (
                                 <div className="mx-4 bg-slate-50 dark:bg-slate-900/30 rounded-b-3xl border-x border-b border-slate-100 dark:border-slate-800 p-8 mb-4 animate-in slide-in-from-top-4 duration-500">
                                   <div className="flex items-center gap-2.5 mb-6">
-                                     <div className="p-1.5 rounded-lg bg-rose-100 text-rose-600 dark:bg-rose-900/30">
+                                     <div className="p-1.5 rounded-lg bg-red-100 text-red-600 dark:bg-red-900/30">
                                         <Info className="w-3.5 h-3.5" />
                                      </div>
                                      <h4 className="text-[11px] font-black uppercase tracking-widest text-slate-900 dark:text-white">Remediation Blueprint & Evidence</h4>

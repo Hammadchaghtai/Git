@@ -121,9 +121,9 @@ export default function ProfileSetup() {
           </div>
 
           {error && (
-            <div className="mb-8 rounded-2xl bg-rose-50 dark:bg-rose-950/20 border border-rose-100 dark:border-rose-900/30 p-5 flex items-start gap-4 animate-in slide-in-from-top-2">
-              <ShieldAlert className="h-5 w-5 text-rose-600 flex-shrink-0 mt-0.5" />
-              <p className="text-[11px] font-black uppercase tracking-widest text-rose-700 dark:text-rose-400 leading-normal">{error}</p>
+            <div className="mb-8 rounded-2xl bg-red-50 dark:bg-red-950/20 border border-red-100 dark:border-red-900/30 p-5 flex items-start gap-4 animate-in slide-in-from-top-2">
+              <ShieldAlert className="h-5 w-5 text-red-600 flex-shrink-0 mt-0.5" />
+              <p className="text-[11px] font-black uppercase tracking-widest text-red-700 dark:text-red-400 leading-normal">{error}</p>
             </div>
           )}
 
@@ -236,7 +236,7 @@ export default function ProfileSetup() {
                       </button>
                     </div>
                     {formData.confirmPassword && (
-                      <div className={`mt-4 flex items-center gap-2 p-2 px-3 rounded-xl border ${formData.password === formData.confirmPassword ? 'bg-emerald-50 border-emerald-100 text-emerald-600 dark:bg-emerald-950/10 dark:border-emerald-900/20' : 'bg-rose-50 border-rose-100 text-rose-600 dark:bg-rose-950/10 dark:border-rose-900/20'}`}>
+                      <div className={`mt-4 flex items-center gap-2 p-2 px-3 rounded-xl border ${formData.password === formData.confirmPassword ? 'bg-emerald-50 border-emerald-100 text-emerald-600 dark:bg-emerald-950/10 dark:border-emerald-900/20' : 'bg-red-50 border-red-100 text-red-600 dark:bg-red-950/10 dark:border-red-900/20'}`}>
                          {formData.password === formData.confirmPassword ? <CheckCircle2 className="w-3 h-3" /> : <XIcon className="w-3 h-3" />}
                          <span className="text-[10px] font-black uppercase tracking-widest">
                            {formData.password === formData.confirmPassword ? 'Synchronization Verified' : 'Mismatched Credentials'}
@@ -262,7 +262,7 @@ export default function ProfileSetup() {
               <button
                 type="button"
                 onClick={() => { logout(); navigate('/login', { replace: true }); }}
-                className="p-4 px-6 rounded-2xl border-2 border-slate-100 dark:border-slate-800 text-slate-400 hover:text-rose-500 hover:border-rose-100 dark:hover:border-rose-900/30 hover:bg-rose-50 dark:hover:bg-rose-950/20 transition-all duration-300 flex items-center gap-2"
+                className="p-4 px-6 rounded-2xl border-2 border-slate-100 dark:border-slate-800 text-slate-400 hover:text-red-500 hover:border-red-100 dark:hover:border-red-900/30 hover:bg-red-50 dark:hover:bg-red-950/20 transition-all duration-300 flex items-center gap-2"
               >
                 <LogOut className="w-5 h-5" />
               </button>

@@ -125,7 +125,7 @@ export default function Frameworks() {
                           </div>
 
                           <div className="w-24 flex-shrink-0 text-right mb-2 md:mb-0">
-                            <span className={`text-[9px] font-black px-2 py-1 rounded-lg border ${ctrl.weight >= 10 ? 'bg-rose-50 text-rose-600 border-rose-100' : 'bg-slate-50 dark:bg-slate-900 text-slate-500 border-slate-100 dark:border-slate-800'}`}>
+                            <span className={`text-[9px] font-black px-2 py-1 rounded-lg border ${ctrl.weight >= 10 ? 'bg-red-50 text-red-600 border-red-100' : 'bg-slate-50 dark:bg-slate-900 text-slate-500 border-slate-100 dark:border-slate-800'}`}>
                               W: {ctrl.weight}
                             </span>
                           </div>

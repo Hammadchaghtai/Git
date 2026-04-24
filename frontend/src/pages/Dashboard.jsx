@@ -12,9 +12,9 @@ import {
 } from 'lucide-react';
 
 const COLORS = {
-  pass: '#7c3aed', // violet-600
-  fail: '#f1f5f9', // slate-100
-  bars: ['#6d28d9', '#7c3aed', '#8b5cf6', '#a78bfa'],
+  pass: '#22c55e', // Green-500
+  fail: '#e2e8f0', // Slate-200 (for the empty track)
+  bars: ['#38bdf8', '#818cf8', '#6366f1', '#4f46e5'], 
 };
 
 /* ── Stat Card ──────────────────────────────── */
@@ -127,10 +127,16 @@ export default function Dashboard() {
 
       {/* ── Stat Cards Row ──────────────────── */}
       <div className="mb-10 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-5">
-        <StatCard icon={Activity} label="Active Agents" value={total_agents_scanned} color="text-brand-600" bgColor="bg-brand-50" />
+        <Link to="/scans" className="block no-underline">
+          <StatCard icon={Activity} label="Active Agents" value={total_agents_scanned} color="text-brand-600" bgColor="bg-brand-50" />
+        </Link>
         <StatCard icon={ShieldCheck} label="Overall Score" value={`${overall_compliance_score}%`} color="text-emerald-600" bgColor="bg-emerald-50" />
-        <StatCard icon={ShieldAlert} label="Frameworks" value={framework_scores.length} color="text-indigo-600" bgColor="bg-indigo-50" />
-        <StatCard icon={AlertTriangle} label="Critical Gaps" value={top_failed_controls.length} color="text-rose-600" bgColor="bg-rose-50" />
+        <Link to="/frameworks" className="block no-underline">
+          <StatCard icon={ShieldAlert} label="Frameworks" value={framework_scores.length} color="text-indigo-600" bgColor="bg-indigo-50" />
+        </Link>
+        <Link to="/reports" className="block no-underline">
+          <StatCard icon={AlertTriangle} label="Critical Gaps" value={top_failed_controls.length} color="text-red-600" bgColor="bg-red-50" />
+        </Link>
         <Link to="/manage-admins" className="block no-underline">
           <StatCard icon={Users} label="Auth Admins" value={data.total_admins} color="text-amber-600" bgColor="bg-amber-50" />
         </Link>
@@ -213,7 +219,7 @@ export default function Dashboard() {
             <h3 className="text-xs font-bold text-slate-400 uppercase tracking-widest">Critical Gaps</h3>
             <p className="text-lg font-bold text-slate-900 dark:text-white mt-1">Non-Compliant Controls</p>
           </div>
-          <span className="status-pill bg-rose-100 text-rose-700 dark:bg-rose-900/30 dark:text-rose-400">
+          <span className="status-pill bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400">
             {top_failed_controls.length} Action Items
           </span>
         </div>
@@ -237,16 +243,16 @@ export default function Dashboard() {
                     <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Requirement</span>
                     <span className="font-bold text-slate-700 dark:text-slate-200 truncate">{ctrl.control_title}</span>
                   </div>
-                  <div className="hidden lg:flex flex-col">
+                  <div className="hidden lg:flex flex-col min-w-[140px]">
                     <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Source</span>
-                    <span className="status-pill bg-brand-50 text-brand-700 dark:bg-brand-900/30 dark:text-brand-400 border-none self-start">
+                    <span className="text-[10px] font-black uppercase text-brand-600 dark:text-white tracking-widest bg-brand-50 dark:bg-slate-900/80 px-3 py-1.5 rounded-xl border border-brand-100 dark:border-sky-500/30 shadow-sm self-start">
                       {ctrl.framework_name}
                     </span>
                   </div>
                 </div>
                 <div className="text-right mt-4 md:mt-0 ml-0 md:ml-6 flex md:block items-center justify-between">
                   <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-1">Incidents</span>
-                  <span className="status-pill bg-rose-100 text-rose-700 dark:bg-rose-900/30 dark:text-rose-400 border-none">
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-red-50 text-red-700 dark:bg-red-500/10 dark:text-red-400 text-[10px] font-black uppercase tracking-widest border border-red-100/50 dark:border-red-500/20">
                     {ctrl.fail_count} Failed Agents
                   </span>
                 </div>

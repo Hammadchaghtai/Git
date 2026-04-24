@@ -93,9 +93,9 @@ export default function VerifyOTP() {
           </div>
 
           {error && (
-            <div className="mb-8 rounded-2xl bg-rose-50 dark:bg-rose-950/20 border border-rose-100 dark:border-rose-900/30 p-5 flex items-start gap-4 animate-in slide-in-from-top-2">
-              <ShieldAlert className="h-5 w-5 text-rose-600 flex-shrink-0 mt-0.5" />
-              <p className="text-[11px] font-black uppercase tracking-widest text-rose-700 dark:text-rose-400 leading-normal">{error}</p>
+            <div className="mb-8 rounded-2xl bg-red-50 dark:bg-red-950/20 border border-red-100 dark:border-red-900/30 p-5 flex items-start gap-4 animate-in slide-in-from-top-2">
+              <ShieldAlert className="h-5 w-5 text-red-600 flex-shrink-0 mt-0.5" />
+              <p className="text-[11px] font-black uppercase tracking-widest text-red-700 dark:text-red-400 leading-normal">{error}</p>
             </div>
           )}
 

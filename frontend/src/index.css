@@ -3,11 +3,11 @@
 
 /* ── Cyber-SaaS Design Tokens ───────────────────── */
 @theme {
-  --color-brand-50: #f5f3ff;
-  --color-brand-100: #ede9fe;
-  --color-brand-600: #7c3aed;
-  --color-brand-700: #6d28d9;
-  --color-brand-800: #5b21b6;
+  --color-brand-50: #f0f9ff;
+  --color-brand-100: #e0f2fe;
+  --color-brand-600: #0284c7;
+  --color-brand-700: #0369a1;
+  --color-brand-800: #075985;
   
   --color-slate-50: #f8fafc;
   --color-slate-100: #f1f5f9;
@@ -30,14 +30,14 @@ body {
 }
 
 .dark body {
-  background-color: #0b0e14; /* Deep Zinc/Navy blend */
-  color: #e2e8f0;
+  background-color: #0f172a; /* Deep Slate/Navy background */
+  color: #f1f5f9;
 }
 
 /* ── Cyber-SaaS Components ─────────────────────── */
 @layer components {
   .cyber-card {
-    @apply bg-white dark:bg-slate-900/50 backdrop-blur-sm shadow-xl shadow-slate-200/50 dark:shadow-black/20 rounded-2xl border-0 transition-all duration-300;
+    @apply bg-white dark:bg-slate-800/60 backdrop-blur-md shadow-xl shadow-slate-200/50 dark:shadow-black/40 rounded-2xl border border-transparent dark:border-slate-700/30 transition-all duration-300;
   }
   
   .input-field {

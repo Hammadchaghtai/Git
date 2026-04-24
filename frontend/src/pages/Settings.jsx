@@ -204,7 +204,7 @@ function MyProfileTab() {
               Replace Avatar
             </button>
             {profile.previewUrl && (
-              <button type="button" onClick={handleRemovePic} className="py-2 px-4 text-xs font-black text-rose-500 uppercase tracking-widest hover:bg-rose-50 dark:hover:bg-rose-900/20 rounded-xl transition-all">
+              <button type="button" onClick={handleRemovePic} className="py-2 px-4 text-xs font-black text-red-500 uppercase tracking-widest hover:bg-red-50 dark:hover:bg-red-900/20 rounded-xl transition-all">
                 Remove
               </button>
             )}
@@ -276,7 +276,7 @@ function MyProfileTab() {
         </div>
 
         <div className="space-y-6">
-           <h4 className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-rose-500 mb-6">
+           <h4 className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-red-500 mb-6">
             <LockKeyhole className="h-4 w-4" /> Cryptographic Secrets
           </h4>
           <div className="space-y-4">
@@ -510,24 +510,24 @@ function SMTPConfigurationTab() {
 
   if (!sudoUnlocked) {
     return (
-      <div className="max-w-md mx-auto p-10 rounded-[2.5rem] bg-rose-50 dark:bg-rose-950/20 border-2 border-rose-100 dark:border-rose-900/30 shadow-2xl animate-in zoom-in-95 duration-500">
+      <div className="max-w-md mx-auto p-10 rounded-[2.5rem] bg-red-50 dark:bg-red-950/20 border-2 border-red-100 dark:border-red-900/30 shadow-2xl animate-in zoom-in-95 duration-500">
         {toast && <Toast message={toast.msg} type={toast.type} onClose={() => setToast(null)} />}
-        <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-3xl bg-white dark:bg-slate-900 border-2 border-rose-200 dark:border-rose-900 shadow-lg mb-8">
-          <ShieldAlert className="h-10 w-10 text-rose-600" />
+        <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-3xl bg-white dark:bg-slate-900 border-2 border-red-200 dark:border-red-900 shadow-lg mb-8">
+          <ShieldAlert className="h-10 w-10 text-red-600" />
         </div>
-        <h3 className="text-2xl font-black text-rose-900 dark:text-rose-400 text-center tracking-tight mb-2">
+        <h3 className="text-2xl font-black text-red-900 dark:text-red-400 text-center tracking-tight mb-2">
           Sudo Mode Required
         </h3>
-        <p className="text-center text-sm text-rose-600 dark:text-rose-300 font-bold uppercase tracking-tighter mb-8 leading-tight">
+        <p className="text-center text-sm text-red-600 dark:text-red-300 font-bold uppercase tracking-tighter mb-8 leading-tight">
           Verifying master identity for integration configuration access.
         </p>
         <form onSubmit={handleSudo} className="space-y-6">
           <div className="relative group">
-             <Lock className="absolute left-4 top-4 h-5 w-5 text-rose-300 group-focus-within:text-rose-600 transition-colors" />
-             <input type="password" required value={sudoPassword} onChange={e => setSudoPassword(e.target.value)} placeholder="••••••••••••" className="w-full pl-12 pr-6 py-4 rounded-2xl border-2 border-rose-100 dark:border-rose-900 focus:border-rose-500 focus:ring-4 focus:ring-rose-500/10 bg-white dark:bg-slate-900 text-center tracking-widest font-mono transition-all outline-none" />
+             <Lock className="absolute left-4 top-4 h-5 w-5 text-red-300 group-focus-within:text-red-600 transition-colors" />
+             <input type="password" required value={sudoPassword} onChange={e => setSudoPassword(e.target.value)} placeholder="••••••••••••" className="w-full pl-12 pr-6 py-4 rounded-2xl border-2 border-red-100 dark:border-red-900 focus:border-red-500 focus:ring-4 focus:ring-red-500/10 bg-white dark:bg-slate-900 text-center tracking-widest font-mono transition-all outline-none" />
           </div>
-          {error && <p className="text-xs text-center font-black text-rose-600 uppercase animate-bounce">{error}</p>}
-          <button type="submit" className="w-full py-4 rounded-2xl bg-rose-600 hover:bg-rose-700 text-white font-black uppercase tracking-widest shadow-xl shadow-rose-600/30 transition-all active:scale-95">
+          {error && <p className="text-xs text-center font-black text-red-600 uppercase animate-bounce">{error}</p>}
+          <button type="submit" className="w-full py-4 rounded-2xl bg-red-600 hover:bg-red-700 text-white font-black uppercase tracking-widest shadow-xl shadow-red-600/30 transition-all active:scale-95">
             Verify Identity
           </button>
         </form>

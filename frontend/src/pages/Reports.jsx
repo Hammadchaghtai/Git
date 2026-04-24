@@ -4,7 +4,7 @@ import { CheckCircle, AlertCircle, Info, Download, Loader2, FileText, Database, 
 
 const STATUS_STYLES = {
   Success: { icon: CheckCircle, bg: 'bg-emerald-50 dark:bg-emerald-900/20', text: 'text-emerald-600 dark:text-emerald-400', iconColor: 'text-emerald-500' },
-  Alert:   { icon: AlertCircle, bg: 'bg-rose-50 dark:bg-rose-900/20', text: 'text-rose-600 dark:text-rose-400', iconColor: 'text-rose-500' },
+  Alert:   { icon: AlertCircle, bg: 'bg-red-50 dark:bg-red-900/20', text: 'text-red-600 dark:text-red-400', iconColor: 'text-red-500' },
   System:  { icon: Info, bg: 'bg-brand-50 dark:bg-brand-900/20', text: 'text-brand-600 dark:text-brand-400', iconColor: 'text-brand-500' },
 };
 
@@ -103,9 +103,9 @@ export default function Reports() {
       </div>
 
       {error && (
-        <div className="mb-6 flex items-center gap-3 rounded-2xl bg-rose-50 dark:bg-rose-900/20 border border-rose-100 dark:border-rose-800 px-5 py-4">
-          <AlertCircle className="h-5 w-5 text-rose-500 flex-shrink-0" />
-          <p className="text-sm font-semibold text-rose-600 dark:text-rose-400">{error}</p>
+        <div className="mb-6 flex items-center gap-3 rounded-2xl bg-red-50 dark:bg-red-900/20 border border-red-100 dark:border-red-800 px-5 py-4">
+          <AlertCircle className="h-5 w-5 text-red-500 flex-shrink-0" />
+          <p className="text-sm font-semibold text-red-600 dark:text-red-400">{error}</p>
         </div>
       )}
 
