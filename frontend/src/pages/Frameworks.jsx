@@ -14,18 +14,18 @@ export default function Frameworks() {
   const [filterMode, setFilterMode] = useState('all');
   const [selectedControl, setSelectedControl] = useState(null);
 
-  useEffect(() => {
+  const fetchData = () => {
     Promise.all([
       API.get('frameworks/'),
       API.get('controls/?page_size=500'),
       API.get('dashboard-summary/'),
-      API.get('scan-results/?page_size=1000'), // Fetch all recent scan results for status
+      API.get('scan-results/?page_size=1000'),
     ])
       .then(([fwRes, ctrlRes, dashRes, scanRes]) => {
         setFrameworks(fwRes.data.results || fwRes.data);
         setControls(ctrlRes.data.results || ctrlRes.data);
         
-        // Map scores by framework ID for 100% accuracy
+        // Map scores by framework ID
         const scoreMap = {};
         if (dashRes.data.framework_scores) {
           dashRes.data.framework_scores.forEach(fs => {
@@ -47,7 +47,6 @@ export default function Frameworks() {
         const results = scanRes.data.results || scanRes.data;
         results.forEach(res => {
           const key = `${res.control_code}-${res.framework_name}`.toLowerCase().trim();
-          // Only set to PASS if it's not already marked as FAIL from the top_failed list
           if (statusMap[key] !== 'FAIL' && res.is_passed) {
             statusMap[key] = 'PASS';
           }
@@ -56,6 +55,15 @@ export default function Frameworks() {
       })
       .catch((err) => console.error(err))
       .finally(() => setLoading(false));
+  };
+
+  useEffect(() => {
+    // Initial fetch
+    fetchData();
+
+    // Auto-refresh every 30 seconds to keep in sync with Dashboard scans
+    const interval = setInterval(fetchData, 30000);
+    return () => clearInterval(interval);
   }, []);
 
   const [controlStatuses, setControlStatuses] = useState({});

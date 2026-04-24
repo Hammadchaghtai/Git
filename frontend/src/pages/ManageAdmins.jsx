@@ -313,8 +313,9 @@ export default function ManageAdmins() {
   if (loading) return <div className="flex h-full items-center justify-center"><div className="h-12 w-12 animate-spin rounded-full border-4 border-slate-200 border-t-sky-500" /></div>;
 
   return (
-    <div className="min-h-screen bg-slate-50/50 dark:bg-slate-950 p-4 md:p-12">
+    <>
       <Toast message={toast.msg} type={toast.type} onClose={handleCloseToast} />
+      <div className="min-h-screen bg-slate-50/50 dark:bg-slate-950 p-4 md:p-12">
 
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-8 mb-16 px-4">
         <div>
@@ -369,5 +370,6 @@ export default function ManageAdmins() {
         </div>
       )}
     </div>
+    </>
   );
 }

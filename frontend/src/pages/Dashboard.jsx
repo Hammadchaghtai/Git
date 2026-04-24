@@ -106,10 +106,10 @@ export default function Dashboard() {
   }));
 
   return (
-    <div className="max-w-7xl mx-auto">
+    <>
       <Toast message={toast.msg} type={toast.type} onClose={() => setToast({ msg: '', type: 'success' })} />
-
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-10">
+      <div className="max-w-7xl mx-auto">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-10">
         <div>
           <h1 className="text-4xl font-black text-slate-900 dark:text-white tracking-tight">Executive Dashboard</h1>
           <p className="text-slate-500 font-medium mt-1">Real-time governance and security compliance monitoring.</p>
@@ -314,8 +314,8 @@ export default function Dashboard() {
           </div>
         )}
       </div>
-
     </div>
+    </>
   );
 }
 

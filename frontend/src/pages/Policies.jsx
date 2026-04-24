@@ -365,12 +365,12 @@ export default function Policies() {
   }
 
   return (
-    <div className="max-w-7xl mx-auto">
+    <>
       <Toast message={toast.msg} type={toast.type} onClose={() => setToast({ msg: '', type: 'success' })} />
-
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-10">
-        <div>
-          <h1 className="text-4xl font-black text-slate-900 dark:text-white tracking-tight">Policy Manager</h1>
+      <div className="max-w-7xl mx-auto">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-10">
+          <div>
+            <h1 className="text-4xl font-black text-slate-900 dark:text-white tracking-tight">Policy Manager</h1>
           <p className="text-slate-500 font-medium mt-1">Design and enforce governance requirements across the platform.</p>
         </div>
         {role !== 'auditor' && (
@@ -592,5 +592,6 @@ export default function Policies() {
         allControls={allControls}
       />
     </div>
+    </>
   );
 }
