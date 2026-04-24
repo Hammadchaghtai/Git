@@ -67,6 +67,12 @@ export default function Reports() {
       const doc = new jsPDF();
       const now = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
 
+      // Determine report scope
+      const isAll = selectedFw === 'all';
+      const selectedFwData = isAll 
+        ? data.framework_scores 
+        : data.framework_scores.filter(f => f.framework_id.toString() === selectedFw.toString());
+
       // ── Header ──
       doc.setFillColor(15, 23, 42); 
       doc.rect(0, 0, 210, 35, 'F');
@@ -78,7 +84,9 @@ export default function Reports() {
       doc.setFontSize(10);
       doc.setFont(undefined, 'normal');
       doc.setTextColor(148, 163, 184);
-      doc.text(`Generated: ${now}  |  Platform: GRC Identity Hub`, 14, 28);
+      // Dynamically show Admin or Auditor based on userRole state
+      const roleLabel = userRole.charAt(0).toUpperCase() + userRole.slice(1);
+      doc.text(`Generated: ${now}  |  Platform: GRC Identity Hub  |  Auth: ${roleLabel}`, 14, 28);
 
       let y = 50;
 
@@ -86,13 +94,13 @@ export default function Reports() {
       doc.setTextColor(15, 23, 42);
       doc.setFontSize(14);
       doc.setFont(undefined, 'bold');
-      doc.text('Framework Compliance Status', 14, y);
+      doc.text(isAll ? 'Framework Compliance Status (Combined)' : `${selectedFwData[0]?.framework_name || 'Framework'} Compliance Status`, 14, y);
       y += 5;
 
       doc.autoTable({
         startY: y,
         head: [['Framework', 'Total Controls', 'Passed', 'Compliance Score']],
-        body: data.framework_scores.map((fw) => [
+        body: selectedFwData.map((fw) => [
           fw.framework_name,
           fw.total_checks,
           fw.passed_checks,
@@ -106,7 +114,18 @@ export default function Reports() {
       y = doc.lastAutoTable.finalY + 15;
 
       // ── Top Failed Controls ──
-      if (data.top_failed_controls?.length) {
+      const failedControls = isAll 
+        ? data.top_failed_controls 
+        : data.top_failed_controls.filter(c => {
+            const fwNameInLog = (c.framework_name || '').trim().toLowerCase();
+            const selectedFwName = (selectedFwData[0]?.framework_name || '').trim().toLowerCase();
+            // Use partial matching to be more robust (e.g. "ISO" matching "ISO 27001")
+            return fwNameInLog === selectedFwName || 
+                   fwNameInLog.includes(selectedFwName) || 
+                   selectedFwName.includes(fwNameInLog);
+          });
+
+      if (failedControls?.length) {
         doc.setFontSize(14);
         doc.setFont(undefined, 'bold');
         doc.text('Critical Vulnerabilities (Top Failed Controls)', 14, y);
@@ -115,7 +134,7 @@ export default function Reports() {
         doc.autoTable({
           startY: y,
           head: [['Control ID', 'Title', 'Framework', 'Total Failures']],
-          body: data.top_failed_controls.map((c) => [
+          body: failedControls.map((c) => [
             c.control_code,
             c.control_title,
             c.framework_name,
@@ -136,7 +155,8 @@ export default function Reports() {
         doc.text(`GRC Compliance Platform  ·  Confidential Report  ·  Page ${i} of ${pageCount}`, 14, 285);
       }
 
-      doc.save(`GRC_Compliance_Report_${new Date().toISOString().slice(0, 10)}.pdf`);
+      const fileName = isAll ? 'Compliance_Report_Combined' : `Compliance_Report_${selectedFwData[0]?.framework_name || 'Export'}`;
+      doc.save(`${fileName}_${new Date().toISOString().slice(0, 10)}.pdf`);
       
       const newCount = reportCount + 1;
       localStorage.setItem('grc_report_count', newCount.toString());
@@ -217,10 +237,11 @@ export default function Reports() {
 
   const filteredLogs = useMemo(() => {
     let result = [...auditLogs];
+    
+    // Status Filter
     if (statusFilter !== 'all') {
       result = result.filter(l => {
         const a = (l.action || '').toLowerCase();
-        // System events are specifically about user/access management
         const isSystem = !l.user || 
                          a.includes('admin') || 
                          a.includes('access') || 
@@ -236,12 +257,27 @@ export default function Reports() {
         return (l.status || '').toLowerCase() === statusFilter.toLowerCase();
       });
     }
+
+    // Date Range Filter
+    if (startDate) {
+      const start = new Date(startDate);
+      start.setHours(0, 0, 0, 0);
+      result = result.filter(l => new Date(l.timestamp) >= start);
+    }
+    if (endDate) {
+      const end = new Date(endDate);
+      end.setHours(23, 59, 59, 999);
+      result = result.filter(l => new Date(l.timestamp) <= end);
+    }
+
     return result.sort((a, b) => {
       const tA = new Date(a.timestamp).getTime();
       const tB = new Date(b.timestamp).getTime();
       return sortOrder === 'latest' ? tB - tA : tA - tB;
     });
-  }, [auditLogs, statusFilter, sortOrder]);
+  }, [auditLogs, statusFilter, sortOrder, startDate, endDate]);
+
+  const today = new Date().toISOString().split('T')[0];
 
   return (
     <>
@@ -285,6 +321,20 @@ export default function Reports() {
 
                     {isFwOpen && (
                       <div className="absolute top-full left-0 w-full mt-2 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-2xl z-50 overflow-hidden">
+                        <button
+                          onClick={() => {
+                            setSelectedFw('all');
+                            setIsFwOpen(false);
+                          }}
+                          className={`w-full text-left px-4 py-3 text-sm font-bold transition-all flex items-center justify-between
+                            ${selectedFw === 'all' 
+                              ? 'bg-brand-600 text-white' 
+                              : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800'
+                            }`}
+                        >
+                          Combined Framework Registry (Both)
+                          {selectedFw === 'all' && <CheckCircle className="w-4 h-4" />}
+                        </button>
                         {frameworks.map((fw) => {
                           const isSelected = fw.id.toString() === selectedFw.toString();
                           return (
@@ -507,12 +557,15 @@ export default function Reports() {
                 <div className="relative group w-full sm:w-auto">
                   <Calendar className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
                   <input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)}
+                    max={endDate || today}
                     className="input-field pl-9 pr-4 py-2 text-xs w-full bg-slate-50 dark:bg-slate-900" title="Start Date" />
                 </div>
                 <span className="text-slate-300 hidden sm:block">-</span>
                 <div className="relative group w-full sm:w-auto">
                   <Calendar className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
                   <input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)}
+                    min={startDate}
+                    max={today}
                     className="input-field pl-9 pr-4 py-2 text-xs w-full bg-slate-50 dark:bg-slate-900" title="End Date" />
                 </div>
               </div>
