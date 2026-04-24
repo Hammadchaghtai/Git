@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Shield, Eye, EyeOff, Sun, Moon } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
@@ -14,26 +14,6 @@ export default function Login() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    // 1. Check for pending error from previous refresh
-    const pendingError = sessionStorage.getItem('login_error');
-    if (pendingError) {
-      setError(pendingError);
-      sessionStorage.removeItem('login_error');
-    }
-  }, []);
-
-  useEffect(() => {
-    if (error) {
-      // Show error for 5 seconds, then refresh
-      const timer = setTimeout(() => {
-        setError('');
-        window.location.reload();
-      }, 5000);
-      return () => clearTimeout(timer);
-    }
-  }, [error]);
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -42,18 +22,16 @@ export default function Login() {
     const result = await login(username, password);
 
     if (result.success) {
-      if (result.requires_2fa) {
-        sessionStorage.setItem('pending_login', JSON.stringify({
-          username: result.username,
-        }));
-        navigate('/verify-otp');
-      } else {
-        navigate('/');
-      }
+      // Store pending login info for the OTP verification step
+      sessionStorage.setItem('pending_login', JSON.stringify({
+        username: result.username,
+        role: result.role || null,
+        needs_setup: result.needs_setup || false,
+        requires_2fa: result.requires_2fa ?? true,
+      }));
+      navigate('/verify-otp');
     } else {
-      // Store error and refresh first as requested
-      sessionStorage.setItem('login_error', result.message || 'Invalid Username or Password!');
-      window.location.reload();
+      setError(result.message || 'Invalid Username or Password!');
     }
     setLoading(false);
   };
@@ -77,14 +55,16 @@ export default function Login() {
         <span className="hidden sm:inline">{isDarkMode ? 'Light' : 'Dark'}</span>
       </button>
 
-      <div className={`w-full max-w-[400px] rounded-xl p-10 shadow-xl text-center transition-colors duration-500 ${isDarkMode
+      <div className={`w-full max-w-[400px] rounded-xl p-10 shadow-xl text-center transition-colors duration-500 ${
+        isDarkMode
           ? 'bg-slate-800 border border-slate-700'
           : 'bg-white'
-        }`}>
+      }`}>
         {/* Shield Icon */}
         <div className="mb-5 flex justify-center">
-          <div className={`flex h-14 w-14 items-center justify-center rounded-full transition-colors duration-500 ${isDarkMode ? 'bg-slate-900' : 'bg-[#0f172a]'
-            }`}>
+          <div className={`flex h-14 w-14 items-center justify-center rounded-full transition-colors duration-500 ${
+            isDarkMode ? 'bg-slate-900' : 'bg-[#0f172a]'
+          }`}>
             <Shield className="h-7 w-7 text-[#38bdf8]" />
           </div>
         </div>
@@ -97,8 +77,9 @@ export default function Login() {
         </p>
 
         {error && (
-          <div className={`mt-4 rounded-lg px-4 py-2 text-sm font-semibold ${isDarkMode ? 'bg-red-900/30 text-red-400 border border-red-900/50' : 'bg-red-50 text-red-600'
-            }`}>
+          <div className={`mt-4 rounded-lg px-4 py-2 text-sm font-semibold ${
+            isDarkMode ? 'bg-red-900/30 text-red-400 border border-red-900/50' : 'bg-red-50 text-red-600'
+          }`}>
             ⚠️ {error}
           </div>
         )}
@@ -113,10 +94,11 @@ export default function Login() {
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               placeholder="Enter username"
-              className={`w-full rounded-lg border px-4 py-2.5 text-sm focus:border-[#38bdf8] focus:outline-none focus:ring-2 focus:ring-[#38bdf8]/20 transition-colors duration-300 ${isDarkMode
+              className={`w-full rounded-lg border px-4 py-2.5 text-sm focus:border-[#38bdf8] focus:outline-none focus:ring-2 focus:ring-[#38bdf8]/20 transition-colors duration-300 ${
+                isDarkMode
                   ? 'bg-slate-900 border-slate-600 text-slate-200 placeholder-slate-500'
                   : 'bg-gray-50 border-gray-200 text-gray-900 placeholder-gray-400'
-                }`}
+              }`}
               required
             />
           </div>
@@ -131,10 +113,11 @@ export default function Login() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Enter password"
-                className={`w-full rounded-lg border px-4 py-2.5 pr-10 text-sm focus:border-[#38bdf8] focus:outline-none focus:ring-2 focus:ring-[#38bdf8]/20 transition-colors duration-300 ${isDarkMode
+                className={`w-full rounded-lg border px-4 py-2.5 pr-10 text-sm focus:border-[#38bdf8] focus:outline-none focus:ring-2 focus:ring-[#38bdf8]/20 transition-colors duration-300 ${
+                  isDarkMode
                     ? 'bg-slate-900 border-slate-600 text-slate-200 placeholder-slate-500'
                     : 'bg-gray-50 border-gray-200 text-gray-900 placeholder-gray-400'
-                  }`}
+                }`}
                 required
               />
               <button
@@ -150,10 +133,11 @@ export default function Login() {
           <button
             type="submit"
             disabled={loading}
-            className={`w-full rounded-lg py-3 text-sm font-semibold text-white transition-all duration-300 cursor-pointer disabled:opacity-60 ${isDarkMode
+            className={`w-full rounded-lg py-3 text-sm font-semibold text-white transition-all duration-300 cursor-pointer disabled:opacity-60 ${
+              isDarkMode
                 ? 'bg-sky-600 hover:bg-sky-700 shadow-lg shadow-sky-900/30'
                 : 'bg-[#0f172a] hover:bg-[#1e293b]'
-              }`}
+            }`}
           >
             {loading ? 'Authenticating...' : 'Sign In'}
           </button>
