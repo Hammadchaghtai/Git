@@ -89,6 +89,13 @@ export default function Frameworks() {
     return { label: 'PENDING', class: 'bg-blue-50 text-blue-600 border-blue-200 dark:bg-blue-500/10 dark:text-blue-400 dark:border-blue-500/20' };
   };
 
+  const getImpactData = (weight) => {
+    const w = parseInt(weight || 0);
+    if (w >= 7) return { label: 'CRITICAL', class: 'bg-red-50 text-red-600 border-red-200 dark:bg-red-500/10 dark:text-red-400' };
+    if (w >= 4) return { label: 'HIGH', class: 'bg-orange-50 text-orange-600 border-orange-200 dark:bg-orange-500/10 dark:text-orange-400' };
+    return { label: 'MEDIUM', class: 'bg-blue-50 text-blue-600 border-blue-200 dark:bg-blue-500/10 dark:text-blue-400' };
+  };
+
   if (loading) {
     return (
       <div className="flex h-full items-center justify-center min-h-[400px]">
