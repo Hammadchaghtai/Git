@@ -994,10 +994,16 @@ class GenerateReportView(APIView):
         ]
 
         # 4. Prepare context
+        settings = SystemSettings.load()
+        threshold = settings.passing_score_threshold
+        system_status = "Safe" if score >= threshold else "Critical"
+
         context = {
             "framework": framework,
             "total_agents": latest_scans.values("agent_id").distinct().count(),
             "compliance_score": score,
+            "passing_threshold": threshold,
+            "system_status": system_status,
             "total_checks": total_checks,
             "passed_checks": passed_checks,
             "failed_controls": failed_controls,

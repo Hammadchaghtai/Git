@@ -148,23 +148,35 @@
         </tr>
     </table>
 
-    <div class="header-title">
-        Intelligent Compliance Management System (ICMS)
+    <div style="margin-top: 40pt; margin-left: 20pt;">
+        <h1 style="font-size: 26pt; font-weight: bold; color: #0f172a; margin-bottom: 30pt;">Executive Summary</h1>
+        
+        <div style="font-size: 16pt; margin-bottom: 15pt; color: #1e293b;">
+            Overall Compliance Score: &nbsp; {{ compliance_score }}%
+        </div>
+        <div style="font-size: 16pt; margin-bottom: 15pt; color: #1e293b;">
+            System Status: &nbsp; <span style="font-weight: normal;">{{ system_status }}</span>
+        </div>
+        <div style="font-size: 16pt; margin-bottom: 15pt; color: #1e293b;">
+            Passing Threshold: &nbsp; {{ passing_threshold }}%
+        </div>
+        <div style="font-size: 16pt; margin-bottom: 40pt; color: #1e293b;">
+            Agents Scanned: &nbsp; {{ total_agents }}
+        </div>
     </div>
 
     <table class="summary-table">
         <tr>
-            <td class="score-cell">
-                <div class="score-value">{{ compliance_score }}%</div>
-                <div class="score-label">Compliance Score</div>
-            </td>
-            <td class="details-cell">
-                <table>
-                    <tr><td width="40%"><strong>Framework:</strong></td><td>{{ framework.name }} v{{ framework.version }}</td></tr>
-                    <tr><td><strong>Generated:</strong></td><td>{{ generation_date|date:"F d, Y H:i" }} UTC</td></tr>
-                    <tr><td><strong>Prepared By:</strong></td><td>{{ generated_by }}</td></tr>
-                    <tr><td><strong>Total Checks:</strong></td><td>{{ total_checks }}</td></tr>
-                    <tr><td><strong>Agents Scanned:</strong></td><td>{{ total_agents }}</td></tr>
+            <td class="details-cell" style="width: 100%;">
+                <table style="width: 100%;">
+                    <tr>
+                        <td width="20%"><strong>Framework:</strong></td><td width="30%">{{ framework.name }} v{{ framework.version }}</td>
+                        <td width="20%"><strong>Generated:</strong></td><td width="30%">{{ generation_date|date:"F d, Y H:i" }}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Prepared By:</strong></td><td>{{ generated_by }}</td>
+                        <td><strong>Total Checks:</strong></td><td>{{ total_checks }}</td>
+                    </tr>
                 </table>
             </td>
         </tr>
