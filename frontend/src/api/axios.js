@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const API = axios.create({
-  baseURL: 'http://localhost:8000/api/',
+  baseURL: 'http://grc.com:8000/api/',
   timeout: 15000,
   headers: { 'Content-Type': 'application/json' },
 });
@@ -31,7 +31,7 @@ API.interceptors.response.use(
 
       if (refresh) {
         try {
-          const res = await axios.post('http://localhost:8000/api/auth/token/refresh/', {
+          const res = await axios.post('http://grc.com:8000/api/auth/token/refresh/', {
             refresh,
           });
           const newAccess = res.data.access;

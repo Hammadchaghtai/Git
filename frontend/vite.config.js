@@ -6,8 +6,8 @@ export default defineConfig({
   plugins: [react(), tailwindcss()],
   server: {
     host: '0.0.0.0',
-    port: 5173,
-    allowedHosts: ['grc.com', 'www.grc.com'],
+    port: 80,
+    allowedHosts: ['grc.com', 'www.grc.com', 'mygrc.com'],
     watch: { usePolling: true },
   },
 })
