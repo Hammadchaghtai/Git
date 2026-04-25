@@ -90,6 +90,29 @@ export default function Reports() {
 
       let y = 50;
 
+      // ── Executive Summary Section ──
+      const threshold = data.passing_threshold || 90;
+      const score = isAll ? data.overall_compliance_score : (selectedFwData[0]?.score || 0);
+      const status = score >= threshold ? 'Safe' : 'Critical';
+      const agents = data.total_agents_scanned || 0;
+
+      doc.setTextColor(15, 23, 42);
+      doc.setFontSize(22);
+      doc.setFont(undefined, 'bold');
+      doc.text('Executive Summary', 14, y);
+      y += 15;
+
+      doc.setFontSize(12);
+      doc.setFont(undefined, 'normal');
+      doc.text(`Overall Compliance Score:  ${score}%`, 14, y);
+      y += 8;
+      doc.text(`System Status:  ${status}`, 14, y);
+      y += 8;
+      doc.text(`Passing Threshold:  ${threshold}%`, 14, y);
+      y += 8;
+      doc.text(`Agents Scanned:  ${agents}`, 14, y);
+      y += 15;
+
       // ── Score Overview ──
       doc.setTextColor(15, 23, 42);
       doc.setFontSize(14);
