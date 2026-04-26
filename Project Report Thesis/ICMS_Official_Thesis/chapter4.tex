@@ -1,0 +1,1128 @@
+\chapter{Design}
+
+\section{System Architecture}
+
+I designed the Intelligent Compliance Management System (ICMS) using an N-tier architecture. Separating the frontend, API, background workers, and database means we can scale or debug each piece without taking the whole system down. Figure \ref{fig:tier_architecture} breaks down the four main layers.
+
+\subsection{Client and Presentation Tier}
+The frontend is a React 18 Single Page Application (SPA). Moving the rendering logic to the browser keeps the server from getting bogged down. It also means analysts don't have to wait for full page reloads when reviewing compliance alerts.
+
+\subsection{Application and Middleware Tier}
+The backend runs on the Django REST Framework. This acts as the main gateway, checking JWTs and enforcing role-based access before running any queries. We route all database traffic through Django to maintain a strict security boundary.
+
+\subsection{Asynchronous Processing Tier}
+Pulling thousands of logs from the Wazuh SIEM takes time. If we did this on the main Django thread, the API would hang and time out. Instead, I offloaded these I/O tasks to background Celery workers using Redis as the message broker.
+
+\subsection{Data Persistence Tier}
+I chose PostgreSQL 18 for the database because compliance data needs strict ACID guarantees. We use standard relational tables for mapping frameworks to controls, but rely on Postgres's JSONField to store the unstructured SIEM logs.
+
+\begin{figure}[H]
+    \centering
+    \resizebox{0.85\textwidth}{!}{
+    \begin{tikzpicture}[
+        tier/.style={rectangle, draw=blue!80!black, thick, fill=blue!5, minimum width=8.5cm, minimum height=1.6cm, align=center, font=\bfseries},
+        arrow/.style={-Stealth, thick, draw=black!80},
+        label/.style={font=\scriptsize, inner sep=2pt}
+    ]
+        % Tiers with increased separation to resolve congestion
+        \node[tier] (client) at (0, 8.5) {Client \& Presentation Tier\\(React SPA)};
+        \node[tier] (app) at (0, 5.0) {Application \& Middleware Tier\\(Django REST Framework)};
+        
+        \node[tier, minimum width=4cm] (async) at (-3.2, 1.5) {Async Processing\\(Celery \& Redis)};
+        \node[tier, minimum width=4cm] (data) at (3.2, 1.5) {Data Persistence\\(PostgreSQL)};
+        
+        \node[tier, fill=gray!10, draw=gray!80!black] (wazuh) at (-3.2, -1.5) {External Security\\(Wazuh SIEM)};
+
+        % Client <-> App Connections
+        \draw[arrow] ([xshift=-2cm]client.south) -- ([xshift=-2cm]app.north) 
+            node[midway, left=8pt, label] {HTTPS / JSON};
+        \draw[arrow] ([xshift=2cm]app.north) -- ([xshift=2cm]client.south) 
+            node[midway, right=8pt, label] {API Responses};
+
+        % App -> Async / Data Connections (Widened entry points)
+        \draw[arrow] ([xshift=-2cm]app.south) -- ([xshift=0.8cm]async.north) 
+            node[midway, left=10pt, label] {Enqueue Tasks};
+        \draw[arrow] ([xshift=2cm]app.south) -- ([xshift=-0.8cm]data.north) 
+            node[midway, right=10pt, label] {ORM Queries};
+
+        % Async -> Wazuh (Increased vertical gap)
+        \draw[arrow] (async.south) -- (wazuh.north) 
+            node[midway, left=8pt, label] {REST API Polling};
+        
+        % Async -> Data (Increased horizontal gap)
+        \draw[arrow] (async.east) -- (data.west) 
+            node[midway, above=6pt, label] {State Commits};
+    \end{tikzpicture}
+    }
+    \caption{Tier-wise System Architecture of the ICMS Platform}
+    \label{fig:tier_architecture}
+\end{figure}
+
+\section{Design Constraints}
+
+Building the ICMS wasn't just about writing code; I had to work around a few hard technical and environmental limits.
+
+\subsection{Technical Constraints}
+
+For security, the database and Redis broker run inside a private Docker bridge network. I didn't expose their ports to the host machine. If you want data, you have to go through the Django API container.
+
+Integrating with the Wazuh API introduced rate limits and network latency. The Celery workers have to batch and throttle their polling requests. Because of this, the dashboard shows the compliance state at the last successful sync, rather than a true real-time feed.
+
+On the frontend, rendering a massive grid of compliance checks can crash the browser. Trying to load thousands of DOM nodes at once blocks the main thread. I fixed this by using React virtualization so the UI only renders what's actually visible on the screen.
+
+\subsection{Infrastructure and Operational Constraints}
+
+Early on, my partner and I lost access to the university's lab network. We had to pivot to building and testing the entire enterprise architecture from home on our personal laptops.
+
+Running a full Wazuh SIEM manager locally burned through our RAM and crashed our machines. To get around this, we built a distributed home-lab. I dedicated one laptop entirely to running Wazuh, while my partner used his machine for development and as the monitored endpoint. We relied heavily on Git to keep our codebases synced while the heavy infrastructure stayed on the dedicated server.
+
+\section{Design Methodology}
+
+We built the platform iteratively using Agile prototyping. Instead of trying to build everything at once, we broke the system into distinct modules so we could test each domain independently before merging.
+
+The project was divided into four main sprints.
+
+\begin{itemize}
+    \item \textbf{Sprint 1 (Prototyping):} We first needed to prove the core concept worked. I set up a basic Django backend and tested the Wazuh API to make sure we could actually pull Security Configuration Assessment (SCA) data.
+    
+    \item \textbf{Sprint 2 (Core Architecture):} Next, I designed the PostgreSQL database schema to link frameworks to rules. We also locked down the API by implementing JWT authentication and role-based routing.
+    
+    \item \textbf{Sprint 3 (Asynchronous Telemetry):} Because the SIEM data was too heavy for synchronous requests, I added Celery and Redis. This gave us a background worker fleet to handle ingestion and deduplication.
+    
+    \item \textbf{Sprint 4 (Frontend \& Visualization):} Finally, we built out the React frontend. This involved rendering the data grids, wiring up the state management, and setting up the backend PDF generator for audit reports.
+\end{itemize}
+
+\section{High Level Design}
+
+To explain how the ICMS actually works, I mapped the architecture across several different views. These diagrams cover the software components, the physical deployment, and the sequence of operations.
+
+\subsection{Component Diagram}
+Figure \ref{fig:component_diagram} shows how the modules talk to each other. The React frontend sends HTTPS requests to the Django API Gateway. The IAM module checks the JWT, and then the Compliance Engine translates the request into a database query. Off to the side, the Wazuh Polling Service runs independently, pulling alerts and dumping them into PostgreSQL.
+
+\begin{figure}[H]
+    \centering
+    \resizebox{0.9\textwidth}{!}{
+    \begin{tikzpicture}[
+        comp/.style={rectangle, draw=black!80, thick, fill=white, minimum width=4.8cm, minimum height=2cm, text width=3.8cm, align=center, font=\small\bfseries, rounded corners=2pt,
+            path picture={
+                \draw[black!80, thick, fill=gray!10] ([xshift=-8mm,yshift=-2mm]path picture bounding box.north east) rectangle ++(6mm,-6mm);
+                \draw[black!80, thick, fill=white] ([xshift=-10mm,yshift=-3mm]path picture bounding box.north east) rectangle ++(4mm,-1.5mm);
+                \draw[black!80, thick, fill=white] ([xshift=-10mm,yshift=-6.5mm]path picture bounding box.north east) rectangle ++(4mm,-1.5mm);
+            }
+        },
+        extcomp/.style={comp, fill=gray!10},
+        arrow/.style={-Stealth, thick, dashed, draw=black!70},
+        label/.style={font=\scriptsize, fill=white, inner sep=2pt}
+    ]
+        % System Boundary (Shifted up slightly for title clearance)
+        \node[draw=blue!80!black, thick, minimum width=19.5cm, minimum height=8.2cm, fill=blue!2, rounded corners=5pt, dashed] (system) at (3, 0.85) {};
+        \node[anchor=north west, xshift=2mm, yshift=-1mm, font=\bfseries\large, text=blue!80!black] at (system.north west) {ICMS Application Subsystem};
+
+        % ROW 0: External Top
+        \node[extcomp] (wazuh) at (9.5, 7.2) {External Wazuh\\Manager API};
+
+        % ROW 1: Internal Top
+        \node[comp] (ui) at (-3.5, 3) {React Frontend\\UI Component};
+        \node[comp] (gateway) at (3, 3) {Django DRF\\API Gateway};
+        
+        % ROW 2: Internal Bottom
+        \node[comp] (auth) at (-3.5, -1.5) {IAM \& Session\\Manager};
+        \node[comp] (engine) at (3, -1.5) {Compliance\\Mapping Engine};
+        \node[comp] (poll) at (9.5, -1.5) {Wazuh Polling\\Celery Service};
+
+        % ROW 3: External Bottom
+        \node[extcomp] (db) at (3, -6) {PostgreSQL\\Database};
+        \node[extcomp] (redis) at (9.5, -6) {Redis Message\\Broker};
+
+        % Dependencies
+        \draw[arrow] (ui) -- (gateway) node[midway, below=5pt, label] {REST / JSON};
+        \draw[arrow] (gateway) -- (auth) node[midway, above=5pt, label, sloped] {JWT Validation};
+        \draw[arrow] (gateway) -- (engine) node[midway, right=5pt, label] {Data Requests};
+        \draw[arrow] (gateway) -- (wazuh) node[midway, above=5pt, label, sloped] {Trigger Sync};
+        \draw[arrow] (wazuh) -- (poll) node[midway, right=5pt, label] {HTTPS Telemetry};
+        
+        \draw[arrow] (engine) -- (db) node[midway, right=5pt, label] {ORM Queries};
+        \draw[arrow] (poll) -- (db) node[midway, above=5pt, label, sloped] {State Commits};
+        \draw[arrow] (poll) -- (redis) node[midway, right=5pt, label] {Task Queues};
+    \end{tikzpicture}
+    }
+    \caption{Conceptual View: UML Component Diagram}
+    \label{fig:component_diagram}
+\end{figure}
+
+\subsection{Deployment Diagram}
+Figure \ref{fig:deployment_diagram} lays out the Docker container environment. I put the Django backend, Celery worker, Redis, and PostgreSQL all on the same host but isolated them inside a private bridge network. This means the database is inaccessible from the outside internet.
+
+\begin{figure}[H]
+    \centering
+    \resizebox{0.95\textwidth}{!}{
+    \begin{tikzpicture}[
+        device/.style={
+            rectangle, draw=black!90, thick, fill=white,
+            minimum width=4cm, minimum height=2.5cm,
+            append after command={
+                \pgfextra{
+                    \filldraw[black!90, thick, fill=gray!15] (\tikzlastnode.north west) -- ++(0.3, 0.4) -- ($(\tikzlastnode.north east)+(0.3,0.4)$) -- (\tikzlastnode.north east) -- cycle;
+                    \filldraw[black!90, thick, fill=gray!15] (\tikzlastnode.north east) -- ($(\tikzlastnode.north east)+(0.3,0.4)$) -- ($(\tikzlastnode.south east)+(0.3,0.4)$) -- (\tikzlastnode.south east) -- cycle;
+                }
+            }
+        },
+        artifact/.style={
+            rectangle, draw=black!80, thick, fill=blue!5,
+            minimum width=3.4cm, minimum height=1cm,
+            align=center, font=\scriptsize\bfseries, rounded corners=2pt
+        },
+        conn/.style={
+            thick, draw=black!80, Stealth-Stealth
+        },
+        label/.style={
+            font=\scriptsize, fill=white, inner sep=2pt
+        }
+    ]
+        % ----------------------------------------------------
+        % CENTER: Docker Host Server
+        % ----------------------------------------------------
+        \node[device, minimum width=9cm, minimum height=6cm] (server) at (0, 0) {};
+        \node[anchor=north, font=\small\bfseries, yshift=-2mm, align=center] at (server.north) {\textless\textless device\textgreater\textgreater\\Docker Host Server (Ubuntu)};
+        
+        \node[artifact] (django) at (-2.4, 1) {\textless\textless container\textgreater\textgreater\\Django API Gateway};
+        \node[artifact] (celery) at (2.4, 1) {\textless\textless container\textgreater\textgreater\\Celery Async Worker};
+        \node[artifact] (postgres) at (-2.4, -1.5) {\textless\textless container\textgreater\textgreater\\PostgreSQL Database};
+        \node[artifact] (redis) at (2.4, -1.5) {\textless\textless container\textgreater\textgreater\\Redis Message Broker};
+
+        % Internal Bridge Network Connections
+        \draw[dashed, -Stealth, thick, draw=black!70] (django.south) -- (postgres.north) node[midway, fill=white, font=\tiny] {TCP 5432};
+        \draw[dashed, -Stealth, thick, draw=black!70] (celery.south) -- (redis.north) node[midway, fill=white, font=\tiny] {TCP 6379};
+        \draw[dashed, Stealth-Stealth, thick, draw=black!70] (django.east) -- (celery.west) node[midway, below=3pt, fill=white, font=\tiny] {Task IPC};
+
+        % ----------------------------------------------------
+        % LEFT: Client Workstation
+        % ----------------------------------------------------
+        \node[device, minimum width=4cm, minimum height=3cm] (client) at (-8.5, 1.5) {};
+        \node[anchor=north, font=\small\bfseries, yshift=-2mm, align=center] at (client.north) {\textless\textless device\textgreater\textgreater\\Client Workstation};
+        \node[artifact] (react) at (-8.5, 1) {\textless\textless artifact\textgreater\textgreater\\React SPA Browser};
+
+        % ----------------------------------------------------
+        % RIGHT: Wazuh SIEM Node
+        % ----------------------------------------------------
+        \node[device, minimum width=4cm, minimum height=3cm] (wazuh) at (8.5, 1.5) {};
+        \node[anchor=north, font=\small\bfseries, yshift=-2mm, align=center] at (wazuh.north) {\textless\textless device\textgreater\textgreater\\Wazuh SIEM Node};
+        \node[artifact] (sca) at (8.5, 1) {\textless\textless artifact\textgreater\textgreater\\SCA Telemetry API};
+
+        % ----------------------------------------------------
+        % EXTERNAL NETWORK CONNECTIONS (Perfectly Horizontal at Y=1)
+        % ----------------------------------------------------
+        \draw[conn] (react.east) -- (django.west) node[midway, below=4pt, label] {HTTPS / TLS 1.3};
+        \draw[conn, -Stealth] (celery.east) -- (sca.west) node[midway, below=4pt, label] {REST API Polling};
+
+    \end{tikzpicture}
+    }
+    \caption{Physical View: UML Deployment Diagram}
+    \label{fig:deployment_diagram}
+\end{figure}
+
+\subsection{System Activity Diagrams}
+The activity diagrams below map out the control flow for the core platform features. I used standard UML semantics like decision nodes and synchronization forks to show exactly what the code does at each step.
+
+\subsubsection{Authentication and IAM Routing}
+Figure \ref{fig:activity_auth} tracks what happens when a user logs in. Django checks the credentials against PostgreSQL. If they're wrong, it logs the failure and drops the request. If they're right, it issues a JWT and checks the user's role. Superadmins get routed to the configuration settings, while Auditors are restricted to the read-only dashboards.
+
+\begin{figure}[H]
+    \centering
+    \resizebox{0.75\textwidth}{!}{
+    \begin{tikzpicture}[
+        node distance=1.5cm,
+        startstop/.style={circle, fill=black, minimum size=0.4cm},
+        end/.style={circle, draw=black, thick, minimum size=0.4cm, path picture={\fill[black] (path picture bounding box.center) circle (0.15cm);}},
+        activity/.style={rectangle, draw=black!80, thick, fill=blue!5, minimum width=3.5cm, minimum height=1cm, align=center, font=\scriptsize\bfseries, rounded corners=2pt, text width=3.2cm},
+        decision/.style={diamond, draw=black!80, thick, fill=yellow!10, minimum width=2.5cm, minimum height=2.5cm, align=center, font=\scriptsize\bfseries, aspect=1.5, text width=1.8cm},
+        arrow/.style={-Stealth, thick, draw=black!90},
+        label/.style={font=\scriptsize, fill=white, inner sep=1pt}
+    ]
+        \node[startstop] (start) at (0,0) {};
+        \node[activity] (submit) at (0,-1.5) {Submit Credentials via HTTPS};
+        \node[activity] (verify) at (0,-3) {Verify Hash in PostgreSQL};
+        \node[decision] (isvalid) at (0,-5.5) {Credentials Valid?};
+        \node[activity] (reject) at (5,-5.5) {Return HTTP 401 \& Log Event};
+        \node[activity] (jwt) at (0,-8.5) {Generate JWT Access \& Refresh Pair};
+        \node[decision] (role) at (0,-11.5) {Evaluate RBAC Profile};
+        \node[activity] (admin) at (-3,-14) {Route to System Configuration};
+        \node[activity] (auditor) at (3,-14) {Route to Read-Only Dashboard};
+        \node[end] (end1) at (5,-7.5) {};
+        \node[end] (end2) at (0,-16) {};
+
+        \draw[arrow] (start) -- (submit);
+        \draw[arrow] (submit) -- (verify);
+        \draw[arrow] (verify) -- (isvalid);
+        \draw[arrow] (isvalid) -- (reject) node[midway, above, label] {No};
+        \draw[arrow] (reject) -- (end1);
+        \draw[arrow] (isvalid) -- (jwt) node[midway, left, label] {Yes};
+        \draw[arrow] (jwt) -- (role);
+        \draw[arrow] (role) -| (admin) node[pos=0.55, above, label] {Superadmin};
+        \draw[arrow] (role) -| (auditor) node[pos=0.55, above, label] {Auditor};
+        \draw[arrow] (admin) |- (end2);
+        \draw[arrow] (auditor) |- (end2);
+    \end{tikzpicture}
+    }
+    \caption{Activity Diagram: Authentication and IAM Routing}
+    \label{fig:activity_auth}
+\end{figure}
+
+\subsubsection{Asynchronous Telemetry Ingestion}
+Figure \ref{fig:activity_sync} shows the async ingestion process. When a sync is triggered, the thread forks. The main thread sends a quick 202 Accepted back to the browser so the user isn't stuck waiting. Meanwhile, the Celery worker hits the Wazuh API. If Wazuh is down, it uses exponential backoff. Once it gets the data, it parses the JSON and updates the database.
+
+\begin{figure}[H]
+    \centering
+    \resizebox{0.8\textwidth}{!}{
+    \begin{tikzpicture}[
+        node distance=1.5cm,
+        startstop/.style={circle, fill=black, minimum size=0.4cm},
+        end/.style={circle, draw=black, thick, minimum size=0.4cm, path picture={\fill[black] (path picture bounding box.center) circle (0.15cm);}},
+        activity/.style={rectangle, draw=black!80, thick, fill=blue!5, minimum width=3.5cm, minimum height=1cm, align=center, font=\scriptsize\bfseries, rounded corners=2pt, text width=3.2cm},
+        decision/.style={diamond, draw=black!80, thick, fill=yellow!10, minimum width=2cm, minimum height=2cm, align=center, font=\scriptsize\bfseries, aspect=1.5, text width=1.5cm},
+        fork/.style={rectangle, draw=black, fill=black, minimum width=8cm, minimum height=0.15cm},
+        arrow/.style={-Stealth, thick, draw=black!90},
+        label/.style={font=\scriptsize, fill=white, inner sep=1pt}
+    ]
+        \node[startstop] (start) at (0,0) {};
+        \node[activity] (trigger) at (0,-1.5) {Trigger Sync via Cron or API};
+        \node[fork] (fork1) at (0,-3) {};
+        
+        \node[activity] (ui) at (-3,-4.5) {UI Thread: Display Syncing Indicator};
+        \node[activity] (celery) at (3,-4.5) {Worker: Poll Wazuh SCA API};
+        \node[decision] (api) at (3,-7) {API OK?};
+        \node[activity] (retry) at (7,-7) {Exponential Backoff \& Log};
+        \node[activity] (parse) at (3,-9.5) {Parse JSON Telemetry Array};
+
+        \node[fork] (join1) at (0,-11.5) {};
+        \node[activity] (commit) at (0,-13) {Execute Bulk PostgreSQL Commit};
+        \node[end] (end) at (0,-15) {};
+
+        \draw[arrow] (start) -- (trigger);
+        \draw[arrow] (trigger) -- (fork1);
+        \draw[arrow] (fork1) -| (ui);
+        \draw[arrow] (fork1) -| (celery);
+        \draw[arrow] (celery) -- (api);
+        \draw[arrow] (api) -- (retry) node[midway, above, label] {No};
+        \draw[arrow] (retry) |- (fork1);
+        \draw[arrow] (api) -- (parse) node[midway, left, label] {Yes};
+        
+        \draw[arrow] (ui) |- (join1);
+        \draw[arrow] (parse) |- (join1);
+        \draw[arrow] (join1) -- (commit);
+        \draw[arrow] (commit) -- (end);
+    \end{tikzpicture}
+    }
+    \caption{Activity Diagram: Parallel Asynchronous Telemetry Ingestion}
+    \label{fig:activity_sync}
+\end{figure}
+
+\subsubsection{Compliance State Evaluation}
+The hardest part of the platform is mapping specific technical alerts to broad policies like ISO 27001. Figure \ref{fig:activity_eval} shows this evaluation loop. I wrote a worst-case priority algorithm: if even one server fails a technical check, the entire governance control is marked as failed. The loop runs until every policy is graded.
+
+\begin{figure}[H]
+    \centering
+    \resizebox{0.75\textwidth}{!}{
+    \begin{tikzpicture}[
+        node distance=1.5cm,
+        startstop/.style={circle, fill=black, minimum size=0.4cm},
+        end/.style={circle, draw=black, thick, minimum size=0.4cm, path picture={\fill[black] (path picture bounding box.center) circle (0.15cm);}},
+        activity/.style={rectangle, draw=black!80, thick, fill=blue!5, minimum width=3.5cm, minimum height=1cm, align=center, font=\scriptsize\bfseries, rounded corners=2pt, text width=3.2cm},
+        decision/.style={diamond, draw=black!80, thick, fill=yellow!10, minimum width=2.5cm, minimum height=2.5cm, align=center, font=\scriptsize\bfseries, aspect=1.5, text width=2cm},
+        arrow/.style={-Stealth, thick, draw=black!90},
+        label/.style={font=\scriptsize, fill=white, inner sep=1pt}
+    ]
+        \node[startstop] (start) at (0,0) {};
+        \node[activity] (load) at (0,-1.5) {Load ISO 27001 Control Matrix};
+        \node[activity] (fetch) at (0,-3) {Fetch Current Node Telemetry};
+        \node[decision] (check) at (0,-5.5) {Any Checks Failed?};
+        \node[activity] (fail) at (-3,-8) {Mark Control Non-Compliant};
+        \node[activity] (pass) at (3,-8) {Mark Control Compliant};
+        \node[decision] (more) at (0,-10.5) {More Controls?};
+        \node[activity] (render) at (0,-13) {Update Aggregated Compliance Score};
+        \node[end] (end) at (0,-15) {};
+
+        \draw[arrow] (start) -- (load);
+        \draw[arrow] (load) -- (fetch);
+        \draw[arrow] (fetch) -- (check);
+        \draw[arrow] (check) -| (fail) node[pos=0.45, above, label] {Yes (Worst-Case)};
+        \draw[arrow] (check) -| (pass) node[pos=0.45, above, label] {No};
+        \draw[arrow] (fail) |- (more);
+        \draw[arrow] (pass) |- (more);
+        \draw[arrow] (more) -- (render) node[midway, left, label] {No};
+        \draw[arrow] (more) -- ++(5,0) |- (fetch) node[pos=0.25, right, label] {Yes};
+        \draw[arrow] (render) -- (end);
+    \end{tikzpicture}
+    }
+    \caption{Activity Diagram: Iterative Compliance Evaluation and Worst-Case Priority}
+    \label{fig:activity_eval}
+\end{figure}
+
+\subsubsection{Audit Report Generation}
+Generating audit reports by hand takes hours, so we automated it. Figure \ref{fig:activity_report} shows the workflow. The user selects a framework, and the backend aggregates the relevant database records. It dumps that data into an HTML template, generates a PDF on the server, and sends the file back to the client.
+
+\begin{figure}[H]
+    \centering
+    \resizebox{0.6\textwidth}{!}{
+    \begin{tikzpicture}[
+        node distance=1.5cm,
+        startstop/.style={circle, fill=black, minimum size=0.4cm},
+        end/.style={circle, draw=black, thick, minimum size=0.4cm, path picture={\fill[black] (path picture bounding box.center) circle (0.15cm);}},
+        activity/.style={rectangle, draw=black!80, thick, fill=blue!5, minimum width=4cm, minimum height=1cm, align=center, font=\scriptsize\bfseries, rounded corners=2pt, text width=3.8cm},
+        decision/.style={diamond, draw=black!80, thick, fill=yellow!10, minimum width=2.5cm, minimum height=2.5cm, align=center, font=\scriptsize\bfseries, aspect=1.5, text width=2cm},
+        arrow/.style={-Stealth, thick, draw=black!90},
+        label/.style={font=\scriptsize, fill=white, inner sep=1pt}
+    ]
+        \node[startstop] (start) at (0,0) {};
+        \node[activity] (request) at (0,-1.5) {Initialize Report Request (Framework ID)};
+        \node[activity] (query) at (0,-3) {Aggregate Historical Compliance Data};
+        \node[decision] (data) at (0,-5.5) {Data Exists?};
+        \node[activity] (error) at (5,-5.5) {Abort \& Alert Auditor};
+        \node[activity] (template) at (0,-8.5) {Inject Data into Reporting Template};
+        \node[activity] (pdf) at (0,-10) {Execute PDF Generation Engine};
+        \node[activity] (download) at (0,-11.5) {Transmit Binary Payload to Client};
+        \node[end] (end1) at (5,-7.5) {};
+        \node[end] (end2) at (0,-13.5) {};
+
+        \draw[arrow] (start) -- (request);
+        \draw[arrow] (request) -- (query);
+        \draw[arrow] (query) -- (data);
+        \draw[arrow] (data) -- (error) node[midway, above, label] {No};
+        \draw[arrow] (error) -- (end1);
+        \draw[arrow] (data) -- (template) node[midway, left, label] {Yes};
+        \draw[arrow] (template) -- (pdf);
+        \draw[arrow] (pdf) -- (download);
+        \draw[arrow] (download) -- (end2);
+    \end{tikzpicture}
+    }
+    \caption{Activity Diagram: Automated PDF Audit Report Generation}
+    \label{fig:activity_report}
+\end{figure}
+
+
+\subsubsection{Framework Rule Mapping and Validation}
+Superadmins have to manually map Wazuh rules to framework controls. Figure \ref{fig:activity_mapping} tracks this. Before saving the mapping, the system checks the SIEM API to confirm the rule ID is real. If it is, it checks for duplicate mappings in the database. I added this validation step so administrators can't accidentally overwrite existing configurations.
+
+\begin{figure}[H]
+    \centering
+    \resizebox{0.8\textwidth}{!}{
+    \begin{tikzpicture}[
+        node distance=1.5cm,
+        startstop/.style={circle, fill=black, minimum size=0.4cm},
+        end/.style={circle, draw=black, thick, minimum size=0.4cm, path picture={\fill[black] (path picture bounding box.center) circle (0.15cm);}},
+        activity/.style={rectangle, draw=black!80, thick, fill=blue!5, minimum width=3.5cm, minimum height=1cm, align=center, font=\scriptsize\bfseries, rounded corners=2pt, text width=3.2cm},
+        decision/.style={diamond, draw=black!80, thick, fill=yellow!10, minimum width=2.5cm, minimum height=2.5cm, align=center, font=\scriptsize\bfseries, aspect=1.5, text width=1.8cm},
+        arrow/.style={-Stealth, thick, draw=black!90},
+        label/.style={font=\scriptsize, fill=white, inner sep=1pt}
+    ]
+        \node[startstop] (start) at (0,0) {};
+        \node[activity] (init) at (0,-1.5) {Initiate Mapping Request};
+        \node[activity] (api) at (0,-3) {Query Wazuh API for Rule ID};
+        \node[decision] (exists) at (0,-5.5) {Rule Exists?};
+        \node[activity] (error1) at (-4,-5.5) {Reject \& Show Error};
+        \node[activity] (checkdb) at (0,-8.5) {Check DB for Existing Mapping};
+        \node[decision] (collision) at (0,-11.5) {Collision Detected?};
+        \node[activity] (override) at (4,-11.5) {Prompt Admin for Override};
+        \node[activity] (commit) at (0,-14.5) {Commit Mapping to PostgreSQL};
+        \node[activity] (audit) at (0,-16) {Write to Audit Trail};
+        \node[end] (end) at (0,-17.5) {};
+
+        \draw[arrow] (start) -- (init);
+        \draw[arrow] (init) -- (api);
+        \draw[arrow] (api) -- (exists);
+        \draw[arrow] (exists) -- (error1) node[midway, above, label] {No};
+        \draw[arrow] (exists) -- (checkdb) node[midway, right, label] {Yes};
+        \draw[arrow] (checkdb) -- (collision);
+        \draw[arrow] (collision) -- (override) node[midway, above, label] {Yes};
+        \draw[arrow] (override) |- (commit);
+        \draw[arrow] (collision) -- (commit) node[midway, right, label] {No};
+        \draw[arrow] (commit) -- (audit);
+        \draw[arrow] (audit) -- (end);
+        \draw[arrow] (error1) |- (end);
+    \end{tikzpicture}
+    }
+    \caption{Activity Diagram: Framework Rule Mapping and API Validation}
+    \label{fig:activity_mapping}
+\end{figure}
+
+\subsubsection{Real-Time Alerting and Notification}
+I didn't want users to have to stare at a dashboard all day, so I built an alerting pipeline (Figure \ref{fig:activity_alerting}). Whenever a compliance check fails, the engine checks its severity. Minor issues just go into the database logs. Critical failures trigger a fan-out: a background task blasts out emails and webhooks to the relevant auditors.
+
+\begin{figure}[H]
+    \centering
+    \resizebox{0.8\textwidth}{!}{
+    \begin{tikzpicture}[
+        node distance=1.5cm,
+        startstop/.style={circle, fill=black, minimum size=0.4cm},
+        end/.style={circle, draw=black, thick, minimum size=0.4cm, path picture={\fill[black] (path picture bounding box.center) circle (0.15cm);}},
+        activity/.style={rectangle, draw=black!80, thick, fill=blue!5, minimum width=3.5cm, minimum height=1cm, align=center, font=\scriptsize\bfseries, rounded corners=2pt, text width=3.2cm},
+        decision/.style={diamond, draw=black!80, thick, fill=yellow!10, minimum width=2.5cm, minimum height=2.5cm, align=center, font=\scriptsize\bfseries, aspect=1.5, text width=2cm},
+        fork/.style={rectangle, draw=black, fill=black, minimum width=6cm, minimum height=0.15cm},
+        arrow/.style={-Stealth, thick, draw=black!90},
+        label/.style={font=\scriptsize, fill=white, inner sep=1pt}
+    ]
+        \node[startstop] (start) at (0,0) {};
+        \node[activity] (event) at (0,-1.5) {Receive State Change Event};
+        \node[decision] (failed) at (0,-4) {Status == Failed?};
+        \node[activity] (ignore) at (-5.5,-4) {Halt Execution};
+        \node[decision] (severity) at (0,-7.5) {Severity $\ge$ Critical?};
+        \node[activity] (log) at (-5.5,-7.5) {Write to Audit Log Only};
+        \node[activity] (fetch) at (0,-10.5) {Fetch Subscribed Auditors};
+        
+        \node[fork] (fork1) at (0,-12) {};
+        \node[activity] (email) at (-2.5,-13.5) {Dispatch Email via SMTP};
+        \node[activity] (webhook) at (2.5,-13.5) {Trigger External Webhook};
+        \node[fork] (join1) at (0,-15) {};
+        
+        \node[activity] (badge) at (0,-16.5) {Update UI Alert Badge};
+        \node[end] (end) at (0,-18) {};
+
+        \draw[arrow] (start) -- (event);
+        \draw[arrow] (event) -- (failed);
+        \draw[arrow] (failed) -- (ignore) node[midway, above, label] {No};
+        \draw[arrow] (failed) -- (severity) node[midway, right, label] {Yes};
+        \draw[arrow] (severity) -- (log) node[midway, above, label] {No};
+        \draw[arrow] (severity) -- (fetch) node[midway, right, label] {Yes};
+        \draw[arrow] (fetch) -- (fork1);
+        \draw[arrow] (fork1) -| (email);
+        \draw[arrow] (fork1) -| (webhook);
+        \draw[arrow] (email) |- (join1);
+        \draw[arrow] (webhook) |- (join1);
+        \draw[arrow] (join1) -- (badge);
+        \draw[arrow] (badge) -- (end);
+        \draw[arrow] (ignore.west) -- ++(-1.5,0) |- (end);
+        \draw[arrow] (log.west) -- ++(-1,0) |- (end);
+    \end{tikzpicture}
+    }
+    \caption{Activity Diagram: Real-Time Alerting and Notification Fan-out}
+    \label{fig:activity_alerting}
+\end{figure}
+
+\subsection{System Sequence Diagrams}
+
+While activity diagrams show what the system does, the sequence diagrams below show exactly how the internal components talk to each other over time.
+
+\subsubsection{Authentication and JWT Issuance}
+Figure \ref{fig:seq_auth} tracks the API calls during login. If the password hashes match, the IAM module mints a JWT and sends it back. If they don't, it throws an exception and sends a 401 Unauthorized.
+
+\begin{figure}[H]
+    \centering
+    \resizebox{0.95\textwidth}{!}{
+    \begin{tikzpicture}[
+        node distance=2cm,
+        inst/.style={rectangle, draw=black!90, thick, fill=blue!5, minimum width=2.8cm, minimum height=0.8cm, font=\small\bfseries, rounded corners=2pt},
+        act/.style={rectangle, draw=black!90, fill=gray!20, minimum width=0.3cm},
+        msg/.style={-Stealth, thick, draw=black!90},
+        reply/.style={Stealth-, thick, dashed, draw=black!80},
+        label/.style={font=\scriptsize, inner sep=2pt}
+    ]
+        % Instances
+        \node[inst] (client) at (0, 0) {React SPA};
+        \node[inst] (api) at (4.5, 0) {API Gateway};
+        \node[inst] (iam) at (9, 0) {IAM Module};
+        \node[inst] (db) at (13.5, 0) {PostgreSQL};
+
+        % Lifelines
+        \draw[dashed, draw=black!60, thick] (client.south) -- ++(0, -10.5);
+        \draw[dashed, draw=black!60, thick] (api.south) -- ++(0, -10.5);
+        \draw[dashed, draw=black!60, thick] (iam.south) -- ++(0, -10.5);
+        \draw[dashed, draw=black!60, thick] (db.south) -- ++(0, -10.5);
+
+        % Activation Boxes
+        \draw[act] ([xshift=-0.15cm, yshift=-1cm]client.south) rectangle ([xshift=0.15cm, yshift=-10cm]client.south);
+        \draw[act] ([xshift=-0.15cm, yshift=-1.2cm]api.south) rectangle ([xshift=0.15cm, yshift=-9.8cm]api.south);
+        \draw[act] ([xshift=-0.15cm, yshift=-2cm]iam.south) rectangle ([xshift=0.15cm, yshift=-9.5cm]iam.south);
+        \draw[act] ([xshift=-0.15cm, yshift=-3cm]db.south) rectangle ([xshift=0.15cm, yshift=-4.5cm]db.south);
+
+        % Messages
+        \draw[msg] ([yshift=-1.5cm]client.south) -- ([yshift=-1.5cm]api.south) node[midway, above=2pt, label] {1. Submit Login Credentials};
+        \draw[msg] ([yshift=-2.5cm]api.south) -- ([yshift=-2.5cm]iam.south) node[midway, above=2pt, label] {2. Request Authentication};
+        \draw[msg] ([yshift=-3.5cm]iam.south) -- ([yshift=-3.5cm]db.south) node[midway, above=2pt, label] {3. Query User Hash};
+        \draw[reply] ([yshift=-4cm]iam.south) -- ([yshift=-4cm]db.south) node[midway, above=2pt, label] {4. Return Encrypted Hash};
+
+        % ALT Fragment
+        \draw[thick, draw=black!80, fill=none] (-1, -4.5) rectangle (14.5, -9.5);
+        \draw[thick, draw=black!80, fill=gray!20] (-1, -4.5) -- ++(1.2,0) -- ++(0,-0.5) -- ++(-1.2,0) -- cycle;
+        \node[font=\scriptsize\bfseries] at (-0.4, -4.75) {alt};
+        \node[font=\scriptsize, right] at (0.3, -4.75) {[Valid Credentials]};
+        
+        \draw[msg] ([yshift=-5.5cm]iam.south) ++(0.15cm,0) -- ++(0.8,0) -- ++(0,-0.8) -- ++(-0.8,0) node[midway, right=4pt, label, text width=2.5cm, opacity=1] {5. Sign \& Issue JWT};
+        \draw[reply] ([yshift=-6.8cm]api.south) -- ([yshift=-6.8cm]iam.south) node[midway, above=2pt, label, opacity=1] {6. Return Stateless JWT};
+        \draw[reply] ([yshift=-7.3cm]client.south) -- ([yshift=-7.3cm]api.south) node[midway, above=2pt, label, opacity=1] {7. HTTP 200 OK + JWT Pair};
+
+        \draw[dashed, thick, draw=black!80] (-1, -7.8) -- (14.5, -7.8);
+        \node[font=\scriptsize, right] at (-0.8, -8.1) {[Invalid Credentials]};
+
+        \draw[reply] ([yshift=-8.6cm]api.south) -- ([yshift=-8.6cm]iam.south) node[midway, above=2pt, label, opacity=1] {8. Raise Authentication Error};
+        \draw[reply] ([yshift=-9.1cm]client.south) -- ([yshift=-9.1cm]api.south) node[midway, above=2pt, label, opacity=1] {9. HTTP 401 Unauthorized};
+    \end{tikzpicture}
+    }
+    \caption{Sequence Diagram: Authentication Flow with UML Alt Fragment}
+    \label{fig:seq_auth}
+\end{figure}
+
+\subsubsection{Asynchronous Telemetry Ingestion}
+I used a bulk update pattern for the telemetry sync to save database I/O, shown in Figure \ref{fig:seq_sync}. The Celery worker pulls down an array of endpoint states from Wazuh. It loops through them in memory, calculating the ISO 27001 impacts, and then commits everything to PostgreSQL in a single transaction.
+
+\begin{figure}[H]
+    \centering
+    \resizebox{0.95\textwidth}{!}{
+    \begin{tikzpicture}[
+        node distance=2cm,
+        inst/.style={rectangle, draw=black!90, thick, fill=blue!5, minimum width=2.8cm, minimum height=0.8cm, font=\small\bfseries, rounded corners=2pt},
+        act/.style={rectangle, draw=black!90, fill=gray!20, minimum width=0.3cm},
+        msg/.style={-Stealth, thick, draw=black!90},
+        reply/.style={Stealth-, thick, dashed, draw=black!80},
+        label/.style={font=\scriptsize, inner sep=2pt}
+    ]
+        % Instances
+        \node[inst] (api) at (0, 0) {Django API};
+        \node[inst] (redis) at (4, 0) {Redis Broker};
+        \node[inst] (celery) at (8, 0) {Celery Worker};
+        \node[inst] (wazuh) at (12, 0) {Wazuh SIEM};
+        \node[inst] (db) at (16, 0) {PostgreSQL};
+
+        % Lifelines
+        \draw[dashed, draw=black!60, thick] (api.south) -- ++(0, -9.5);
+        \draw[dashed, draw=black!60, thick] (redis.south) -- ++(0, -9.5);
+        \draw[dashed, draw=black!60, thick] (celery.south) -- ++(0, -9.5);
+        \draw[dashed, draw=black!60, thick] (wazuh.south) -- ++(0, -9.5);
+        \draw[dashed, draw=black!60, thick] (db.south) -- ++(0, -9.5);
+
+        % Activation Boxes
+        \draw[act] ([xshift=-0.15cm, yshift=-0.8cm]api.south) rectangle ([xshift=0.15cm, yshift=-2.2cm]api.south);
+        \draw[act] ([xshift=-0.15cm, yshift=-1cm]redis.south) rectangle ([xshift=0.15cm, yshift=-3.5cm]redis.south);
+        \draw[act] ([xshift=-0.15cm, yshift=-2.8cm]celery.south) rectangle ([xshift=0.15cm, yshift=-9cm]celery.south);
+        \draw[act] ([xshift=-0.15cm, yshift=-4cm]wazuh.south) rectangle ([xshift=0.15cm, yshift=-5.5cm]wazuh.south);
+        \draw[act] ([xshift=-0.15cm, yshift=-8cm]db.south) rectangle ([xshift=0.15cm, yshift=-9cm]db.south);
+
+        % Messages
+        \draw[msg] ([yshift=-1.2cm]api.south) -- ([yshift=-1.2cm]redis.south) node[midway, above=2pt, label] {1. Enqueue Synchronization Task};
+        \draw[reply] ([yshift=-1.8cm]api.south) -- ([yshift=-1.8cm]redis.south) node[midway, above=2pt, label] {2. Acknowledge Queue (HTTP 202)};
+        
+        \draw[msg] ([yshift=-3cm]redis.south) -- ([yshift=-3cm]celery.south) node[midway, above=2pt, label] {3. Consume Task Payload};
+        \draw[msg] ([yshift=-4.2cm]celery.south) -- ([yshift=-4.2cm]wazuh.south) node[midway, above=2pt, label] {4. Request Endpoint Telemetry};
+        \draw[reply] ([yshift=-5.2cm]celery.south) -- ([yshift=-5.2cm]wazuh.south) node[midway, above=2pt, label] {5. Return JSON Telemetry Array};
+        
+        % LOOP Fragment
+        \draw[thick, draw=black!80, fill=none] (6.5, -5.7) rectangle (11.5, -7.2);
+        \draw[thick, draw=black!80, fill=gray!20] (6.5, -5.7) -- ++(1.4,0) -- ++(0,-0.5) -- ++(-1.4,0) -- cycle;
+        \node[font=\scriptsize\bfseries] at (7.2, -5.95) {loop};
+        \node[font=\scriptsize, right] at (8.0, -5.95) {[For Each Event]};
+
+        % Shortened self-loop to 0.8
+        \draw[msg] ([yshift=-6.3cm]celery.south) ++(0.15cm,0) -- ++(0.8,0) -- ++(0,-0.8) -- ++(-0.8,0) node[midway, right=4pt, label, text width=2.5cm, opacity=1] {6. Map Control to Framework};
+
+        \draw[msg] ([yshift=-8.3cm]celery.south) -- ([yshift=-8.3cm]db.south) node[midway, above=2pt, label] {7. Commit Resolved States};
+        \draw[reply] ([yshift=-8.8cm]celery.south) -- ([yshift=-8.8cm]db.south) node[midway, above=2pt, label] {8. Transaction Success};
+    \end{tikzpicture}
+    }
+    \caption{Sequence Diagram: Background Telemetry Synchronization with UML Loop}
+    \label{fig:seq_sync}
+\end{figure}
+
+\subsubsection{Framework Configuration and Rule Mapping}
+Figure \ref{fig:seq_mapping} shows the API flow when a Superadmin links a Wazuh rule to a policy. The backend verifies their permissions and writes the mapping to Postgres. This has to happen synchronously so the background workers don't try to parse telemetry for a rule that doesn't exist yet.
+
+\begin{figure}[H]
+    \centering
+    \resizebox{0.8\textwidth}{!}{
+    \begin{tikzpicture}[
+        node distance=2cm,
+        inst/.style={rectangle, draw=black!90, thick, fill=blue!5, minimum width=2.8cm, minimum height=0.8cm, font=\small\bfseries, rounded corners=2pt},
+        act/.style={rectangle, draw=black!90, fill=gray!20, minimum width=0.3cm},
+        msg/.style={-Stealth, thick, draw=black!90},
+        reply/.style={Stealth-, thick, dashed, draw=black!80},
+        label/.style={font=\scriptsize, inner sep=2pt}
+    ]
+        % Instances
+        \node[inst] (client) at (0, 0) {Admin UI};
+        \node[inst] (api) at (4.5, 0) {API Gateway};
+        \node[inst] (db) at (9, 0) {PostgreSQL};
+
+        % Lifelines
+        \draw[dashed, draw=black!60, thick] (client.south) -- ++(0, -6.5);
+        \draw[dashed, draw=black!60, thick] (api.south) -- ++(0, -6.5);
+        \draw[dashed, draw=black!60, thick] (db.south) -- ++(0, -6.5);
+
+        % Activation Boxes
+        \draw[act] ([xshift=-0.15cm, yshift=-1cm]client.south) rectangle ([xshift=0.15cm, yshift=-6cm]client.south);
+        \draw[act] ([xshift=-0.15cm, yshift=-1.2cm]api.south) rectangle ([xshift=0.15cm, yshift=-5.5cm]api.south);
+        \draw[act] ([xshift=-0.15cm, yshift=-2.5cm]db.south) rectangle ([xshift=0.15cm, yshift=-4.5cm]db.south);
+
+        % Messages
+        \draw[msg] ([yshift=-1.5cm]client.south) -- ([yshift=-1.5cm]api.south) node[midway, above=2pt, label] {1. Submit Framework Mapping};
+        
+        % Shortened self-loop to 0.8
+        \draw[msg] ([yshift=-2cm]api.south) ++(0.15cm,0) -- ++(0.8,0) -- ++(0,-0.6) -- ++(-0.8,0) node[midway, right=4pt, label, text width=3cm] {2. Verify RBAC Constraints};
+
+        \draw[msg] ([yshift=-3.7cm]api.south) -- ([yshift=-3.7cm]db.south) node[midway, above=2pt, label] {3. Insert Relational Mapping};
+        \draw[reply] ([yshift=-4.7cm]api.south) -- ([yshift=-4.7cm]db.south) node[midway, above=2pt, label] {4. Return Database ACK};
+        
+        \draw[reply] ([yshift=-5.7cm]client.south) -- ([yshift=-5.7cm]api.south) node[midway, above=2pt, label] {5. HTTP 201 Created};
+    \end{tikzpicture}
+    }
+    \caption{Sequence Diagram: Framework Rule Mapping}
+    \label{fig:seq_mapping}
+\end{figure}
+
+\subsubsection{Audit Report Generation}
+Figure \ref{fig:seq_report} covers the PDF generation. If the database returns an empty dataset, the API kills the request early to save CPU cycles. If we have data, the templating engine compiles the PDF binary and streams it straight to the browser.
+
+\begin{figure}[H]
+    \centering
+    \resizebox{0.95\textwidth}{!}{
+    \begin{tikzpicture}[
+        node distance=2cm,
+        inst/.style={rectangle, draw=black!90, thick, fill=blue!5, minimum width=2.8cm, minimum height=0.8cm, font=\small\bfseries, rounded corners=2pt},
+        act/.style={rectangle, draw=black!90, fill=gray!20, minimum width=0.3cm},
+        msg/.style={-Stealth, thick, draw=black!90},
+        reply/.style={Stealth-, thick, dashed, draw=black!80},
+        label/.style={font=\scriptsize, inner sep=2pt}
+    ]
+        % Instances
+        \node[inst] (client) at (0, 0) {Auditor UI};
+        \node[inst] (api) at (4.5, 0) {Django API};
+        \node[inst] (engine) at (9, 0) {Reporting Engine};
+        \node[inst] (db) at (13.5, 0) {PostgreSQL};
+
+        % Lifelines
+        \draw[dashed, draw=black!60, thick] (client.south) -- ++(0, -9.5);
+        \draw[dashed, draw=black!60, thick] (api.south) -- ++(0, -9.5);
+        \draw[dashed, draw=black!60, thick] (engine.south) -- ++(0, -9.5);
+        \draw[dashed, draw=black!60, thick] (db.south) -- ++(0, -9.5);
+
+        % Activation Boxes
+        \draw[act] ([xshift=-0.15cm, yshift=-1cm]client.south) rectangle ([xshift=0.15cm, yshift=-9cm]client.south);
+        \draw[act] ([xshift=-0.15cm, yshift=-1.2cm]api.south) rectangle ([xshift=0.15cm, yshift=-8.5cm]api.south);
+        \draw[act] ([xshift=-0.15cm, yshift=-2cm]engine.south) rectangle ([xshift=0.15cm, yshift=-7cm]engine.south);
+        \draw[act] ([xshift=-0.15cm, yshift=-2.8cm]db.south) rectangle ([xshift=0.15cm, yshift=-4cm]db.south);
+
+        % Messages
+        \draw[msg] ([yshift=-1.5cm]client.south) -- ([yshift=-1.5cm]api.south) node[midway, above=2pt, label] {1. Request Audit Report};
+        \draw[msg] ([yshift=-2.2cm]api.south) -- ([yshift=-2.2cm]engine.south) node[midway, above=2pt, label] {2. Initialize Report Compilation};
+        \draw[msg] ([yshift=-3cm]engine.south) -- ([yshift=-3cm]db.south) node[midway, above=2pt, label] {3. Aggregate Compliance Data};
+        \draw[reply] ([yshift=-3.8cm]engine.south) -- ([yshift=-3.8cm]db.south) node[midway, above=2pt, label] {4. Return Data Collection};
+
+        % ALT Fragment
+        \draw[thick, draw=black!80, fill=none] (-1, -4.5) rectangle (14.5, -8.3);
+        \draw[thick, draw=black!80, fill=gray!20] (-1, -4.5) -- ++(1.2,0) -- ++(0,-0.5) -- ++(-1.2,0) -- cycle;
+        \node[font=\scriptsize\bfseries] at (-0.4, -4.75) {alt};
+        \node[font=\scriptsize, right] at (0.3, -4.75) {[Data Exists]};
+        
+        % Valid Path
+        \draw[msg] ([yshift=-5.5cm]engine.south) ++(0.15cm,0) -- ++(0.8,0) -- ++(0,-0.8) -- ++(-0.8,0) node[midway, right=4pt, label, text width=2.5cm, opacity=1] {5. Render PDF via Template};
+        \draw[reply] ([yshift=-6.8cm]api.south) -- ([yshift=-6.8cm]engine.south) node[midway, above=2pt, label, opacity=1] {6. Return Binary Buffer};
+
+        % Divider
+        \draw[dashed, thick, draw=black!80] (-1, -7.2) -- (14.5, -7.2);
+        \node[font=\scriptsize, right] at (-0.8, -7.5) {[Dataset Empty]};
+
+        % Invalid Path
+        \draw[reply] ([yshift=-7.8cm]api.south) -- ([yshift=-7.8cm]engine.south) node[midway, above=2pt, label, opacity=1] {7. Abort Generation (Error 404)};
+        
+        \draw[reply] ([yshift=-8.6cm]client.south) -- ([yshift=-8.6cm]api.south) node[midway, above=2pt, label, opacity=1] {8. Stream Payload or Error};
+
+    \end{tikzpicture}
+    }
+    \caption{Sequence Diagram: Report Generation with Alternative Data States}
+    \label{fig:seq_report}
+\end{figure}
+\section{Low Level Design}
+The Low-Level Design (LLD) translates the high-level system architecture into fundamental software building blocks. This section maps the specific object-oriented structures, persistence models, and relational bindings that dictate the execution of the ICMS platform's core business logic.
+
+\subsection{UML Class Diagram}
+Figure \ref{fig:class_diagram} maps out the Django ORM classes. I used standard foreign-key constraints to tie the abstract regulatory frameworks directly to the concrete endpoint logs.
+
+\begin{figure}[H]
+    \centering
+    \resizebox{\textwidth}{!}{
+    \begin{tikzpicture}[
+        classnode/.style={rectangle, draw=black!90, thick, fill=white, align=left, minimum width=4.5cm, rounded corners=2pt, inner sep=1ex, font=\scriptsize},
+        assoc/.style={-Stealth, thick, draw=black!80},
+        rel/.style={font=\scriptsize\bfseries, fill=white, inner sep=1pt}
+    ]
+        % Classes
+        \node[classnode] (user) at (0, 0) {
+            \textbf{UserAccount}\\[1ex]
+            \rule{4cm}{0.4pt}\\[0.5ex]
+            + uuid : UUID\\
+            + email : String\\
+            + password\_hash : String\\
+            + role : Enum (Admin, Auditor)\\
+            + is\_active : Boolean\\[0.5ex]
+            \rule{4cm}{0.4pt}\\[0.5ex]
+            + authenticate() : Boolean\\
+            + generate\_token\_pair() : JWT
+        };
+        \node[classnode] (framework) at (7, 0) {
+            \textbf{RegulatoryFramework}\\[1ex]
+            \rule{4cm}{0.4pt}\\[0.5ex]
+            + id : Integer\\
+            + name : String (e.g., ISO 27001)\\
+            + version : String\\
+            + description : Text\\[0.5ex]
+            \rule{4cm}{0.4pt}\\[0.5ex]
+            + get\_controls() : QuerySet\\
+            + calculate\_compliance() : Float
+        };
+        \node[classnode] (control) at (14, 0) {
+            \textbf{FrameworkControl}\\[1ex]
+            \rule{4cm}{0.4pt}\\[0.5ex]
+            + id : Integer\\
+            + framework\_id : FK\\
+            + clause\_id : String\\
+            + objective : Text\\[0.5ex]
+            \rule{4cm}{0.4pt}\\[0.5ex]
+            + evaluate\_status() : Boolean
+        };
+        \node[classnode] (mapping) at (14, -6) {
+            \textbf{RuleMapping}\\[1ex]
+            \rule{4cm}{0.4pt}\\[0.5ex]
+            + id : Integer\\
+            + control\_id : FK\\
+            + wazuh\_rule\_id : Integer\\
+            + severity\_weight : Integer\\[0.5ex]
+            \rule{4cm}{0.4pt}\\[0.5ex]
+            + validate\_mapping() : Boolean
+        };
+        \node[classnode] (endpoint) at (7, -6) {
+            \textbf{MonitoredEndpoint}\\[1ex]
+            \rule{4cm}{0.4pt}\\[0.5ex]
+            + agent\_id : String\\
+            + hostname : String\\
+            + ip\_address : String\\
+            + status : Enum\\[0.5ex]
+            \rule{4cm}{0.4pt}\\[0.5ex]
+            + fetch\_latest\_telemetry() : JSON
+        };
+        \node[classnode] (state) at (0, -6) {
+            \textbf{ComplianceState}\\[1ex]
+            \rule{4cm}{0.4pt}\\[0.5ex]
+            + id : Integer\\
+            + endpoint\_id : FK\\
+            + rule\_id : FK\\
+            + is\_passed : Boolean\\
+            + timestamp : DateTime\\[0.5ex]
+            \rule{4cm}{0.4pt}\\[0.5ex]
+            + trigger\_alert() : Void\\
+            + commit\_to\_ledger() : Void
+        };
+        % Relationships
+        \draw[assoc] (framework.east) -- (control.west) node[midway, above, rel] {1} node[midway, below, rel] {1..*};
+        \draw[assoc] (control.south) -- (mapping.north) node[midway, left, rel] {1} node[midway, right, rel] {1..*};
+        \draw[assoc] (endpoint.west) -- (state.east) node[midway, above, rel] {1} node[midway, below, rel] {1..*};
+        \draw[assoc, dashed] (mapping.west) -- (endpoint.east) node[midway, above, rel] {Evaluates};
+        
+    \end{tikzpicture}
+    }
+    \caption{UML Class Diagram: Core Object-Relational Models}
+    \label{fig:class_diagram}
+\end{figure}
+
+\section{Database Design}
+I built the database on PostgreSQL. The tables are normalized to the Third Normal Form (3NF) to prevent update anomalies. When you're pulling in thousands of SIEM alerts an hour, you need strict ACID compliance so the data doesn't corrupt.
+
+\subsection{Physical Data Model (Core ERD)}
+Figure \ref{fig:core_erd} shows the actual physical schema. I mapped out the exact column types and foreign keys we used to build the PostgreSQL database.
+
+\begin{figure}[H]
+    \centering
+    \resizebox{\textwidth}{!}{
+    \begin{tikzpicture}[
+        table/.style={rectangle, draw=black!90, thick, fill=white, align=left, font=\footnotesize\ttfamily, inner sep=1.5ex, rounded corners=2pt},
+        rel/.style={-Stealth, thick, draw=black!80},
+        card/.style={font=\scriptsize\bfseries\sffamily, fill=white, inner sep=1pt}
+    ]
+
+        % ----------------------------------------------------
+        % TABLE PLACEMENT (Strict Grid Layout)
+        % ----------------------------------------------------
+        \node[table, text width=4.5cm] (users) at (0, 6) {
+            \textbf{users} \\
+            \rule{4.5cm}{0.4pt} \\
+            PK \hspace{1mm} id : UUID \\
+            UQ \hspace{1mm} email : VARCHAR(255) \\
+            \hspace{5.5mm} password\_hash : VARCHAR(255) \\
+            \hspace{5.5mm} role : VARCHAR(50) \\
+            \hspace{5.5mm} created\_at : TIMESTAMP
+        };
+
+        \node[table, text width=4.5cm] (frameworks) at (8, 6) {
+            \textbf{regulatory\_frameworks} \\
+            \rule{4.5cm}{0.4pt} \\
+            PK \hspace{1mm} id : SERIAL \\
+            UQ \hspace{1mm} name : VARCHAR(255) \\
+            \hspace{5.5mm} version : VARCHAR(50) \\
+            \hspace{5.5mm} is\_active : BOOLEAN
+        };
+
+        \node[table, text width=4.5cm] (controls) at (16, 6) {
+            \textbf{framework\_controls} \\
+            \rule{4.5cm}{0.4pt} \\
+            PK \hspace{1mm} id : SERIAL \\
+            FK \hspace{1mm} framework\_id : INT \\
+            \hspace{5.5mm} clause\_id : VARCHAR(50) \\
+            \hspace{5.5mm} objective : TEXT
+        };
+
+        \node[table, text width=4.5cm] (endpoints) at (0, 0) {
+            \textbf{monitored\_endpoints} \\
+            \rule{4.5cm}{0.4pt} \\
+            PK \hspace{1mm} agent\_id : VARCHAR(50) \\
+            FK \hspace{1mm} managed\_by : UUID \\
+            \hspace{5.5mm} hostname : VARCHAR(255) \\
+            \hspace{5.5mm} ip\_address : INET \\
+            \hspace{5.5mm} status : VARCHAR(20)
+        };
+
+        \node[table, text width=4.5cm] (states) at (8, 0) {
+            \textbf{compliance\_states} \\
+            \rule{4.5cm}{0.4pt} \\
+            PK \hspace{1mm} id : BIGSERIAL \\
+            FK \hspace{1mm} agent\_id : VARCHAR(50) \\
+            FK \hspace{1mm} rule\_mapping\_id : INT \\
+            \hspace{5.5mm} status : VARCHAR(20) \\
+            \hspace{5.5mm} timestamp : TIMESTAMP
+        };
+
+        \node[table, text width=4.5cm] (mappings) at (16, 0) {
+            \textbf{rule\_mappings} \\
+            \rule{4.5cm}{0.4pt} \\
+            PK \hspace{1mm} id : SERIAL \\
+            FK \hspace{1mm} control\_id : INT \\
+            UQ \hspace{1mm} wazuh\_rule\_id : INT \\
+            \hspace{5.5mm} severity\_weight : INT
+        };
+
+        % ----------------------------------------------------
+        % RELATIONSHIPS (Crow's Foot via 1-to-N lines)
+        % ----------------------------------------------------
+        \draw[rel] (users.south) -- (endpoints.north) node[pos=0.1, right, card] {1} node[pos=0.9, right, card] {N};
+        \draw[rel] (frameworks.east) -- (controls.west) node[pos=0.1, above, card] {1} node[pos=0.9, above, card] {N};
+        \draw[rel] (controls.south) -- (mappings.north) node[pos=0.1, right, card] {1} node[pos=0.9, right, card] {N};
+        \draw[rel] (endpoints.east) -- (states.west) node[pos=0.1, above, card] {1} node[pos=0.9, above, card] {N};
+        \draw[rel] (mappings.west) -- (states.east) node[pos=0.1, above, card] {1} node[pos=0.9, above, card] {N};
+
+    \end{tikzpicture}
+    }
+    \caption{Physical Database Schema: Core Relational Data Model with Exact Data Types}
+    \label{fig:core_erd}
+\end{figure}
+
+\subsection{Extended Entity Relationship Diagram (EERD)}
+Figure \ref{fig:eerd} is an Extended ERD (EERD) that visualizes the logical rules we put in place.
+
+Notice the disjoint (\textbf{d}) specialization: a generic User Account splits strictly into either a System Admin or a Security Auditor. That handles our RBAC at the database level. I also modeled the Compliance State as a weak entity, because an alert record is useless without its parent Monitored Endpoint.
+
+\begin{figure}[H]
+    \centering
+    \resizebox{0.9\textwidth}{!}{
+    \begin{tikzpicture}[
+        entity/.style={rectangle, draw=black!90, thick, fill=blue!10, minimum width=2.8cm, minimum height=1cm, align=center, font=\small\bfseries, rounded corners=2pt},
+        weakent/.style={rectangle, double, draw=black!90, thick, fill=blue!5, minimum width=2.8cm, minimum height=1cm, align=center, font=\small\bfseries, rounded corners=2pt},
+        rel/.style={diamond, draw=black!90, thick, fill=yellow!20, minimum width=2.5cm, minimum height=1.5cm, align=center, font=\footnotesize\bfseries, aspect=1.5},
+        weakrel/.style={diamond, double, draw=black!90, thick, fill=yellow!10, minimum width=2.5cm, minimum height=1.5cm, align=center, font=\footnotesize\bfseries, aspect=1.5},
+        disjoint/.style={circle, draw=black!90, thick, fill=white, minimum size=0.6cm, font=\small\bfseries},
+        line/.style={thick, draw=black!80},
+        attr/.style={ellipse, draw=black!80, fill=white, font=\footnotesize, inner sep=1.5pt},
+        card/.style={font=\scriptsize\bfseries, fill=white, inner sep=1pt}
+    ]
+
+        % ----------------------------------------------------
+        % CORE ENTITIES (Center Y-Axis Stack)
+        % ----------------------------------------------------
+        \node[entity] (user) at (0, 5) {User Account};
+        \node[disjoint] (d) at (0, 3) {d};
+        \node[font=\scriptsize\bfseries, right=2pt] at (0, 4) {Is-A};
+        
+        \node[entity] (admin) at (-4, 1) {System Admin};
+        \node[entity] (auditor) at (4, 1) {Security Auditor};
+
+        \node[rel] (monitors) at (-4, -1.5) {Monitors};
+        \node[rel] (reviews) at (4, -1.5) {Reviews};
+
+        \node[entity] (endpoint) at (-4, -4) {Monitored Endpoint};
+        \node[weakrel] (generates) at (0, -4) {Generates};
+        \node[weakent] (state) at (4, -4) {Compliance State};
+
+        % ----------------------------------------------------
+        % ATTRIBUTES (Shooting Outwards to Prevent Overlap)
+        % ----------------------------------------------------
+        % User Attributes (Top)
+        \node[attr] (uuid) at (0, 7) {\underline{uuid}};
+        \node[attr] (email) at (-2.5, 6) {email};
+        \node[attr] (pass) at (2.5, 6) {password};
+        \draw[line] (user.north) -- (uuid.south);
+        \draw[line] (user.north west) -- (email.south east);
+        \draw[line] (user.north east) -- (pass.south west);
+
+        % Subclass Attributes (Far Left / Far Right)
+        \node[attr] (clearance) at (-8.0, 1) {clearance\_level};
+        \draw[line] (admin.west) -- (clearance.east);
+
+        \node[attr] (cert) at (8.0, 1) {cert\_id};
+        \draw[line] (auditor.east) -- (cert.west);
+
+        % Endpoint Attributes (Bottom Left)
+        \node[attr] (agent) at (-8.0, -4) {\underline{agent\_id}};
+        \node[attr] (hostname) at (-6.5, -5.5) {hostname};
+        \node[attr] (ip) at (-4, -6.5) {ip\_address};
+        \draw[line] (endpoint.west) -- (agent.east);
+        \draw[line] (endpoint.south west) -- (hostname.north east);
+        \draw[line] (endpoint.south) -- (ip.north);
+
+        % State Attributes (Bottom Right)
+        \node[attr] (timestamp) at (8.5, -4) {\textit{timestamp (Partial)}};
+        \node[attr] (status) at (7.5, -5.5) {status};
+        \node[attr] (details) at (4, -6.5) {details};
+        \draw[line] (state.east) -- (timestamp.west);
+        \draw[line] (state.south east) -- (status.north west);
+        \draw[line] (state.south) -- (details.north);
+
+        % ----------------------------------------------------
+        % STRUCTURAL CONNECTIONS
+        % ----------------------------------------------------
+        % Inheritance
+        \draw[line] (user.south) -- (d.north);
+        \draw[line] (d.south) -- ++(0,-0.5) -| (admin.north);
+        \draw[line] (d.south) -- ++(0,-0.5) -| (auditor.north);
+
+        % Admin to Endpoint
+        \draw[line] (admin.south) -- (monitors.north) node[midway, left, card] {1};
+        \draw[line] (monitors.south) -- (endpoint.north) node[midway, left, card] {N};
+
+        % Auditor to State
+        \draw[line] (auditor.south) -- (reviews.north) node[midway, right, card] {1};
+        \draw[line] (reviews.south) -- (state.north) node[midway, right, card] {N};
+
+        % Weak Entity Dependency
+        \draw[line] (endpoint.east) -- (generates.west) node[midway, above, card] {1};
+        \draw[line, double] (generates.east) -- (state.west) node[midway, above, card] {N};
+
+    \end{tikzpicture}
+    }
+    \caption{Extended Entity Relationship Diagram (EERD) with Constraints and Attributes}
+    \label{fig:eerd}
+\end{figure}
+
+
+\section{Graphical User Interface (GUI) Design}
+For the frontend, I built a React Single Page Application (SPA). I wanted the interface to be clean and data-focused so analysts don't get overwhelmed by noise. The screenshots below show the default dark mode, though the app supports theme switching.
+
+\subsection{Authentication and Identity Management}
+The login screen is bare-bones by design. The user submits their credentials, the backend validates the JWT, and they get routed to their specific dashboard based on their role.
+
+\begin{figure}[H]
+    \centering
+    \framebox{\rule{0pt}{2.5in} \rule{0.8\textwidth}{0pt}} 
+    % INSTRUCTION: Replace the \framebox line above with: \includegraphics[width=0.8\textwidth]{your_login_screenshot.png}
+    \caption{GUI Design: Secure User Authentication Portal}
+    \label{fig:gui_login}
+\end{figure}
+
+\subsection{Superadmin Configuration Portal}
+Superadmins have full read/write access. Their dashboard gives them complete control over the Wazuh pipeline, the framework rules, and user accounts. 
+
+\begin{figure}[H]
+    \centering
+    \framebox{\rule{0pt}{3in} \rule{0.9\textwidth}{0pt}}
+    \caption{GUI Design: Superadmin Global Compliance Dashboard}
+    \label{fig:gui_superadmin_dashboard}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \framebox{\rule{0pt}{3in} \rule{0.9\textwidth}{0pt}}
+    \caption{GUI Design: Framework and Wazuh Rule Mapping Interface}
+    \label{fig:gui_superadmin_mapping}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \framebox{\rule{0pt}{3in} \rule{0.9\textwidth}{0pt}}
+    \caption{GUI Design: Monitored Endpoints and Telemetry Synchronization Status}
+    \label{fig:gui_superadmin_endpoints}
+\end{figure}
+
+\subsection{Admin and Auditor Workspaces}
+The React app changes what it renders depending on who logs in. System Admins can manage endpoints but can't touch the compliance frameworks. Security Auditors get a strict read-only view, ensuring they can't accidentally alter the audit evidence.
+
+\begin{figure}[H]
+    \centering
+    \framebox{\rule{0pt}{2.5in} \rule{0.85\textwidth}{0pt}}
+    \caption{GUI Design: System Admin Operational Dashboard}
+    \label{fig:gui_admin_dashboard}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \framebox{\rule{0pt}{2.5in} \rule{0.85\textwidth}{0pt}}
+    \caption{GUI Design: Security Auditor Read-Only Compliance View}
+    \label{fig:gui_auditor_dashboard}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \framebox{\rule{0pt}{2.5in} \rule{0.85\textwidth}{0pt}}
+    \caption{GUI Design: Auditor Report Generation Modal}
+    \label{fig:gui_auditor_export}
+\end{figure}
+
+\subsection{Automated PDF Audit Artifacts}
+External auditors need physical files, so I built a PDF rendering engine on the backend. It aggregates the PostgreSQL data and generates formal reports like the ones below.
+
+\begin{figure}[H]
+    \centering
+    \framebox{\rule{0pt}{3.5in} \rule{0.65\textwidth}{0pt}}
+    \caption{System Output: Automated PDF Report - Cover and Executive Summary}
+    \label{fig:gui_pdf_cover}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \framebox{\rule{0pt}{3.5in} \rule{0.65\textwidth}{0pt}}
+    \caption{System Output: Automated PDF Report - Aggregated Framework Control Matrix}
+    \label{fig:gui_pdf_matrix}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \framebox{\rule{0pt}{3.5in} \rule{0.65\textwidth}{0pt}}
+    \caption{System Output: Automated PDF Report - Technical Wazuh Telemetry Evidence}
+    \label{fig:gui_pdf_telemetry}
+\end{figure}
+
+
+\section{External Interfaces}
+The ICMS doesn't run in a vacuum. It talks to several external services. This section lists out the protocols and authentication methods I used to keep those connections secure.
+
+\subsection{Wazuh SIEM REST API}
+The whole system relies on raw logs coming from the Wazuh Manager. My Celery workers hit the Wazuh REST API over HTTPS. I secured this with Bearer tokens generated by the Wazuh server. We pull down the JSON payloads and validate them against the Django ORM before saving them.
+
+\subsection{SMTP Notification Gateway}
+For real-time alerts, the backend constructs HTML emails and fires them off through an external SMTP server over port 587 using STARTTLS. I threw this logic into the async message broker so it wouldn't block the API Gateway.
+
+\subsection{Outbound Webhook Integration}
+I also added outbound webhooks so the system can talk to tools like Slack or Microsoft Teams. Whenever a compliance rule breaks, it shoots out an HTTP POST request with the JSON event data. To prevent spoofing, I added an HMAC-SHA256 signature to the headers.
+
+\subsection{Interface Specification Matrix}
+Table \ref{tab:external_interfaces} summarizes the technical parameters and boundary constraints of the platform's external interfaces.
+
+\begin{table}[H]
+    \centering
+    \caption{External Interface Technical Specifications}
+    \label{tab:external_interfaces}
+    \renewcommand{\arraystretch}{1.4}
+    \resizebox{0.95\textwidth}{!}{
+    \begin{tabular}{|l|l|l|l|l|}
+        \hline
+        \rowcolor{blue!10} 
+        \textbf{Interface Target} & \textbf{Network Protocol} & \textbf{Data Format} & \textbf{Authentication Mechanism} & \textbf{Directionality} \\ \hline
+        Wazuh Manager API & HTTPS (TCP 443) & JSON & Bearer Token / API Key & Bidirectional (Polling) \\ \hline
+        SMTP Relay Server & SMTP (TCP 587) & MIME / HTML & SMTP AUTH (TLS) & Outbound Only \\ \hline
+        Enterprise Webhooks & HTTPS (TCP 443) & JSON & HMAC-SHA256 Signatures & Outbound Only \\ \hline
+        Client Web Browser & HTTPS (TCP 443) & HTML / JSON & JWT (Stateless) & Bidirectional \\ \hline
+    \end{tabular}
+    }
+\end{table}

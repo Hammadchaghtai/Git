@@ -1,19 +1,131 @@
-\contentsline {section}{Certificate of Approval}{i}{Doc-Start}%
-\contentsline {section}{Abstract}{ii}{Doc-Start}%
-\contentsline {section}{Acknowledgments}{iii}{Doc-Start}%
+\contentsline {section}{Certificate}{i}{section*.1}%
+\contentsline {chapter}{Abstract}{ii}{section*.2}%
+\contentsline {chapter}{Acknowledgments}{iii}{section*.4}%
+\contentsline {chapter}{List of Figures}{x}{section*.7}%
+\contentsline {chapter}{List of Tables}{xii}{section*.9}%
+\contentsline {chapter}{List of Abbreviations}{xiv}{section*.11}%
 \contentsline {chapter}{\numberline {1}Introduction}{1}{chapter.1}%
-\contentsline {section}{\numberline {1.1}Background of Enterprise Compliance}{1}{section.1.1}%
-\contentsline {section}{\numberline {1.2}Problem Statement}{2}{section.1.2}%
-\contentsline {section}{\numberline {1.3}Project Objectives}{2}{section.1.3}%
-\contentsline {section}{\numberline {1.4}Project Scope}{3}{section.1.4}%
-\contentsline {section}{\numberline {1.5}Proposed Solution Overview}{4}{section.1.5}%
-\contentsline {section}{\numberline {1.6}Thesis Organization}{4}{section.1.6}%
-\contentsline {chapter}{\numberline {2}Literature Review}{6}{chapter.2}%
-\contentsline {section}{\numberline {2.1}Evolution of Governance, Risk, and Compliance (GRC) Platforms}{6}{section.2.1}%
-\contentsline {section}{\numberline {2.2}Security Information and Event Management (SIEM) Integrations}{7}{section.2.2}%
-\contentsline {section}{\numberline {2.3}Performance Bottlenecks in Telemetry Aggregation}{7}{section.2.3}%
-\contentsline {section}{\numberline {2.4}Modern Access Control Paradigms}{9}{section.2.4}%
-\contentsline {section}{\numberline {2.5}Containerization and Defense-in-Depth Topology}{10}{section.2.5}%
-\contentsline {section}{\numberline {2.6}Cognitive Load and HCI in Security Dashboards}{10}{section.2.6}%
-\contentsline {section}{\numberline {2.7}Comparative Analysis}{11}{section.2.7}%
-\contentsline {chapter}{Bibliography}{13}{table.2.1}%
+\contentsline {section}{\numberline {1.1}Project Background}{1}{section.1.1}%
+\contentsline {subsection}{\numberline {1.1.1}The Temporal Blind Spot of Audits}{1}{subsection.1.1.1}%
+\contentsline {subsection}{\numberline {1.1.2}The Shift to Continuous Monitoring}{1}{subsection.1.1.2}%
+\contentsline {section}{\numberline {1.2}Problem Description}{2}{section.1.2}%
+\contentsline {subsection}{\numberline {1.2.1}Telemetry Correlation Delays}{2}{subsection.1.2.1}%
+\contentsline {subsection}{\numberline {1.2.2}Algorithmic Failures in Legacy Systems}{2}{subsection.1.2.2}%
+\contentsline {section}{\numberline {1.3}Project Objectives}{3}{section.1.3}%
+\contentsline {section}{\numberline {1.4}Methodology}{4}{section.1.4}%
+\contentsline {subsection}{\numberline {1.4.1}Agile Development Lifecycle}{4}{subsection.1.4.1}%
+\contentsline {subsection}{\numberline {1.4.2}Sandbox Testing and Evaluation}{4}{subsection.1.4.2}%
+\contentsline {section}{\numberline {1.5}Project Scope}{5}{section.1.5}%
+\contentsline {subsection}{\numberline {1.5.1}Compliance Framework Boundaries}{5}{subsection.1.5.1}%
+\contentsline {subsection}{\numberline {1.5.2}Technical Implementation Boundaries}{5}{subsection.1.5.2}%
+\contentsline {section}{\numberline {1.6}Feasibility Study}{6}{section.1.6}%
+\contentsline {subsection}{\numberline {1.6.1}Technical and Economic Feasibility}{6}{subsection.1.6.1}%
+\contentsline {subsection}{\numberline {1.6.2}Operational Feasibility}{6}{subsection.1.6.2}%
+\contentsline {section}{\numberline {1.7}Areas of Application}{6}{section.1.7}%
+\contentsline {subsection}{\numberline {1.7.1}Financial Technology (FinTech)}{6}{subsection.1.7.1}%
+\contentsline {subsection}{\numberline {1.7.2}Healthcare Sector}{7}{subsection.1.7.2}%
+\contentsline {section}{\numberline {1.8}Report Organization}{7}{section.1.8}%
+\contentsline {chapter}{\numberline {2}Literature Review}{8}{chapter.2}%
+\contentsline {section}{\numberline {2.1}Comprehensive Literature Review}{8}{section.2.1}%
+\contentsline {subsection}{\numberline {2.1.1}Evolution of Governance, Risk, and Compliance (GRC) Platforms}{8}{subsection.2.1.1}%
+\contentsline {subsection}{\numberline {2.1.2}Security Information and Event Management (SIEM) Integrations}{8}{subsection.2.1.2}%
+\contentsline {subsection}{\numberline {2.1.3}Performance Bottlenecks in Telemetry Aggregation}{9}{subsection.2.1.3}%
+\contentsline {subsection}{\numberline {2.1.4}Modern Access Control Paradigms}{10}{subsection.2.1.4}%
+\contentsline {subsection}{\numberline {2.1.5}Containerization and Defense-in-Depth Topology}{11}{subsection.2.1.5}%
+\contentsline {subsection}{\numberline {2.1.6}Cognitive Load and HCI in Security Dashboards}{12}{subsection.2.1.6}%
+\contentsline {section}{\numberline {2.2}Analysis of Existing Systems}{12}{section.2.2}%
+\contentsline {subsection}{\numberline {2.2.1}Manual Spreadsheet Auditing}{12}{subsection.2.2.1}%
+\contentsline {subsection}{\numberline {2.2.2}Vanta (Commercial SaaS)}{12}{subsection.2.2.2}%
+\contentsline {subsection}{\numberline {2.2.3}Drata (Commercial SaaS)}{13}{subsection.2.2.3}%
+\contentsline {subsection}{\numberline {2.2.4}AuditBoard (Enterprise GRC)}{13}{subsection.2.2.4}%
+\contentsline {section}{\numberline {2.3}Comparative Analysis}{14}{section.2.3}%
+\contentsline {section}{\numberline {2.4}Summary of Competitive Advantages}{14}{section.2.4}%
+\contentsline {chapter}{\numberline {3}Requirement Specification}{16}{chapter.3}%
+\contentsline {section}{\numberline {3.1}Existing System}{16}{section.3.1}%
+\contentsline {section}{\numberline {3.2}Proposed System}{16}{section.3.2}%
+\contentsline {subsection}{\numberline {3.2.1}Technology Stack Selection}{17}{subsection.3.2.1}%
+\contentsline {subsection}{\numberline {3.2.2}High-Level Architecture}{18}{subsection.3.2.2}%
+\contentsline {subsection}{\numberline {3.2.3}Dockerized Infrastructure and Network Isolation}{19}{subsection.3.2.3}%
+\contentsline {section}{\numberline {3.3}Requirements Specification}{20}{section.3.3}%
+\contentsline {section}{\numberline {3.4}Functional Requirements}{21}{section.3.4}%
+\contentsline {section}{\numberline {3.5}Non-Functional Requirements}{21}{section.3.5}%
+\contentsline {section}{\numberline {3.6}User Requirements}{22}{section.3.6}%
+\contentsline {section}{\numberline {3.7}System Models and Components}{22}{section.3.7}%
+\contentsline {subsection}{\numberline {3.7.1}Context Diagram}{22}{subsection.3.7.1}%
+\contentsline {subsection}{\numberline {3.7.2}Data Flow Diagram}{23}{subsection.3.7.2}%
+\contentsline {section}{\numberline {3.8}Use Cases}{24}{section.3.8}%
+\contentsline {subsection}{\numberline {3.8.1}Use Case Diagram}{24}{subsection.3.8.1}%
+\contentsline {subsection}{\numberline {3.8.2}Descriptive Use Cases}{25}{subsection.3.8.2}%
+\contentsline {chapter}{\numberline {4}Design}{32}{chapter.4}%
+\contentsline {section}{\numberline {4.1}System Architecture}{32}{section.4.1}%
+\contentsline {subsection}{\numberline {4.1.1}Client and Presentation Tier}{32}{subsection.4.1.1}%
+\contentsline {subsection}{\numberline {4.1.2}Application and Middleware Tier}{32}{subsection.4.1.2}%
+\contentsline {subsection}{\numberline {4.1.3}Asynchronous Processing Tier}{32}{subsection.4.1.3}%
+\contentsline {subsection}{\numberline {4.1.4}Data Persistence Tier}{33}{subsection.4.1.4}%
+\contentsline {section}{\numberline {4.2}Design Constraints}{33}{section.4.2}%
+\contentsline {subsection}{\numberline {4.2.1}Technical Constraints}{33}{subsection.4.2.1}%
+\contentsline {subsection}{\numberline {4.2.2}Infrastructure and Operational Constraints}{34}{subsection.4.2.2}%
+\contentsline {section}{\numberline {4.3}Design Methodology}{34}{section.4.3}%
+\contentsline {section}{\numberline {4.4}High Level Design}{35}{section.4.4}%
+\contentsline {subsection}{\numberline {4.4.1}Component Diagram}{35}{subsection.4.4.1}%
+\contentsline {subsection}{\numberline {4.4.2}Deployment Diagram}{36}{subsection.4.4.2}%
+\contentsline {subsection}{\numberline {4.4.3}System Activity Diagrams}{37}{subsection.4.4.3}%
+\contentsline {subsubsection}{Authentication and IAM Routing}{37}{subsection.4.4.3}%
+\contentsline {subsubsection}{Asynchronous Telemetry Ingestion}{38}{figure.4.4}%
+\contentsline {subsubsection}{Compliance State Evaluation}{39}{figure.4.5}%
+\contentsline {subsubsection}{Audit Report Generation}{40}{figure.4.6}%
+\contentsline {subsubsection}{Framework Rule Mapping and Validation}{41}{figure.4.7}%
+\contentsline {subsubsection}{Real-Time Alerting and Notification}{42}{figure.4.8}%
+\contentsline {subsection}{\numberline {4.4.4}System Sequence Diagrams}{43}{subsection.4.4.4}%
+\contentsline {subsubsection}{Authentication and JWT Issuance}{44}{subsection.4.4.4}%
+\contentsline {subsubsection}{Asynchronous Telemetry Ingestion}{44}{figure.4.10}%
+\contentsline {subsubsection}{Framework Configuration and Rule Mapping}{45}{figure.4.11}%
+\contentsline {subsubsection}{Audit Report Generation}{46}{figure.4.12}%
+\contentsline {section}{\numberline {4.5}Low Level Design}{46}{section.4.5}%
+\contentsline {subsection}{\numberline {4.5.1}UML Class Diagram}{46}{subsection.4.5.1}%
+\contentsline {section}{\numberline {4.6}Database Design}{47}{section.4.6}%
+\contentsline {subsection}{\numberline {4.6.1}Physical Data Model (Core ERD)}{47}{subsection.4.6.1}%
+\contentsline {subsection}{\numberline {4.6.2}Extended Entity Relationship Diagram (EERD)}{48}{subsection.4.6.2}%
+\contentsline {section}{\numberline {4.7}Graphical User Interface (GUI) Design}{49}{section.4.7}%
+\contentsline {subsection}{\numberline {4.7.1}Authentication and Identity Management}{49}{subsection.4.7.1}%
+\contentsline {subsection}{\numberline {4.7.2}Superadmin Configuration Portal}{50}{subsection.4.7.2}%
+\contentsline {subsection}{\numberline {4.7.3}Admin and Auditor Workspaces}{51}{subsection.4.7.3}%
+\contentsline {subsection}{\numberline {4.7.4}Automated PDF Audit Artifacts}{53}{subsection.4.7.4}%
+\contentsline {section}{\numberline {4.8}External Interfaces}{54}{section.4.8}%
+\contentsline {subsection}{\numberline {4.8.1}Wazuh SIEM REST API}{54}{subsection.4.8.1}%
+\contentsline {subsection}{\numberline {4.8.2}SMTP Notification Gateway}{54}{subsection.4.8.2}%
+\contentsline {subsection}{\numberline {4.8.3}Outbound Webhook Integration}{55}{subsection.4.8.3}%
+\contentsline {subsection}{\numberline {4.8.4}Interface Specification Matrix}{55}{subsection.4.8.4}%
+\contentsline {chapter}{\numberline {5}Implementation}{56}{chapter.5}%
+\contentsline {section}{\numberline {5.1}System Architecture}{56}{section.5.1}%
+\contentsline {subsection}{\numberline {5.1.1}Presentation Layer Implementation (Frontend)}{58}{subsection.5.1.1}%
+\contentsline {subsection}{\numberline {5.1.2}Middleware and API Gateway (Backend)}{58}{subsection.5.1.2}%
+\contentsline {subsection}{\numberline {5.1.3}Asynchronous Processing Engine}{59}{subsection.5.1.3}%
+\contentsline {subsection}{\numberline {5.1.4}Data Persistence Layer}{60}{subsection.5.1.4}%
+\contentsline {subsection}{\numberline {5.1.5}Architectural Technology Stack}{60}{subsection.5.1.5}%
+\contentsline {section}{\numberline {5.2}System Internal Components}{61}{section.5.2}%
+\contentsline {subsection}{\numberline {5.2.1}Identity and Access Management (IAM) Module}{62}{subsection.5.2.1}%
+\contentsline {subsection}{\numberline {5.2.2}Governance and Compliance Data Engine}{62}{subsection.5.2.2}%
+\contentsline {subsection}{\numberline {5.2.3}SIEM Telemetry and Synchronization Module}{63}{subsection.5.2.3}%
+\contentsline {subsection}{\numberline {5.2.4}Automated Audit and Reporting Module}{63}{subsection.5.2.4}%
+\contentsline {subsection}{\numberline {5.2.5}Frontend State and Visualization Layer}{64}{subsection.5.2.5}%
+\contentsline {section}{\numberline {5.3}Tools and Technologies}{65}{section.5.3}%
+\contentsline {chapter}{\numberline {6}System Testing and Evaluation}{67}{chapter.6}%
+\contentsline {section}{\numberline {6.1}Critical Appraisal and Limitations}{67}{section.6.1}%
+\contentsline {section}{\numberline {6.2}Testing Environment and Methodology}{68}{section.6.2}%
+\contentsline {section}{\numberline {6.3}Functional System Test Cases}{68}{section.6.3}%
+\contentsline {section}{\numberline {6.4}Non-Functional System Testing}{82}{section.6.4}%
+\contentsline {subsection}{\numberline {6.4.1}Performance and Load Testing}{83}{subsection.6.4.1}%
+\contentsline {subsection}{\numberline {6.4.2}Security and Penetration Testing}{83}{subsection.6.4.2}%
+\contentsline {subsection}{\numberline {6.4.3}Usability and Accessibility Testing}{84}{subsection.6.4.3}%
+\contentsline {subsection}{\numberline {6.4.4}Compatibility and Deployment Testing}{85}{subsection.6.4.4}%
+\contentsline {chapter}{\numberline {7}Conclusions}{87}{chapter.7}%
+\contentsline {chapter}{\numberline {A}User Manual}{89}{appendix.A}%
+\contentsline {section}{\numberline {A.1}Purpose}{89}{section.A.1}%
+\contentsline {section}{\numberline {A.2}System Requirements}{89}{section.A.2}%
+\contentsline {section}{\numberline {A.3}System Access}{89}{section.A.3}%
+\contentsline {section}{\numberline {A.4}Main User Steps}{90}{section.A.4}%
+\contentsline {section}{\numberline {A.5}Logout}{91}{section.A.5}%
+\contentsline {section}{\numberline {A.6}Support}{92}{section.A.6}%
+\contentsline {section}{\numberline {A.7}Note}{92}{section.A.7}%
+\contentsline {chapter}{Bibliography}{93}{section*.13}%

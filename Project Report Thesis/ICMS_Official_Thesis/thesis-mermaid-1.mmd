@@ -1,0 +1,41 @@
+flowchart LR
+    %% Actors
+    Superadmin((Superadmin))
+    Admin((System\nAdministrator))
+    Auditor((Security\nAuditor))
+
+    %% System Boundary
+    subgraph ICMS Platform
+        UC1([User Authentication])
+        UC2([Manage Frameworks])
+        UC3([Map SIEM Rules])
+        UC4([Sync Telemetry])
+        UC5([View Dashboard])
+        UC6([Export Reports])
+    end
+
+    %% Associations
+    Superadmin --- UC1
+    Superadmin --- UC2
+    Superadmin --- UC3
+    Superadmin --- UC4
+    Superadmin --- UC5
+    Superadmin --- UC6
+
+    Admin --- UC1
+    Admin --- UC2
+    Admin --- UC3
+    Admin --- UC4
+    Admin --- UC5
+    Admin --- UC6
+
+    Auditor --- UC1
+    Auditor --- UC5
+    Auditor --- UC6
+
+    %% Includes
+    UC2 -. "<< include >>" .-> UC1
+    UC3 -. "<< include >>" .-> UC1
+    UC4 -. "<< include >>" .-> UC1
+    UC5 -. "<< include >>" .-> UC1
+    UC6 -. "<< include >>" .-> UC1

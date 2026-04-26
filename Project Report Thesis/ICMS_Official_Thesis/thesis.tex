@@ -3,14 +3,20 @@
 % --- Packages ---
 \usepackage[margin=1in]{geometry}
 \usepackage{graphicx}
+\usepackage[T1]{fontenc}
+\usepackage{float}
 \usepackage[hidelinks]{hyperref}
 \usepackage{tikz}
-\usetikzlibrary{shapes, arrows.meta, positioning, calc}
+\usetikzlibrary{shapes, arrows.meta, positioning, calc, fit, backgrounds}
 \usepackage{setspace}
 \usepackage{titlesec}
 \usepackage[numbers]{natbib}
 \usepackage{fancyhdr}
 \usepackage{etoolbox}
+\usepackage{array}
+\usepackage{longtable}
+\usepackage[table]{xcolor}
+
 
 % --- Document Settings ---
 \onehalfspacing
@@ -39,21 +45,24 @@
     \centering
     \vspace*{1cm}
     
-    \includegraphics[width=0.3\textwidth]{bui_logo.jpg}\\[1.5cm]
-    
     {\Huge \textbf{Intelligent Compliance Management System (ICMS)}}\\[1.5cm]
     
-    {\Large \textbf{Muhammad Ali Bukhari (01-135222-096)}}\\[0.3cm]
-    {\Large \textbf{Hammad Chaghtai (01-135222-014)}}\\[1.5cm]
+    \includegraphics[width=0.3\textwidth]{bui_logo.jpg}\\[1.5cm]
     
-    {\large \textbf{Supervisor: Dr. Faisal Bashir}}\\[2cm]
+    {\Large \textsc{Muhammad Ali Bukhari}}\\[0.1cm]
+    {\Large \textbf{01-135222-096}}\\[0.8cm]
     
-    {\large \textbf{Bachelor of Science in Information Technology}}\\[1cm]
+    {\Large \textsc{Muhammad Hammad Chaghtai}}\\[0.1cm]
+    {\Large \textbf{01-135222-014}}\\[1.2cm]
     
-    {\large \textbf{Department of Computer Science}}\\[0.2cm]
-    {\large \textbf{Bahria University, Islamabad}}\\[1.5cm]
+    {\large Supervisor: Dr. Faisal Bashir}\\[1.5cm]
     
-    {\large \textbf{April 2026}}
+    {\large \textbf{Bachelor of Science in Information Technology}}\\[1.2cm]
+    
+    {\large Department of Computer Science}\\[0.1cm]
+    {\large Bahria University, Islamabad}\\[0.8cm]
+    
+    {\large April 2026}
     
     \vfill
 \end{titlepage}
@@ -63,67 +72,90 @@
 % =========================================================
 \newpage
 \pagenumbering{roman}
-\section*{Certificate of Approval}
-\addcontentsline{toc}{section}{Certificate of Approval}
-\vspace{1cm}
+\phantomsection
+\addcontentsline{toc}{section}{Certificate}
+\begin{center}
+    \null\vskip 8mm
+    {\LARGE \textbf{Certificate}}
+\end{center}
+\vspace{10mm}
 
-We accept the work contained in the report titled \textbf{``Intelligent Compliance Management System (ICMS)''}, written by \textbf{Muhammad Ali Bukhari} and \textbf{Hammad Chaghtai} as a confirmation to the required standard for the partial fulfillment of the degree of Bachelor of Science in Information Technology.
+\begin{singlespace}
+We accept the work contained in the report title \textbf{``Intelligent Compliance Management System (ICMS)''} written by \textbf{Mr. Muhammad Ali Bukhari} and \textbf{Mr. Muhammad Hammad Chaghtai} as a confirmation to the required standard for the partial fulfillment of the degree of Bachelor of Science in Information Technology.
 
-\vspace{2cm}
+\vspace{8mm}
 
-\begin{flushleft}
-    \textbf{Approved by:}
-    \vspace{1.5cm}
-    
-    \rule{8cm}{0.4pt}\\
-    \textbf{Supervisor: Dr. Faisal Bashir}\\
-    (Department of Computer Science)
-    
-    \vspace{1.5cm}
-    
-    \rule{8cm}{0.4pt}\\
-    \textbf{Internal Examiner: Name of the Internal Examiner}\\
-    (Title/Designation)
-    
-    \vspace{1.5cm}
-    
-    \rule{8cm}{0.4pt}\\
-    \textbf{External Examiner: Name of the External Examiner}\\
-    (Title/Designation)
-    
-    \vspace{1.5cm}
-    
-    \rule{8cm}{0.4pt}\\
-    \textbf{Head of Department: Name of the HOD}\\
-    (Department of Computer Science)
-\end{flushleft}
+\noindent Approved by \ldots :
+
+\vskip 6mm
+
+\noindent Supervisor: Dr. Faisal Bashir (Dean Engineering Sciences)
+\par\vskip 2mm
+\hfill \rule{0.75\linewidth}{0.2mm}
+
+\vskip 6mm
+
+\noindent Internal Examiner: Name of the Internal Examiner (Title)
+\par\vskip 2mm
+\hfill \rule{0.75\linewidth}{0.2mm}
+
+\vskip 6mm
+
+\noindent External Examiner: Name of the External Examiner (Title)
+\par\vskip 2mm
+\hfill \rule{0.75\linewidth}{0.2mm}
+
+\vskip 6mm
+
+\noindent Project Coordinator: Dr. Kabeer Ahmed Bhatti (FYP Coordinator, IT Department)
+\par\vskip 2mm
+\hfill \rule{0.75\linewidth}{0.2mm}
+
+\vskip 6mm
+
+\noindent Head of the Department: Dr. Muhammad Khurram Ehsan (Head of Department, \\ Computer Science)
+\par\vskip 2mm
+\hfill \rule{0.75\linewidth}{0.2mm}
+
+\vspace{10mm}
+
+\noindent April , 2026
+\end{singlespace}
+
 
 % =========================================================
 % ABSTRACT
 % =========================================================
 \newpage
-\section*{Abstract}
-\addcontentsline{toc}{section}{Abstract}
+\phantomsection
+\addcontentsline{toc}{chapter}{Abstract}
+\chapter*{Abstract}
+Manual security auditing and static compliance mapping create temporal blind spots, leaving enterprise infrastructure vulnerable to configuration drift between assessment cycles. Traditional Governance, Risk, and Compliance (GRC) processes often remain disconnected from actual endpoint telemetry, resulting in high administrative overhead and inaccurate security postures. This project presents the Intelligent Compliance Management System (ICMS), a centralized orchestration platform designed to automate continuous controls monitoring. Originating as an industrial collaborative project, the platform integrates directly with the Wazuh Security Information and Event Management (SIEM) system to ingest unstructured Security Configuration Assessment (SCA) logs. By implementing a deterministic mapping algorithm, the ICMS translates raw technical events into verifiable regulatory controls, enabling continuous compliance tracking against standards such as ISO/IEC 27001.
 
-Manual security auditing in enterprise environments fails to address rapid configuration drift or ephemeral workloads effectively. This thesis presents the Intelligent Compliance Management System (ICMS), a full-stack platform designed to automate Governance, Risk, and Compliance (GRC) workflows through direct Security Information and Event Management (SIEM) integration. The system utilizes a specialized client to ingest raw telemetry from Wazuh, mapping technical events to specific control requirements within the ISO 27001:2022 and SOC 2 Type II frameworks. To manage the performance demands of real-time monitoring, the architecture eliminates the N+1 query bottleneck by implementing set-based ORM aggregation and SQL FILTER clauses. This optimization converts linear retrieval patterns into constant-time database operations, allowing the dashboard to aggregate millions of telemetry rows without significant latency. When telemetry sources provide contradictory states, the system applies a Worst-Case Priority algorithm to ensure a pessimistic, secure resolution of compliance statuses. Infrastructure security follows a defense-in-depth model, utilizing a containerized topology that isolates the PostgreSQL data tier and Redis message broker within a private Docker bridge network. This isolation prevents direct host-port exposure and restricts lateral movement during a potential breach. Identity management relies on stateless JSON Web Tokens (JWT) with rotation policies and Time-Based One-Time Passwords (TOTP) to maintain a zero-trust baseline. The resulting framework replaces periodic, manual evidence collection with a continuous, data-driven assessment model that provides deterministic validation of an organization's security posture.
+The system is engineered using an N-tier architecture. A React Single Page Application (SPA) serves as the presentation layer, communicating with a Django REST Framework API. To prevent main-thread blocking during high-volume SIEM polling and comprehensive PDF report generation, intensive I/O operations are offloaded to an asynchronous Celery and Redis worker tier. Data persistence is managed via PostgreSQL, utilizing a hybrid schema that combines rigid relational constraints for Role-Based Access Control (RBAC) with dynamic JSON fields for variable telemetry storage. Platform security is enforced through stateless JSON Web Tokens (JWT) and Time-based One-Time Password (TOTP) two-factor authentication. 
+
+Comprehensive functional and non-functional testing confirmed the platform's operational viability. The asynchronous tier successfully processed high-density endpoint synchronizations while maintaining an average API latency of under 150ms, and the mapping engine maintained strict referential integrity against collision attempts. The ICMS demonstrates that replacing point-in-time manual audits with continuous, mathematically verifiable SIEM integration establishes a deterministic compliance posture and significantly reduces organizational audit fatigue.
 
 % =========================================================
 % ACKNOWLEDGMENTS
 % =========================================================
 \newpage
-\section*{Acknowledgments}
-\addcontentsline{toc}{section}{Acknowledgments}
+\phantomsection
+\addcontentsline{toc}{chapter}{Acknowledgments}
+\chapter*{Acknowledgments}
 
 In the name of Allah, the Most Gracious, the Most Merciful. All praise is due to Allah, the Almighty, for granting the strength and guidance required to complete this work.
 
-I express my deepest gratitude to my supervisor, Dr. Faisal Bashir, for his mentorship, technical expertise, and continuous encouragement throughout the development of this project. His insights into systems architecture and cybersecurity were fundamental to the successful execution of this thesis.
+We express our deepest gratitude to our supervisor, Dr. Faisal Bashir, for his mentorship, technical expertise, and continuous encouragement throughout the development of this project. His insights into systems architecture and cybersecurity were fundamental to the successful execution of this project. We also extend our sincere appreciation to the dedicated lab staff who assisted us during our practical work, and to the diverse faculty members whose teaching and companionship shaped our understanding over the years. We are profoundly thankful to the Department of Computer Science and Bahria University, not only for providing the necessary resources for our project but for being a place of invaluable life experiences and holistic learning.
 
-I am also thankful to the Department of Computer Science at Bahria University for providing the academic environment and resources necessary for our research. Finally, I would like to thank my family and peers for their unwavering support and patience during this intensive process.
+We owe an immense debt of gratitude to our parents, families, and friends for their prayers, unconditional support, and patience throughout this intensive process. We also take a moment to thank one another; navigating the complexities of this project side-by-side and seeing it through to accomplishment has been a remarkable journey of genuine teamwork and shared dedication. 
+
+Finally, on a deeply personal note, I (Muhammad Ali Bukhari) would like to dedicate a special remembrance to my beautiful pet bird, Kiroo. Though he is no longer with me today, his presence meant the world to me, and his memory provided quiet comfort and joy during the long hours of this journey.
 
 \vspace{1cm}
 \begin{flushright}
-    \textbf{Muhammad Ali Bukhari}\\
-    \textbf{Hammad Chaghtai}
+    \textbf{Muhammad Ali Bukhari}\\[0.5cm]
+    \textbf{Muhammad Hammad Chaghtai}
 \end{flushright}
 
 % =========================================================
@@ -133,10 +165,77 @@ I am also thankful to the Department of Computer Science at Bahria University fo
 \tableofcontents
 
 \newpage
+\phantomsection
+\addcontentsline{toc}{chapter}{List of Figures}
 \listoffigures
 
 \newpage
+\phantomsection
+\addcontentsline{toc}{chapter}{List of Tables}
 \listoftables
+
+\newpage
+\phantomsection
+\addcontentsline{toc}{chapter}{List of Abbreviations}
+\chapter*{List of Abbreviations}
+
+\renewcommand{\arraystretch}{1.2}
+\begin{longtable}{@{}p{3cm} p{12cm}@{}}
+\textbf{ACID} & Atomicity, Consistency, Isolation, Durability \\
+\textbf{API} & Application Programming Interface \\
+\textbf{CCM} & Continuous Controls Monitoring \\
+\textbf{CI/CD} & Continuous Integration and Continuous Deployment \\
+\textbf{CPU} & Central Processing Unit \\
+\textbf{DOM} & Document Object Model \\
+\textbf{DRF} & Django REST Framework \\
+\textbf{ERD} & Entity-Relationship Diagram \\
+\textbf{FedRAMP} & Federal Risk and Authorization Management Program \\
+\textbf{FISMA} & Federal Information Security Modernization Act \\
+\textbf{FK} & Foreign Key \\
+\textbf{GRC} & Governance, Risk, and Compliance \\
+\textbf{GUI} & Graphical User Interface \\
+\textbf{HCI} & Human-Computer Interaction \\
+\textbf{HIPAA} & Health Insurance Portability and Accountability Act \\
+\textbf{HMAC} & Hash-based Message Authentication Code \\
+\textbf{HTML} & HyperText Markup Language \\
+\textbf{HTTP} & HyperText Transfer Protocol \\
+\textbf{HTTPS} & HyperText Transfer Protocol Secure \\
+\textbf{I/O} & Input / Output \\
+\textbf{ICMS} & Intelligent Compliance Management System \\
+\textbf{IDE} & Integrated Development Environment \\
+\textbf{IEC} & International Electrotechnical Commission \\
+\textbf{ISMS} & Information Security Management System \\
+\textbf{ISO} & International Organization for Standardization \\
+\textbf{JSON} & JavaScript Object Notation \\
+\textbf{JWT} & JSON Web Token \\
+\textbf{MIME} & Multipurpose Internet Mail Extensions \\
+\textbf{NIST} & National Institute of Standards and Technology \\
+\textbf{ORM} & Object-Relational Mapping \\
+\textbf{OS} & Operating System \\
+\textbf{PDF} & Portable Document Format \\
+\textbf{PHI} & Protected Health Information \\
+\textbf{PK} & Primary Key \\
+\textbf{QA} & Quality Assurance \\
+\textbf{RBAC} & Role-Based Access Control \\
+\textbf{REST} & Representational State Transfer \\
+\textbf{SaaS} & Software as a Service \\
+\textbf{SCA} & Security Configuration Assessment \\
+\textbf{SHA} & Secure Hash Algorithm \\
+\textbf{SIEM} & Security Information and Event Management \\
+\textbf{SMTP} & Simple Mail Transfer Protocol \\
+\textbf{SPA} & Single Page Application \\
+\textbf{SQL} & Structured Query Language \\
+\textbf{SSL} & Secure Sockets Layer \\
+\textbf{TCP} & Transmission Control Protocol \\
+\textbf{TLS} & Transport Layer Security \\
+\textbf{TOTP} & Time-based One-Time Password \\
+\textbf{UI} & User Interface \\
+\textbf{UML} & Unified Modeling Language \\
+\textbf{UX} & User Experience \\
+\textbf{VPN} & Virtual Private Network \\
+\textbf{WCAG} & Web Content Accessibility Guidelines \\
+\textbf{XSS} & Cross-Site Scripting \\
+\end{longtable}
 
 % =========================================================
 % CHAPTERS
@@ -146,16 +245,24 @@ I am also thankful to the Department of Computer Science at Bahria University fo
 
 \input{chapter1}
 \input{chapter2}
-% \input{chapter3}
-% \input{chapter4}
-% \input{chapter5}
-% \input{chapter6}
-% \input{chapter7}
+\input{chapter3}
+\input{chapter4}
+\input{chapter5}
+\input{chapter6}
+\input{chapter7}
+
+% =========================================================
+% APPENDICES
+% =========================================================
+\newpage
+\appendix
+\input{appendixA}
 
 % =========================================================
 % BIBLIOGRAPHY
 % =========================================================
 \newpage
+\phantomsection
 \addcontentsline{toc}{chapter}{Bibliography}
 \bibliographystyle{plainnat}
 \bibliography{references}

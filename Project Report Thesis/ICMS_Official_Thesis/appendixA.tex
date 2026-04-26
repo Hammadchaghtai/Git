@@ -1,0 +1,90 @@
+\chapter{User Manual}
+
+\section{Purpose}
+The Intelligent Compliance Management System (ICMS) is developed as a centralized Governance, Risk, and Compliance (GRC) platform. The system aims to eliminate manual spreadsheet auditing, reduce operational overhead, and provide a secure, automated environment for mapping regulatory frameworks to technical endpoint telemetry ingested from the Wazuh SIEM.
+
+\section{System Requirements}
+The following requirements are necessary for the smooth operation of the system:
+\begin{itemize}
+    \item \textbf{Device:} Desktop or workstation computer (Minimum 1080p resolution recommended for data tables).
+    \item \textbf{Web Browser:} Modern web browser (Google Chrome v100+, Mozilla Firefox v100+, or Microsoft Edge).
+    \item \textbf{Network:} Secure intranet or VPN access to the ICMS hosting environment.
+    \item \textbf{Authentication:} A registered Authenticator Application (e.g., Google Authenticator, Authy) for TOTP Two-Factor Authentication.
+\end{itemize}
+
+\section{System Access}
+\begin{itemize}
+    \item Open a supported web browser and navigate to the ICMS platform URL provided by your system administrator.
+    \item Enter your registered corporate email and password.
+    \item Upon successful credential validation, enter the 6-digit TOTP code from your authenticator application.
+    \item After successful login, the system will redirect you to the appropriate Dashboard based on your assigned Role-Based Access Control (RBAC) profile (Superadmin, Admin, or Auditor).
+\end{itemize}
+
+\section{Main User Steps}
+
+\textbf{Step 1 -- Authentication and Role Verification}
+\begin{itemize}
+    \item Users authenticate via the primary login portal.
+    \item The system verifies the JWT token and mounts the interface corresponding to the user's privilege level.
+\end{itemize}
+
+\textbf{Step 2 -- Dashboard Overview}
+\begin{itemize}
+    \item Navigate to the Home Dashboard to view the global organizational compliance posture.
+    \item View dynamic gauges representing real-time compliance percentages across all active frameworks.
+    \item Toggle between Light Mode and Dark Mode using the theme switcher in the navigation bar to reduce eye strain.
+\end{itemize}
+
+\textbf{Step 3 -- Framework and Control Management (Admins)}
+\begin{itemize}
+    \item Navigate to the "Frameworks" tab to view active regulatory standards (e.g., ISO 27001).
+    \item Select a framework to drill down into its specific clauses and technical controls.
+\end{itemize}
+
+\textbf{Step 4 -- Telemetry Mapping Configuration (Superadmins)}
+\begin{itemize}
+    \item Navigate to the "Mapping Configuration" portal.
+    \item Link specific Wazuh Security Configuration Assessment (SCA) Rule IDs to the appropriate GRC controls.
+    \item Save the mapping to instruct the engine on how to categorize incoming SIEM events.
+\end{itemize}
+
+\textbf{Step 5 -- Wazuh Telemetry Synchronization}
+\begin{itemize}
+    \item The system automatically polls the Wazuh manager in the background.
+    \item To force an immediate update, Administrators can click "Trigger Manual Sync" on the Scans page.
+    \item View the synchronization logs to verify successful data ingestion.
+\end{itemize}
+
+\textbf{Step 6 -- Endpoint Monitoring}
+\begin{itemize}
+    \item Navigate to the "Endpoints" or "Agents" view.
+    \item Select a specific workstation or server to view its localized compliance score and a list of failed security checks.
+\end{itemize}
+
+\textbf{Step 7 -- Automated Audit Report Generation}
+\begin{itemize}
+    \item Navigate to the "Reports" module.
+    \item Select the desired regulatory framework and date range.
+    \item Click "Generate PDF". The system will process the data and prompt a download of the immutable audit dossier.
+\end{itemize}
+
+\textbf{Step 8 -- System and User Management}
+\begin{itemize}
+    \item Superadmins can navigate to "Manage Users" to provision new accounts and assign RBAC roles.
+    \item Configure SMTP threshold alerts in the System Settings to ensure immediate email dispatch upon compliance failure.
+\end{itemize}
+
+\section{Logout}
+\begin{itemize}
+    \item Click the user profile avatar in the top right corner of the navigation shell.
+    \item Select "Logout" to securely invalidate the active JWT session and clear browser storage.
+\end{itemize}
+
+\section{Support}
+\begin{itemize}
+    \item For credential recovery or 2FA resets, contact the internal IT Security Administrator.
+    \item For Wazuh agent connectivity issues, consult the SIEM infrastructure team.
+\end{itemize}
+
+\section{Note}
+The ICMS platform is designed to automate compliance visibility and reporting. While the system ensures mathematically deterministic mappings based on SIEM telemetry, it is an orchestration and governance tool. Users and administrators are advised that maintaining compliance requires active remediation of the vulnerabilities identified by the platform; the ICMS highlights the security gaps, but direct administrative action on the endpoints is required to resolve them.

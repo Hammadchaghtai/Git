@@ -1,3 +1,41 @@
 \addvspace {10\p@ }
-\contentsline {figure}{\numberline {1.1}{\ignorespaces High-Level Architecture of the Containerized ICMS Platform}}{4}{figure.1.1}%
+\addvspace {10\p@ }
+\addvspace {10\p@ }
+\contentsline {figure}{\numberline {3.1}{\ignorespaces Refined N-Tier System Architecture and Protocol Flow}}{19}{figure.3.1}%
+\contentsline {figure}{\numberline {3.2}{\ignorespaces Docker Service Mesh: Port Exposure and Health-Check Dependencies}}{20}{figure.3.2}%
+\contentsline {figure}{\numberline {3.3}{\ignorespaces Context Diagram: High-Level System Interactions}}{23}{figure.3.3}%
+\contentsline {figure}{\numberline {3.4}{\ignorespaces Level-1 Data Flow Diagram detailing internal compliance processes.}}{24}{figure.3.4}%
+\contentsline {figure}{\numberline {3.5}{\ignorespaces System Use Case Diagram}}{25}{figure.3.5}%
+\addvspace {10\p@ }
+\contentsline {figure}{\numberline {4.1}{\ignorespaces Tier-wise System Architecture of the ICMS Platform}}{33}{figure.4.1}%
+\contentsline {figure}{\numberline {4.2}{\ignorespaces Conceptual View: UML Component Diagram}}{36}{figure.4.2}%
+\contentsline {figure}{\numberline {4.3}{\ignorespaces Physical View: UML Deployment Diagram}}{36}{figure.4.3}%
+\contentsline {figure}{\numberline {4.4}{\ignorespaces Activity Diagram: Authentication and IAM Routing}}{38}{figure.4.4}%
+\contentsline {figure}{\numberline {4.5}{\ignorespaces Activity Diagram: Parallel Asynchronous Telemetry Ingestion}}{39}{figure.4.5}%
+\contentsline {figure}{\numberline {4.6}{\ignorespaces Activity Diagram: Iterative Compliance Evaluation and Worst-Case Priority}}{40}{figure.4.6}%
+\contentsline {figure}{\numberline {4.7}{\ignorespaces Activity Diagram: Automated PDF Audit Report Generation}}{41}{figure.4.7}%
+\contentsline {figure}{\numberline {4.8}{\ignorespaces Activity Diagram: Framework Rule Mapping and API Validation}}{42}{figure.4.8}%
+\contentsline {figure}{\numberline {4.9}{\ignorespaces Activity Diagram: Real-Time Alerting and Notification Fan-out}}{43}{figure.4.9}%
+\contentsline {figure}{\numberline {4.10}{\ignorespaces Sequence Diagram: Authentication Flow with UML Alt Fragment}}{44}{figure.4.10}%
+\contentsline {figure}{\numberline {4.11}{\ignorespaces Sequence Diagram: Background Telemetry Synchronization with UML Loop}}{45}{figure.4.11}%
+\contentsline {figure}{\numberline {4.12}{\ignorespaces Sequence Diagram: Framework Rule Mapping}}{45}{figure.4.12}%
+\contentsline {figure}{\numberline {4.13}{\ignorespaces Sequence Diagram: Report Generation with Alternative Data States}}{46}{figure.4.13}%
+\contentsline {figure}{\numberline {4.14}{\ignorespaces UML Class Diagram: Core Object-Relational Models}}{47}{figure.4.14}%
+\contentsline {figure}{\numberline {4.15}{\ignorespaces Physical Database Schema: Core Relational Data Model with Exact Data Types}}{48}{figure.4.15}%
+\contentsline {figure}{\numberline {4.16}{\ignorespaces Extended Entity Relationship Diagram (EERD) with Constraints and Attributes}}{49}{figure.4.16}%
+\contentsline {figure}{\numberline {4.17}{\ignorespaces GUI Design: Secure User Authentication Portal}}{50}{figure.4.17}%
+\contentsline {figure}{\numberline {4.18}{\ignorespaces GUI Design: Superadmin Global Compliance Dashboard}}{50}{figure.4.18}%
+\contentsline {figure}{\numberline {4.19}{\ignorespaces GUI Design: Framework and Wazuh Rule Mapping Interface}}{51}{figure.4.19}%
+\contentsline {figure}{\numberline {4.20}{\ignorespaces GUI Design: Monitored Endpoints and Telemetry Synchronization Status}}{51}{figure.4.20}%
+\contentsline {figure}{\numberline {4.21}{\ignorespaces GUI Design: System Admin Operational Dashboard}}{52}{figure.4.21}%
+\contentsline {figure}{\numberline {4.22}{\ignorespaces GUI Design: Security Auditor Read-Only Compliance View}}{52}{figure.4.22}%
+\contentsline {figure}{\numberline {4.23}{\ignorespaces GUI Design: Auditor Report Generation Modal}}{52}{figure.4.23}%
+\contentsline {figure}{\numberline {4.24}{\ignorespaces System Output: Automated PDF Report - Cover and Executive Summary}}{53}{figure.4.24}%
+\contentsline {figure}{\numberline {4.25}{\ignorespaces System Output: Automated PDF Report - Aggregated Framework Control Matrix}}{53}{figure.4.25}%
+\contentsline {figure}{\numberline {4.26}{\ignorespaces System Output: Automated PDF Report - Technical Wazuh Telemetry Evidence}}{54}{figure.4.26}%
+\addvspace {10\p@ }
+\contentsline {figure}{\numberline {5.1}{\ignorespaces Implemented N-Tier System Architecture}}{57}{figure.5.1}%
+\contentsline {figure}{\numberline {5.2}{\ignorespaces Implemented Service Topology and Container Networking}}{57}{figure.5.2}%
+\addvspace {10\p@ }
+\addvspace {10\p@ }
 \addvspace {10\p@ }
