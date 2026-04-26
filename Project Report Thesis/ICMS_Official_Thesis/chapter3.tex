@@ -1,30 +1,26 @@
 \chapter{Requirement Specification}
 
 \section{Existing System}
+Traditional compliance management systems use manual spreadsheets and fragmented Software-as-a-Service (SaaS) platforms. Governance teams often map regulatory standards, such as ISO/IEC 27001:2022, to technical controls using decentralized documents. This approach is prone to human error, lacks version control, and often fails to maintain consistency across different frameworks. Manual tracking of configuration states increases operational labor and administrative overhead.
 
-Legacy compliance management systems rely on manual spreadsheet auditing and fragmented Software-as-a-Service (SaaS) platforms. Governance teams attempt to map regulatory standards, such as ISO/IEC 27001:2022, to technical controls using decentralized, static documents. This approach introduces human error, lacks version control, and fails to maintain referential integrity across overlapping frameworks. The manual tracking of configuration states results in heavy operational labor expenditures and administrative burden.
-
-Existing point-in-time auditing solutions perform delayed security assessments, meaning data collected from internal network systems becomes stale upon generation. Legacy platforms employ generic software flows lacking specialized relational constraints, leading to latency when processing endpoint telemetry and an inability to maintain determinism in vulnerability resolution. The reliance on proprietary SaaS architectures introduces data sovereignty risks, because internal compliance metrics and infrastructure configurations are transmitted to multi-tenant public cloud environments.
+Existing auditing solutions perform delayed security assessments, which means data from internal systems is often out of date by the time it is reviewed. Legacy platforms lack specialized relational constraints, which causes latency when processing telemetry and makes it difficult to resolve vulnerabilities consistently. The reliance on proprietary SaaS architectures also introduces data sovereignty risks, as compliance metrics and configurations are transmitted to public cloud environments.
 
 \section{Proposed System}
-
-To overcome the limitations of legacy spreadsheet mapping and asynchronous SIEM aggregation, the ICMS platform introduces a centralized, deterministic orchestration engine. The system leverages a multi-tier architectural topology designed to maintain separation of concerns while providing compliance tracking within a single-tenant, isolated environment.
+The ICMS platform provides a centralized system to address the limitations of manual mapping and asynchronous SIEM aggregation. The system uses a multi-tier architecture to maintain a separation of concerns while keeping compliance tracking within an isolated environment.
 
 \subsection{Technology Stack Selection}
+The Django framework provides a backend environment with an integrated Object-Relational Mapper (ORM) and built-in security middleware. The Django ORM allows for performance optimizations like $O(1)$ set-based database aggregations. By using query projections and conditional filtering, the system keeps high-volume telemetry manageable. The Django REST Framework (DRF) adds serialization pipelines and supports authentication methods like stateless JSON Web Token (JWT) rotation.
 
-Selecting the Python-based Django framework for the backend application layer provides an environment characterized by an integrated Object-Relational Mapper (ORM) and native security middleware. The Django ORM facilitates the implementation of performance optimizations, specifically $O(1)$ set-based database aggregations. By utilizing query projections and conditional filtering at the ORM level, the system ensures high-volume telemetry remains computationally manageable. The Django REST Framework (DRF) extends these capabilities by providing modular serialization pipelines and support for authentication schemas, including stateless JSON Web Token (JWT) rotation.
+React 18 and Vite are used to build a Single Page Application (SPA) for data visualization. React's Virtual DOM allows the interface to update compliance states without blocking the browser thread. This ensures the dashboard remains responsive when viewing large amounts of SIEM alerts. Vite improves the development process by using native ES modules, which reduces build times compared to older tools.
 
-The selection of React 18 and the Vite build tool establishes a Single Page Application (SPA) architecture designed for data visualization. React's Virtual DOM provides an advantage in the context of security monitoring, allowing the interface to render compliance state changes without causing browser thread execution delays. This reactive rendering ensures analysts maintain an operational experience when viewing dense matrices of SIEM alerts. Vite enhances the development and production lifecycle by utilizing native ES modules and Hot Module Replacement (HMR), reducing build latency compared to legacy Webpack-based bundling strategies.
+PostgreSQL is the primary database and provides the ACID compliance needed for organizational records. The database handles concurrent read/write loads from SIEM telemetry and automated mapping. By using B-Tree indexing and relational constraints, PostgreSQL ensures compliance metrics remain accurate. This satisfies the requirements for ISO 27001 and SOC 2 audits, where the history of security controls must be verifiable.
 
-PostgreSQL serves as the primary data persistence tier, providing the ACID compliance required for maintaining the integrity of organizational compliance records. The relational engine handles the concurrent read/write loads generated by SIEM telemetry ingestion and automated framework mapping. By utilizing B-Tree indexing and relational constraints, PostgreSQL guarantees cross-framework compliance metrics remain accurate. This data integrity satisfies the evidence requirements of ISO 27001 and SOC 2 audits, where the historical state of security controls must remain verifiable and immutable.
-
-To ensure the platform remains responsive during data-heavy operations, the architecture incorporates Celery and Redis as the asynchronous orchestration layer. Decoupling I/O-bound tasks, such as the periodic synchronization of telemetry from the Wazuh SIEM REST API, from the main Django application thread prevents HTTP request timeouts and maintains dashboard availability. Redis acts as a message broker, facilitating the transport of task payloads between the web server and the background worker fleet. This distributed task execution model allows the platform to scale its ingestion capacity without impeding the interaction capabilities of the primary API service.
+To keep the platform responsive during data-heavy operations, the architecture uses Celery and Redis as an asynchronous layer. This decouples tasks like telemetry synchronization from the main application thread to prevent timeouts. Redis is the message broker that moves task payloads between the web server and the background workers. This model allows the platform to scale its ingestion capacity without slowing down the primary API service.
 
 \subsection{High-Level Architecture}
+The Presentation Tier is a React SPA that manages user sessions and provides a monitoring interface. It communicates with the API via JSON payloads over HTTPS. By handling state management and rendering on the client side, the system keeps server resources available for data processing and mapping.
 
-The Presentation Tier consists of a React-based SPA that manages the user session and provides an interface for compliance monitoring. This tier communicates with the Application Logic Tier via stateless JSON payloads over an encrypted HTTPS channel. By offloading the state management and rendering logic to the client-side browser environment, the system ensures central server resources remain available for data processing and framework mapping tasks.
-
-The Application Logic Tier, powered by the Django REST Framework, serves as the gateway for compliance orchestration. This tier manages the Identity and Access Management (IAM) lifecycle, including the generation and rotation of JSON Web Tokens (JWT). Interactions with the Data Persistence Tier occur via TCP connections managed by the Django ORM, which enforces relational integrity and executes query aggregations. Asynchronous task execution relies on a distributed architecture incorporating Celery and a Redis-based message broker. The system utilizes a Pub/Sub messaging model to enqueue compliance synchronization tasks, allowing Celery workers to process telemetry data from the external Wazuh SIEM Manager out-of-band. Figure \ref{fig:detailed_architecture} maps the protocol flow and multi-tier layout.
+The Application Logic Tier, powered by Django REST Framework, manages compliance tasks. This tier handles the Identity and Access Management (IAM) lifecycle and JWT rotation. The Django ORM manages interactions with the database to enforce integrity and execute query aggregations. Asynchronous tasks use Celery and a Redis-based message broker. The system uses a Pub/Sub model to enqueue synchronization tasks, which allows Celery workers to process telemetry from the external Wazuh SIEM Manager. Figure \ref{fig:detailed_architecture} shows the protocol flow and multi-tier layout.
 
 \begin{figure}[H]
     \centering
@@ -87,8 +83,7 @@ The Application Logic Tier, powered by the Django REST Framework, serves as the 
 \end{figure}
 
 \subsection{Dockerized Infrastructure and Network Isolation}
-
-The implementation of a Dockerized virtual bridge network establishes a perimeter that isolates the data persistence tier from external network environments. By restricting the PostgreSQL and Redis services to an internal, non-routable network, the architecture ensures these components remain inaccessible to host-level scans. Managing data persistence across container lifecycles requires Docker volumes to prevent the loss of compliance telemetry. Orchestrating the system startup sequence through deterministic health-check dependencies ensures the platform remains resilient against race conditions during deployment. The configuration defines execution priorities, where the Django API container monitors the execution of system-level commands before initiating database migrations or starting the WSGI server. Figure \ref{fig:docker_mesh} depicts this multi-tier isolation and health monitoring network.
+A Docker virtual bridge network isolates the database from external environments. By keeping PostgreSQL and Redis on a private, internal network, the architecture ensures they are not accessible to external scans. The system uses Docker volumes to prevent data loss across container restarts. The startup sequence uses health-checks to ensure the platform is resilient during deployment. The configuration ensures the Django API container waits for other services before running migrations or starting the server. Figure \ref{fig:docker_mesh} shows the isolation and health monitoring network.
 
 \begin{figure}[H]
     \centering
@@ -138,48 +133,42 @@ The implementation of a Dockerized virtual bridge network establishes a perimete
 \end{figure}
 
 \section{Requirements Specification}
-
-Requirement engineering for the ICMS platform involves mapping regulatory mandates to technical specifications. Aligning the platform with ISO/IEC 27001:2022 and SOC 2 Type II standards requires the translation of governance objectives into deterministic functional capabilities. This process ensures architectural components satisfy compliance or operational constraints. The requirement analysis phase establishes the foundation for a system capable of maintaining visibility across distributed infrastructure by prioritizing automated telemetry ingestion and data aggregation.
+Requirement engineering for the ICMS platform involves mapping regulatory mandates to technical specifications. Aligning the platform with ISO/IEC 27001:2022 and SOC 2 Type II standards requires translating governance objectives into functional capabilities. This ensures architectural components satisfy compliance and operational constraints. The analysis phase establishes the foundation for a system that maintains visibility by prioritizing automated telemetry ingestion and data aggregation.
 
 \section{Functional Requirements}
-
-The functional requirements define the capabilities the ICMS architecture must possess to execute its core operations:
+The functional requirements define the capabilities the ICMS architecture must have to operate:
 
 \begin{itemize}
-    \item The system must enforce a 3-tier Role-Based Access Control (RBAC) model integrated with Time-Based One-Time Password (TOTP) secondary authentication.
-    \item The platform must automate the ingestion of endpoint security telemetry from the Wazuh SCA module via authenticated REST API synchronization.
-    \item The system must resolve conflicting telemetry states using a deterministic Worst-Case Priority state-mutation algorithm to ensure data integrity.
-    \item The platform must generate server-side compliance reports in PDF format utilizing CSS2.1 compliant layouts for audit documentation.
-    \item The system must provide an administrative interface for the dynamic management of frameworks, controls, and Wazuh SIEM mapping identifiers.
-    \item The application must implement a stateless session management lifecycle utilizing JSON Web Token (JWT) rotation for all authenticated requests.
+    \item The system must use a 3-tier Role-Based Access Control (RBAC) model with Time-Based One-Time Password (TOTP) authentication.
+    \item The platform must automate the ingestion of security telemetry from the Wazuh SCA module via a REST API.
+    \item The system must resolve conflicting telemetry states using a Worst-Case Priority algorithm to ensure data integrity.
+    \item The platform must generate compliance reports in PDF format for audit documentation.
+    \item The system must provide an interface for managing frameworks, controls, and mapping identifiers.
+    \item The application must use a stateless session lifecycle with JSON Web Token (JWT) rotation.
 \end{itemize}
 
 \section{Non-Functional Requirements}
-
-The non-functional requirements dictate the operational constraints and performance thresholds required to maintain system reliability:
+The non-functional requirements set the operational constraints and performance thresholds for system reliability:
 
 \begin{itemize}
-    \item The system must isolate the PostgreSQL persistence tier and Redis message broker within a private Dockerized virtual bridge network.
-    \item The backend must utilize $O(1)$ set-based query aggregations to ensure dashboard rendering latency remains below 200 milliseconds.
-    \item The architecture must employ asynchronous background orchestration via Celery and Redis to maintain non-blocking UI responsiveness during data ingestion.
-    \item The frontend must utilize a responsive Flexbox and Cyber-Card based architecture to mitigate analyst alert fatigue and reduce cognitive load.
-    \item The platform must ensure high availability through the implementation of Celery task retry logic and persistent message queuing for all telemetry sync tasks.
-    \item The system must maintain a granular audit logging engine that records all administrative actions and automated system events for forensic traceability.
+    \item The system must isolate PostgreSQL and Redis within a private Docker virtual bridge network.
+    \item The backend must use $O(1)$ set-based query aggregations to keep dashboard latency below 200 milliseconds.
+    \item The architecture must use asynchronous background tasks via Celery and Redis to keep the UI responsive.
+    \item The frontend must use a responsive architecture to reduce analyst alert fatigue.
+    \item The platform must ensure high availability through task retry logic and message queuing.
+    \item The system must maintain an audit log that records administrative actions and system events.
 \end{itemize}
 
 \section{User Requirements}
+The efficiency of the ICMS platform relies on a user experience tailored to its primary actors: the System Administrator and the Security Auditor. The System Administrator needs a control plane to manage infrastructure settings without directly accessing the database. They must be able to configure synchronization, manage RBAC privileges, and override automated telemetry when necessary. The interface must present these controls clearly, using visual feedback to confirm operations within the Django ORM.
 
-The operational efficacy of the ICMS platform relies on delivering a user experience tailored to its primary actors: the System Administrator and the Security Auditor. The System Administrator requires a control plane capable of managing infrastructure settings without exposing database commands. They must possess the capability to configure the synchronization lifecycle, manage RBAC privileges across user accounts, and override automated telemetry when necessary. The interface must present these administrative controls with a low cognitive load, utilizing visual feedback through the component library to confirm successful CRUD operations within the Django ORM.
-
-The Security Auditor interacts with the platform as an analytical tool to assess regulatory adherence. Their primary requirement is parsing compliance data without the visual clutter associated with legacy GRC software. The auditor requires an RBAC boundary that prevents modification of infrastructure mapping while offering access to historical scan logs and PDF export functionalities. The React SPA architecture must guarantee the dashboard remains responsive during concurrent data ingestion from the Wazuh SIEM, employing memoization to ensure DOM updates do not introduce browser thread execution delays.
+The Security Auditor uses the platform to assess regulatory adherence. Their primary requirement is viewing compliance data without unnecessary clutter. The auditor needs an RBAC boundary that prevents them from modifying infrastructure mapping while providing access to historical logs and PDF exports. The React SPA architecture must ensure the dashboard remains responsive during telemetry ingestion by using techniques like memoization to prevent rendering delays.
 
 \section{System Models and Components}
-
-This section outlines the systemic data exchange boundaries and flow orchestrations utilized by the platform to synchronize external SIEM telemetry with the internal compliance tracking engine.
+This section outlines the data exchange and flow used by the platform to synchronize SIEM telemetry with the internal compliance engine.
 
 \subsection{Context Diagram}
-
-The Context Diagram defines the interaction between the ICMS core logic and external entities, illustrating the boundaries of the application and the data streams required for operation. Figure \ref{fig:context_diagram} maps the interaction flow from human operators to infrastructure components.
+The Context Diagram defines the interaction between the ICMS and external entities, showing the boundaries of the application and the data streams required. Figure \ref{fig:context_diagram} shows the flow from human operators to infrastructure components.
 
 \begin{figure}[H]
     \centering
@@ -223,8 +212,7 @@ The Context Diagram defines the interaction between the ICMS core logic and exte
 \end{figure}
 
 \subsection{Data Flow Diagram}
-
-The Level-1 Data Flow Diagram (DFD) offers a visualization of how data payloads traverse the platform's internal architecture, mapping the transformation of raw SIEM logs into structured compliance metrics. Figure \ref{fig:dfd_level_1} outlines the deterministic pipeline executed by the ICMS.
+The Level-1 Data Flow Diagram (DFD) shows how data payloads move through the platform's architecture and how raw SIEM logs become compliance metrics. Figure \ref{fig:dfd_level_1} outlines the pipeline used by the ICMS.
 
 \begin{figure}[H]
     \centering
@@ -285,8 +273,7 @@ The Level-1 Data Flow Diagram (DFD) offers a visualization of how data payloads 
 The use cases define the interaction sequences available to authenticated actors, providing deterministic state definitions for platform operations.
 
 \subsection{Use Case Diagram}
-
-Figure \ref{fig:use_case_diagram} maps the operational workflows orchestrated by the System Administrator and the Security Auditor, establishing boundaries of execution based on the platform's internal RBAC implementation.
+Figure \ref{fig:use_case_diagram} shows the workflows for the System Administrator and the Security Auditor, establishing boundaries based on the platform's RBAC implementation.
 
 \begin{figure}[H]
     \centering
@@ -370,8 +357,7 @@ Figure \ref{fig:use_case_diagram} maps the operational workflows orchestrated by
 \end{figure}
 
 \subsection{Descriptive Use Cases}
-
-The following tabular specifications define the algorithmic flows, authentication prerequisites, and resulting persistence states for each operation.
+The following tables define the flows, authentication requirements, and persistence states for each operation.
 
 \renewcommand{\arraystretch}{1.5}
 \begin{table}[H]

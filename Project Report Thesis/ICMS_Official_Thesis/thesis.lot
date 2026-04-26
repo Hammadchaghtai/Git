@@ -2,35 +2,35 @@
 \addvspace {10\p@ }
 \contentsline {table}{\numberline {2.1}{\ignorespaces Comparative Feature Matrix: Analyzing GRC Platforms}}{14}{table.2.1}%
 \addvspace {10\p@ }
-\contentsline {table}{\numberline {3.1}{\ignorespaces Use Case - Authentication}}{26}{table.3.1}%
-\contentsline {table}{\numberline {3.2}{\ignorespaces Use Case - Manage Frameworks}}{27}{table.3.2}%
-\contentsline {table}{\numberline {3.3}{\ignorespaces Use Case - Map Controls}}{28}{table.3.3}%
-\contentsline {table}{\numberline {3.4}{\ignorespaces Use Case - Sync Telemetry}}{29}{table.3.4}%
-\contentsline {table}{\numberline {3.5}{\ignorespaces Use Case - View Dashboard}}{30}{table.3.5}%
-\contentsline {table}{\numberline {3.6}{\ignorespaces Use Case - Export Audit Reports}}{31}{table.3.6}%
+\contentsline {table}{\numberline {3.1}{\ignorespaces Use Case - Authentication}}{23}{table.3.1}%
+\contentsline {table}{\numberline {3.2}{\ignorespaces Use Case - Manage Frameworks}}{24}{table.3.2}%
+\contentsline {table}{\numberline {3.3}{\ignorespaces Use Case - Map Controls}}{25}{table.3.3}%
+\contentsline {table}{\numberline {3.4}{\ignorespaces Use Case - Sync Telemetry}}{26}{table.3.4}%
+\contentsline {table}{\numberline {3.5}{\ignorespaces Use Case - View Dashboard}}{27}{table.3.5}%
+\contentsline {table}{\numberline {3.6}{\ignorespaces Use Case - Export Audit Reports}}{28}{table.3.6}%
 \addvspace {10\p@ }
-\contentsline {table}{\numberline {4.1}{\ignorespaces External Interface Technical Specifications}}{55}{table.4.1}%
+\contentsline {table}{\numberline {4.1}{\ignorespaces External Interface Technical Specifications}}{51}{table.4.1}%
 \addvspace {10\p@ }
-\contentsline {table}{\numberline {5.1}{\ignorespaces Architectural Technology Stack and Implementation Roles}}{61}{table.5.1}%
-\contentsline {table}{\numberline {5.2}{\ignorespaces Summary of Tools, Technologies, and Development Stack}}{65}{table.5.2}%
+\contentsline {table}{\numberline {5.1}{\ignorespaces Architectural Technology Stack and Implementation Roles}}{56}{table.5.1}%
+\contentsline {table}{\numberline {5.2}{\ignorespaces Summary of Tools, Technologies, and Development Stack}}{60}{table.5.2}%
 \addvspace {10\p@ }
-\contentsline {table}{\numberline {6.1}{\ignorespaces TC-01: Valid Superadmin Authentication (Positive)}}{69}{table.6.1}%
-\contentsline {table}{\numberline {6.2}{\ignorespaces TC-02: Invalid Credential Rejection (Negative)}}{70}{table.6.2}%
-\contentsline {table}{\numberline {6.3}{\ignorespaces TC-03: Global Theme Toggling — Light/Dark Mode (Positive)}}{71}{table.6.3}%
-\contentsline {table}{\numberline {6.4}{\ignorespaces TC-04: UI RBAC View Segregation (Positive)}}{72}{table.6.4}%
-\contentsline {table}{\numberline {6.5}{\ignorespaces TC-05: Unauthorized API Write Attempt (Negative)}}{73}{table.6.5}%
-\contentsline {table}{\numberline {6.6}{\ignorespaces TC-06: Deterministic Framework Mapping (Positive)}}{74}{table.6.6}%
-\contentsline {table}{\numberline {6.7}{\ignorespaces TC-07: Duplicate Mapping Collision (Negative)}}{75}{table.6.7}%
-\contentsline {table}{\numberline {6.8}{\ignorespaces TC-08: Wazuh API Handshake and Token Retrieval (Positive)}}{76}{table.6.8}%
-\contentsline {table}{\numberline {6.9}{\ignorespaces TC-09: Wazuh Connection Timeout Exception (Negative)}}{77}{table.6.9}%
-\contentsline {table}{\numberline {6.10}{\ignorespaces TC-10: Asynchronous Telemetry Polling via Celery Beat (Positive)}}{78}{table.6.10}%
-\contentsline {table}{\numberline {6.11}{\ignorespaces TC-11: Unstructured JSON Log Ingestion (Positive)}}{79}{table.6.11}%
-\contentsline {table}{\numberline {6.12}{\ignorespaces TC-12: Dynamic Compliance Score Recalculation (Positive)}}{80}{table.6.12}%
-\contentsline {table}{\numberline {6.13}{\ignorespaces TC-13: Comprehensive PDF Audit Report Generation (Positive)}}{81}{table.6.13}%
-\contentsline {table}{\numberline {6.14}{\ignorespaces TC-14: Asynchronous SMTP Alert Dispatch (Positive)}}{82}{table.6.14}%
-\contentsline {table}{\numberline {6.15}{\ignorespaces Performance Test Results}}{83}{table.6.15}%
-\contentsline {table}{\numberline {6.16}{\ignorespaces Security Test Results}}{84}{table.6.16}%
-\contentsline {table}{\numberline {6.17}{\ignorespaces Usability Test Task Completion Results}}{85}{table.6.17}%
-\contentsline {table}{\numberline {6.18}{\ignorespaces Compatibility and Deployment Test Results}}{86}{table.6.18}%
+\contentsline {table}{\numberline {6.1}{\ignorespaces TC-01: Valid Superadmin Authentication (Positive)}}{64}{table.6.1}%
+\contentsline {table}{\numberline {6.2}{\ignorespaces TC-02: Invalid Credential Rejection (Negative)}}{65}{table.6.2}%
+\contentsline {table}{\numberline {6.3}{\ignorespaces TC-03: Global Theme Toggling — Light/Dark Mode (Positive)}}{66}{table.6.3}%
+\contentsline {table}{\numberline {6.4}{\ignorespaces TC-04: UI RBAC View Segregation (Positive)}}{67}{table.6.4}%
+\contentsline {table}{\numberline {6.5}{\ignorespaces TC-05: Unauthorized API Write Attempt (Negative)}}{68}{table.6.5}%
+\contentsline {table}{\numberline {6.6}{\ignorespaces TC-06: Deterministic Framework Mapping (Positive)}}{69}{table.6.6}%
+\contentsline {table}{\numberline {6.7}{\ignorespaces TC-07: Duplicate Mapping Collision (Negative)}}{70}{table.6.7}%
+\contentsline {table}{\numberline {6.8}{\ignorespaces TC-08: Wazuh API Handshake and Token Retrieval (Positive)}}{71}{table.6.8}%
+\contentsline {table}{\numberline {6.9}{\ignorespaces TC-09: Wazuh Connection Timeout Exception (Negative)}}{72}{table.6.9}%
+\contentsline {table}{\numberline {6.10}{\ignorespaces TC-10: Asynchronous Telemetry Polling via Celery Beat (Positive)}}{73}{table.6.10}%
+\contentsline {table}{\numberline {6.11}{\ignorespaces TC-11: Unstructured JSON Log Ingestion (Positive)}}{74}{table.6.11}%
+\contentsline {table}{\numberline {6.12}{\ignorespaces TC-12: Dynamic Compliance Score Recalculation (Positive)}}{75}{table.6.12}%
+\contentsline {table}{\numberline {6.13}{\ignorespaces TC-13: Comprehensive PDF Audit Report Generation (Positive)}}{76}{table.6.13}%
+\contentsline {table}{\numberline {6.14}{\ignorespaces TC-14: Asynchronous SMTP Alert Dispatch (Positive)}}{77}{table.6.14}%
+\contentsline {table}{\numberline {6.15}{\ignorespaces Performance Test Results}}{78}{table.6.15}%
+\contentsline {table}{\numberline {6.16}{\ignorespaces Security Test Results}}{79}{table.6.16}%
+\contentsline {table}{\numberline {6.17}{\ignorespaces Usability Test Task Completion Results}}{80}{table.6.17}%
+\contentsline {table}{\numberline {6.18}{\ignorespaces Compatibility and Deployment Test Results}}{81}{table.6.18}%
 \addvspace {10\p@ }
 \addvspace {10\p@ }

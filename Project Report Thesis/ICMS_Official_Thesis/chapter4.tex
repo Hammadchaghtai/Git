@@ -1,20 +1,19 @@
 \chapter{Design}
 
 \section{System Architecture}
-
-I designed the Intelligent Compliance Management System (ICMS) using an N-tier architecture. Separating the frontend, API, background workers, and database means we can scale or debug each piece without taking the whole system down. Figure \ref{fig:tier_architecture} breaks down the four main layers.
+The Intelligent Compliance Management System (ICMS) uses an N-tier architecture. Separating the frontend, API, background workers, and database allows for scaling and debugging of individual components without affecting the entire system. Figure \ref{fig:tier_architecture} shows the four main layers.
 
 \subsection{Client and Presentation Tier}
-The frontend is a React 18 Single Page Application (SPA). Moving the rendering logic to the browser keeps the server from getting bogged down. It also means analysts don't have to wait for full page reloads when reviewing compliance alerts.
+The frontend is a React 18 Single Page Application (SPA). Moving the rendering logic to the browser reduces server load. This architecture also ensures that analysts can review compliance alerts without full page reloads.
 
 \subsection{Application and Middleware Tier}
-The backend runs on the Django REST Framework. This acts as the main gateway, checking JWTs and enforcing role-based access before running any queries. We route all database traffic through Django to maintain a strict security boundary.
+The backend uses the Django REST Framework. It functions as the primary gateway, verifying JWTs and enforcing role-based access before processing queries. Database traffic is routed through Django to maintain a consistent security boundary.
 
 \subsection{Asynchronous Processing Tier}
-Pulling thousands of logs from the Wazuh SIEM takes time. If we did this on the main Django thread, the API would hang and time out. Instead, I offloaded these I/O tasks to background Celery workers using Redis as the message broker.
+Retrieving telemetry from the Wazuh SIEM is an I/O-intensive process. Executing these tasks on the main Django thread would cause API latency and timeouts. To prevent this, the system offloads I/O tasks to background Celery workers using Redis as the message broker.
 
 \subsection{Data Persistence Tier}
-I chose PostgreSQL 18 for the database because compliance data needs strict ACID guarantees. We use standard relational tables for mapping frameworks to controls, but rely on Postgres's JSONField to store the unstructured SIEM logs.
+PostgreSQL 18 is the primary database for its ACID guarantees. The schema uses relational tables for mapping frameworks to controls, while the JSONField type stores unstructured SIEM logs.
 
 \begin{figure}[H]
     \centering
@@ -59,45 +58,40 @@ I chose PostgreSQL 18 for the database because compliance data needs strict ACID
 \end{figure}
 
 \section{Design Constraints}
-
-Building the ICMS wasn't just about writing code; I had to work around a few hard technical and environmental limits.
+The design of the ICMS involved addressing several technical and environmental constraints.
 
 \subsection{Technical Constraints}
+For security, the database and Redis broker operate inside a private Docker bridge network. Their ports are not exposed to the host machine. Access to data requires requests through the Django API container.
 
-For security, the database and Redis broker run inside a private Docker bridge network. I didn't expose their ports to the host machine. If you want data, you have to go through the Django API container.
+The integration with the Wazuh API introduced rate limits and network latency. Celery workers are configured to batch and throttle polling requests. Consequently, the dashboard displays the compliance state from the last successful synchronization rather than a real-time feed.
 
-Integrating with the Wazuh API introduced rate limits and network latency. The Celery workers have to batch and throttle their polling requests. Because of this, the dashboard shows the compliance state at the last successful sync, rather than a true real-time feed.
-
-On the frontend, rendering a massive grid of compliance checks can crash the browser. Trying to load thousands of DOM nodes at once blocks the main thread. I fixed this by using React virtualization so the UI only renders what's actually visible on the screen.
+On the frontend, rendering large compliance grids can impact browser performance. Loading thousands of DOM nodes simultaneously can block the main thread. This is addressed by using React virtualization, which ensures the UI only renders visible elements.
 
 \subsection{Infrastructure and Operational Constraints}
+External factors, such as restricted access to university facilities, required the transition to developing and testing the architecture in a home-lab environment.
 
-Early on, my partner and I lost access to the university's lab network. We had to pivot to building and testing the entire enterprise architecture from home on our personal laptops.
-
-Running a full Wazuh SIEM manager locally burned through our RAM and crashed our machines. To get around this, we built a distributed home-lab. I dedicated one laptop entirely to running Wazuh, while my partner used his machine for development and as the monitored endpoint. We relied heavily on Git to keep our codebases synced while the heavy infrastructure stayed on the dedicated server.
+Running a full Wazuh SIEM manager locally is resource-intensive and can impact system stability. To manage this, a distributed configuration was used. One system was dedicated to running Wazuh, while another was used for development and as a monitored endpoint. Git was used to maintain consistency across different development environments while the primary infrastructure remained on a dedicated server.
 
 \section{Design Methodology}
+The platform was built using an iterative prototyping approach. The system was divided into distinct modules to allow for independent testing before integration.
 
-We built the platform iteratively using Agile prototyping. Instead of trying to build everything at once, we broke the system into distinct modules so we could test each domain independently before merging.
-
-The project was divided into four main sprints.
+The project was divided into four main phases:
 
 \begin{itemize}
-    \item \textbf{Sprint 1 (Prototyping):} We first needed to prove the core concept worked. I set up a basic Django backend and tested the Wazuh API to make sure we could actually pull Security Configuration Assessment (SCA) data.
+    \item \textbf{Phase 1 (Prototyping):} The initial phase focused on verifying the core concept. This included setting up a basic Django backend and testing the Wazuh API to confirm successful retrieval of Security Configuration Assessment (SCA) telemetry.
     
-    \item \textbf{Sprint 2 (Core Architecture):} Next, I designed the PostgreSQL database schema to link frameworks to rules. We also locked down the API by implementing JWT authentication and role-based routing.
+    \item \textbf{Phase 2 (Core Architecture):} The second phase involved designing the PostgreSQL database schema to link frameworks to rules. JWT authentication and role-based routing were also implemented to secure the API.
     
-    \item \textbf{Sprint 3 (Asynchronous Telemetry):} Because the SIEM data was too heavy for synchronous requests, I added Celery and Redis. This gave us a background worker fleet to handle ingestion and deduplication.
+    \item \textbf{Phase 3 (Asynchronous Telemetry):} Celery and Redis were added to handle heavy SIEM data ingestion. This established a background worker fleet for data processing and deduplication.
     
-    \item \textbf{Sprint 4 (Frontend \& Visualization):} Finally, we built out the React frontend. This involved rendering the data grids, wiring up the state management, and setting up the backend PDF generator for audit reports.
+    \item \textbf{Phase 4 (Frontend \& Visualization):} The final phase involved building the React frontend. This included rendering data grids, implementing state management, and configuring the server-side PDF generator for audit reports.
 \end{itemize}
 
 \section{High Level Design}
-
-To explain how the ICMS actually works, I mapped the architecture across several different views. These diagrams cover the software components, the physical deployment, and the sequence of operations.
+The system architecture is represented through several views that cover software components, physical deployment, and operational sequences.
 
 \subsection{Component Diagram}
-Figure \ref{fig:component_diagram} shows how the modules talk to each other. The React frontend sends HTTPS requests to the Django API Gateway. The IAM module checks the JWT, and then the Compliance Engine translates the request into a database query. Off to the side, the Wazuh Polling Service runs independently, pulling alerts and dumping them into PostgreSQL.
+Figure \ref{fig:component_diagram} shows the interactions between system modules. The React frontend sends HTTPS requests to the Django API Gateway. The IAM module verifies the JWT, and the Compliance Engine then translates the request into a database query. A separate Wazuh Polling Service retrieves alerts and stores them in PostgreSQL.
 
 \begin{figure}[H]
     \centering
@@ -151,7 +145,7 @@ Figure \ref{fig:component_diagram} shows how the modules talk to each other. The
 \end{figure}
 
 \subsection{Deployment Diagram}
-Figure \ref{fig:deployment_diagram} lays out the Docker container environment. I put the Django backend, Celery worker, Redis, and PostgreSQL all on the same host but isolated them inside a private bridge network. This means the database is inaccessible from the outside internet.
+Figure \ref{fig:deployment_diagram} outlines the Docker container environment. The Django backend, Celery workers, Redis, and PostgreSQL are deployed on the same host but isolated within a private bridge network. This configuration ensures the database remains inaccessible from external networks.
 
 \begin{figure}[H]
     \centering
@@ -222,10 +216,10 @@ Figure \ref{fig:deployment_diagram} lays out the Docker container environment. I
 \end{figure}
 
 \subsection{System Activity Diagrams}
-The activity diagrams below map out the control flow for the core platform features. I used standard UML semantics like decision nodes and synchronization forks to show exactly what the code does at each step.
+The activity diagrams below show the control flow for core platform features. Standard UML semantics, such as decision nodes and synchronization forks, are used to represent the system logic.
 
 \subsubsection{Authentication and IAM Routing}
-Figure \ref{fig:activity_auth} tracks what happens when a user logs in. Django checks the credentials against PostgreSQL. If they're wrong, it logs the failure and drops the request. If they're right, it issues a JWT and checks the user's role. Superadmins get routed to the configuration settings, while Auditors are restricted to the read-only dashboards.
+Figure \ref{fig:activity_auth} shows the login process. Django verifies credentials against PostgreSQL. If the verification fails, the system logs the event and denies the request. Upon successful authentication, the system issues a JWT and evaluates the user's role. Administrators are directed to configuration settings, while Auditors are restricted to read-only dashboards.
 
 \begin{figure}[H]
     \centering
@@ -269,7 +263,7 @@ Figure \ref{fig:activity_auth} tracks what happens when a user logs in. Django c
 \end{figure}
 
 \subsubsection{Asynchronous Telemetry Ingestion}
-Figure \ref{fig:activity_sync} shows the async ingestion process. When a sync is triggered, the thread forks. The main thread sends a quick 202 Accepted back to the browser so the user isn't stuck waiting. Meanwhile, the Celery worker hits the Wazuh API. If Wazuh is down, it uses exponential backoff. Once it gets the data, it parses the JSON and updates the database.
+Figure \ref{fig:activity_sync} shows the asynchronous ingestion process. When a synchronization task is triggered, the main thread returns an HTTP 202 status to the client. Simultaneously, the Celery worker polls the Wazuh API. If the SIEM is unreachable, the system uses exponential backoff. Once telemetry is retrieved, the system parses the JSON data and updates the database.
 
 \begin{figure}[H]
     \centering
@@ -318,7 +312,7 @@ Figure \ref{fig:activity_sync} shows the async ingestion process. When a sync is
 \end{figure}
 
 \subsubsection{Compliance State Evaluation}
-The hardest part of the platform is mapping specific technical alerts to broad policies like ISO 27001. Figure \ref{fig:activity_eval} shows this evaluation loop. I wrote a worst-case priority algorithm: if even one server fails a technical check, the entire governance control is marked as failed. The loop runs until every policy is graded.
+The mapping of technical alerts to policies like ISO 27001 is shown in Figure \ref{fig:activity_eval}. The system uses a worst-case priority algorithm; if a technical check fails on a single node, the corresponding governance control is marked as non-compliant. This evaluation continues until all policies are processed.
 
 \begin{figure}[H]
     \centering
@@ -359,7 +353,7 @@ The hardest part of the platform is mapping specific technical alerts to broad p
 \end{figure}
 
 \subsubsection{Audit Report Generation}
-Generating audit reports by hand takes hours, so we automated it. Figure \ref{fig:activity_report} shows the workflow. The user selects a framework, and the backend aggregates the relevant database records. It dumps that data into an HTML template, generates a PDF on the server, and sends the file back to the client.
+The audit report generation process is automated, as shown in Figure \ref{fig:activity_report}. When a user selects a framework, the backend aggregates relevant database records. This data is injected into an HTML template, and a PDF is generated on the server for delivery to the client.
 
 \begin{figure}[H]
     \centering
@@ -401,7 +395,7 @@ Generating audit reports by hand takes hours, so we automated it. Figure \ref{fi
 
 
 \subsubsection{Framework Rule Mapping and Validation}
-Superadmins have to manually map Wazuh rules to framework controls. Figure \ref{fig:activity_mapping} tracks this. Before saving the mapping, the system checks the SIEM API to confirm the rule ID is real. If it is, it checks for duplicate mappings in the database. I added this validation step so administrators can't accidentally overwrite existing configurations.
+Administrators map Wazuh rules to framework controls as shown in Figure \ref{fig:activity_mapping}. Before saving the mapping, the system queries the SIEM API to verify the rule ID. If valid, the system checks for existing mappings in the database. This validation prevents accidental overwriting of existing configurations.
 
 \begin{figure}[H]
     \centering
@@ -446,7 +440,7 @@ Superadmins have to manually map Wazuh rules to framework controls. Figure \ref{
 \end{figure}
 
 \subsubsection{Real-Time Alerting and Notification}
-I didn't want users to have to stare at a dashboard all day, so I built an alerting pipeline (Figure \ref{fig:activity_alerting}). Whenever a compliance check fails, the engine checks its severity. Minor issues just go into the database logs. Critical failures trigger a fan-out: a background task blasts out emails and webhooks to the relevant auditors.
+The platform includes an alerting pipeline as shown in Figure \ref{fig:activity_alerting}. When a compliance check fails, the engine evaluates its severity. Minor issues are recorded in the database logs, while critical failures trigger automated notifications via email and webhooks to auditors.
 
 \begin{figure}[H]
     \centering
@@ -499,11 +493,10 @@ I didn't want users to have to stare at a dashboard all day, so I built an alert
 \end{figure}
 
 \subsection{System Sequence Diagrams}
-
-While activity diagrams show what the system does, the sequence diagrams below show exactly how the internal components talk to each other over time.
+The sequence diagrams below show the interactions between internal system components over time.
 
 \subsubsection{Authentication and JWT Issuance}
-Figure \ref{fig:seq_auth} tracks the API calls during login. If the password hashes match, the IAM module mints a JWT and sends it back. If they don't, it throws an exception and sends a 401 Unauthorized.
+Figure \ref{fig:seq_auth} shows the API calls during the login process. If the credentials match, the IAM module issues a JWT. If the verification fails, the system returns an HTTP 401 Unauthorized response.
 
 \begin{figure}[H]
     \centering
@@ -562,7 +555,7 @@ Figure \ref{fig:seq_auth} tracks the API calls during login. If the password has
 \end{figure}
 
 \subsubsection{Asynchronous Telemetry Ingestion}
-I used a bulk update pattern for the telemetry sync to save database I/O, shown in Figure \ref{fig:seq_sync}. The Celery worker pulls down an array of endpoint states from Wazuh. It loops through them in memory, calculating the ISO 27001 impacts, and then commits everything to PostgreSQL in a single transaction.
+The telemetry synchronization uses a bulk update pattern to optimize database performance, as shown in Figure \ref{fig:seq_sync}. The Celery worker retrieves endpoint states from Wazuh, processes the impacts on the regulatory framework, and commits the results to PostgreSQL in a single transaction.
 
 \begin{figure}[H]
     \centering
@@ -622,7 +615,7 @@ I used a bulk update pattern for the telemetry sync to save database I/O, shown 
 \end{figure}
 
 \subsubsection{Framework Configuration and Rule Mapping}
-Figure \ref{fig:seq_mapping} shows the API flow when a Superadmin links a Wazuh rule to a policy. The backend verifies their permissions and writes the mapping to Postgres. This has to happen synchronously so the background workers don't try to parse telemetry for a rule that doesn't exist yet.
+Figure \ref{fig:seq_mapping} shows the API flow for linking Wazuh rules to policies. The backend verifies permissions and records the mapping in the database. This synchronous process ensures that subsequent telemetry processing can utilize the new rule associations immediately.
 
 \begin{figure}[H]
     \centering
@@ -667,7 +660,7 @@ Figure \ref{fig:seq_mapping} shows the API flow when a Superadmin links a Wazuh 
 \end{figure}
 
 \subsubsection{Audit Report Generation}
-Figure \ref{fig:seq_report} covers the PDF generation. If the database returns an empty dataset, the API kills the request early to save CPU cycles. If we have data, the templating engine compiles the PDF binary and streams it straight to the browser.
+Figure \ref{fig:seq_report} outlines the PDF generation process. If the database query returns no records, the system terminates the request. If data is present, the reporting engine generates the PDF binary and streams it to the client.
 
 \begin{figure}[H]
     \centering
@@ -732,7 +725,7 @@ Figure \ref{fig:seq_report} covers the PDF generation. If the database returns a
 The Low-Level Design (LLD) translates the high-level system architecture into fundamental software building blocks. This section maps the specific object-oriented structures, persistence models, and relational bindings that dictate the execution of the ICMS platform's core business logic.
 
 \subsection{UML Class Diagram}
-Figure \ref{fig:class_diagram} maps out the Django ORM classes. I used standard foreign-key constraints to tie the abstract regulatory frameworks directly to the concrete endpoint logs.
+Figure \ref{fig:class_diagram} shows the Django ORM classes and their relationships. Relational constraints link regulatory frameworks to specific endpoint telemetry logs.
 
 \begin{figure}[H]
     \centering
