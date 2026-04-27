@@ -1,107 +1,85 @@
-\begin{thebibliography}{15}
-\providecommand{\natexlab}[1]{#1}
-\providecommand{\url}[1]{\texttt{#1}}
-\expandafter\ifx\csname urlstyle\endcsname\relax
-  \providecommand{\doi}[1]{doi: #1}\else
-  \providecommand{\doi}{doi: \begingroup \urlstyle{rm}\Url}\fi
+\begin{thebibliography}{10}
 
-\bibitem[{Center for Internet Security}(2020)]{cis_docker_2020}
-{Center for Internet Security}.
-\newblock Cis docker benchmark v1.2.0.
-\newblock Technical report, 2020.
-\newblock URL \url{https://www.cisecurity.org/benchmark/docker}.
+\bibitem{bukhari2021automated}
+T.~T. Bukhari, O.~Oladimeji, E.~D. Etim, and J.~O. Ajayi, ``Automated control
+  monitoring: A new standard for continuous audit readiness,'' {\em
+  International Journal of Scientific Research in Computer Science, Engineering
+  and Information Technology}, vol.~7, no.~3, pp.~711--735, 2021.
 
-\bibitem[{ISO/IEC}(2022)]{iso27001_2022}
-{ISO/IEC}.
-\newblock Information security, cybersecurity and privacy protection —
-  information security management systems — requirements, 2022.
-\newblock URL \url{https://www.iso.org/standard/27001}.
+\bibitem{nist80053r5}
+{Joint Task Force}, ``Security and privacy controls for information systems and
+  organizations,'' Tech. Rep. NIST Special Publication 800-53 Revision 5,
+  National Institute of Standards and Technology, 2020.
 
-\bibitem[Johnson et~al.(2011)Johnson, Kelley, and Ronquille]{nist800128_2011}
-Arnold Johnson, Mark Kelley, and Barrett Ronquille.
-\newblock Guide for security-focused configuration management of information
-  systems.
-\newblock Technical Report NIST Special Publication 800-128, National Institute
-  of Standards and Technology, 2011.
+\bibitem{quispe2026enhancing}
+G.~Quispe-Kobashikawa, C.~Zuloaga-Estrada, P.~S. Casta{\~n}eda~Vargas, and
+  A.~D. Garc{\'i}a-N{\'u}{\~n}ez, ``Enhancing information security in
+  technology small and medium-sized enterprises: A metrics-driven model based
+  on {ISO/IEC} 27001:2022,'' {\em IEEE Access}, 2026.
 
-\bibitem[Kent and Souppaya(2006)]{nist80092_2006}
-Karen Kent and Murugiah Souppaya.
-\newblock Guide to computer security log management.
-\newblock Technical Report NIST Special Publication 800-92, National Institute
-  of Standards and Technology, 2006.
+\bibitem{yang2024true}
+L.~Yang, Z.~Chen, C.~Wang, Z.~Zhang, S.~Booma, P.~Cao, C.~Adam, A.~Withers,
+  Z.~Kalbarczyk, R.~K. Iyer, and G.~Wang, ``True attacks, attack attempts, or
+  benign triggers? an empirical measurement of network alerts in a security
+  operations center,'' in {\em Proceedings of the 33rd USENIX Security
+  Symposium}, (Philadelphia, PA, USA), 2024.
 
-\bibitem[Kuraj(2024)]{kuraj_microservices_2024}
-Ivanko Kuraj.
-\newblock \emph{Microservices Architecture for Heterogeneous-Database Web
-  Applications}.
-\newblock PhD thesis, Massachusetts Institute of Technology, Cambridge, MA,
-  2024.
-\newblock URL \url{https://dspace.mit.edu/handle/1721.1/153838}.
+\bibitem{best2023auditing}
+P.~Best, ``Auditing during a pandemic: Can continuous controls monitoring (ccm)
+  address challenges facing internal audit departments?,'' {\em Pacific
+  Accounting Review}, vol.~35, no.~5, pp.~727--745, 2023.
 
-\bibitem[{Mozilla Developer Network}(2024)]{mdn_flexbox}
-{Mozilla Developer Network}.
-\newblock Basic concepts of flexbox, 2024.
-\newblock URL
-  \url{https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_flexible_box_layout/Basic_concepts_of_flexbox}.
-\newblock Accessed: 2026-04-23.
+\bibitem{jamali2024cybersecurity}
+M.~A. Jamali and A.~Masood, ``Cybersecurity on a budget: Evaluating security
+  and performance of open-source {SIEM} solutions for {SMEs},'' {\em PLOS ONE},
+  vol.~19, no.~3, p.~e0301183, 2024.
 
-\bibitem[M'Raihi et~al.(2011)M'Raihi, Machani, Pei, and Rydell]{rfc6238}
-D.~M'Raihi, S.~Machani, M.~Pei, and J.~Rydell.
-\newblock Totp: Time-based one-time password algorithm.
-\newblock RFC 6238, Internet Engineering Task Force, 2011.
+\bibitem{poudel2026unified}
+D.~Poudel, ``A unified automation framework for {CIS} benchmark compliance and
+  real-time remediation on ubuntu using wazuh, ansible and {FastAPI},'' {\em
+  International Journal of Innovative Science and Research Technology},
+  vol.~11, no.~4, 2026.
 
-\bibitem[{National Institute of Standards and
-  Technology}(2020)]{nist80053_2020}
-{National Institute of Standards and Technology}.
-\newblock \emph{Security and Privacy Controls for Information Systems and
-  Organizations}.
-\newblock NIST Special Publication 800-53 Revision 5. U.S. Department of
-  Commerce, 2020.
-\newblock \doi{10.6028/NIST.SP.800-53r5}.
+\bibitem{aji2026evaluating}
+R.~F. Aji and N.~P. Utami, ``Evaluating field flexibility approaches in
+  relational databases: A performance study of {JSON} and column-oriented
+  models in library systems,'' {\em International Journal of Advanced Computer
+  Science and Applications}, vol.~17, no.~1, 2026.
 
-\bibitem[Nelson(2024)]{nelson_stateless_2024}
-J.~Nelson.
-\newblock Securing the stateless frontier: A critical analysis of advanced
-  authentication techniques in asp.net core web apis.
-\newblock \emph{ResearchGate}, 2024.
-\newblock Technical Analysis of JWT and RBAC.
+\bibitem{cat2025implementing}
+H.~D. Cat, ``Implementing security measures in web chat applications using
+  django framework,'' bachelor's thesis, Tampere University, 2025.
 
-\bibitem[of~Technology(2021)]{mit_alert_fatigue}
-Massachusetts~Institute of~Technology.
-\newblock The psychology of alert fatigue in security operations.
-\newblock \emph{MIT Sloan Management Review}, 2021.
-\newblock Technical Report on HCI and Security.
+\bibitem{ahmad2025totp}
+S.~Ahmad, M.~Arif, J.~Ahmad, and S.~Mehfuz, ``A {TOTP}-based secure data
+  storage system in the cloud environment using the {JWT} token approach,''
+  {\em International Journal of System Assurance Engineering and Management},
+  vol.~16, no.~4, pp.~1565--1578, 2025.
 
-\bibitem[PlanetScale(2023)]{planetscale_n1}
-PlanetScale.
-\newblock What is the n+1 query problem?, 2023.
-\newblock URL
-  \url{https://planetscale.com/blog/what-is-the-n-1-query-problem-and-how-to-fix-it}.
-\newblock Accessed: 2026-04-23.
+\bibitem{amer2024biometric}
+M.~Amer and T.~S. Sobh, ``Biometric {JSON} web tokens ({BJWT}): Enhancing web
+  {API} security with biometric key exchange and {OTP-JWT} authentication,''
+  {\em International Journal of Computer Applications}, vol.~186, no.~39,
+  pp.~15--21, 2024.
 
-\bibitem[Souppaya et~al.(2017)Souppaya, Morello, and Scarfone]{nist800190_2017}
-Murugiah Souppaya, John Morello, and Karen Scarfone.
-\newblock Application container security guide.
-\newblock Technical Report NIST Special Publication 800-190, National Institute
-  of Standards and Technology, 2017.
+\bibitem{casalicchio2020state}
+E.~Casalicchio and S.~Iannucci, ``The state-of-the-art in container
+  technologies: Application, orchestration and security,'' {\em Concurrency and
+  Computation: Practice and Experience}, vol.~32, no.~17, p.~e5668, 2020.
 
-\bibitem[{U.S. Congress}(2014)]{fisma_2014}
-{U.S. Congress}.
-\newblock Federal information security modernization act of 2014, 2014.
-\newblock Public Law 113-283.
+\bibitem{thokala2025utilizing}
+V.~S. Thokala, ``Utilizing docker containers for reproducible builds and
+  scalable web application deployments,'' {\em Journal of Information Systems
+  Engineering and Management}, vol.~10, no.~45s, p.~725, 2025.
 
-\bibitem[{Wazuh Team}(2024)]{wazuh_doc}
-{Wazuh Team}.
-\newblock Wazuh documentation, 2024.
-\newblock URL \url{https://documentation.wazuh.com/}.
-\newblock Accessed: 2026-04-23.
+\bibitem{happa2020assessing}
+J.~Happa, I.~Agrafiotis, M.~Helmhout, T.~Bashford-Rogers, M.~Goldsmith, and
+  S.~Creese, ``Assessing a decision support tool for {SOC} analysts,'' {\em
+  Digital Threats: Research and Practice}, 2020.
 
-\bibitem[Zavarella(2022)]{mit_hci_security_2022}
-T.~Zavarella.
-\newblock \emph{The impact of alert fatigue on cognitive load in security
-  operations}.
-\newblock PhD thesis, Massachusetts Institute of Technology, Cambridge, MA,
-  2022.
-\newblock URL \url{https://dspace.mit.edu/handle/1721.1/155176}.
+\bibitem{chamkar2025improving}
+S.~A. Chamkar, M.~Zaydi, Y.~Maleh, and N.~Gherabi, ``Improving threat detection
+  in wazuh using machine learning techniques,'' {\em Journal of Cybersecurity
+  and Privacy}, vol.~5, no.~2, p.~34, 2025.
 
 \end{thebibliography}

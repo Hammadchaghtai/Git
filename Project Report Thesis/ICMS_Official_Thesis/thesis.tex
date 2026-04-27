@@ -5,12 +5,12 @@
 \usepackage{graphicx}
 \usepackage[T1]{fontenc}
 \usepackage{float}
-\usepackage[hidelinks]{hyperref}
+\usepackage[pagebackref=true]{hyperref}
 \usepackage{tikz}
 \usetikzlibrary{shapes, arrows.meta, positioning, calc, fit, backgrounds}
 \usepackage{setspace}
 \usepackage{titlesec}
-\usepackage[numbers]{natbib}
+\usepackage[numbers, sort&compress]{natbib}
 \usepackage{fancyhdr}
 \usepackage{etoolbox}
 \usepackage{array}
@@ -33,10 +33,29 @@
     pdftitle={Intelligent Compliance Management System (ICMS)},
     pdfauthor={Muhammad Ali Bukhari, Hammad Chaghtai},
     pdfsubject={Final Year Project Thesis},
-    pdfkeywords={GRC, SIEM, Wazuh, Compliance, Automation}
+    pdfkeywords={GRC, SIEM, Wazuh, Compliance, Automation},
+    colorlinks=true,
+    linkcolor=blue,
+    citecolor=blue,
+    urlcolor=blue,
+    linktocpage=true,
+    hypertexnames=true,
+    pdfpagelabels=true,
+    plainpages=false
+}
+
+\renewcommand{\bibname}{References}
+
+\renewcommand*{\backref}[1]{}
+\renewcommand*{\backrefalt}[4]{%
+    \ifcase #1 (Not cited.)%
+    \or Cited on p.~#2.%
+    \else Cited on pp.~#2.%
+    \fi
 }
 
 \begin{document}
+\pagenumbering{roman}
 
 % =========================================================
 % TITLE PAGE
@@ -71,7 +90,6 @@
 % APPROVAL CERTIFICATE
 % =========================================================
 \newpage
-\pagenumbering{roman}
 \phantomsection
 \addcontentsline{toc}{section}{Certificate}
 \begin{center}
@@ -263,8 +281,8 @@ Finally, on a personal note, I (Muhammad Ali Bukhari) dedicate this to my pet bi
 % =========================================================
 \newpage
 \phantomsection
-\addcontentsline{toc}{chapter}{Bibliography}
-\bibliographystyle{plainnat}
+\addcontentsline{toc}{chapter}{References}
+\bibliographystyle{ieeetr}
 \bibliography{references}
 
 \end{document}

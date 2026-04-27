@@ -122,7 +122,7 @@ The full service topology (as shown below in Figure \ref{fig:deployment_diagram_
     \label{fig:deployment_diagram_impl}
 \end{figure}
 
-When the stack boots, Docker brings up the database and Redis first, waits for their health checks to pass, and only then starts the Django backend. This startup ordering was not optional; without it, the backend would crash on boot trying to run migrations against a database that was not yet accepting connections. The Celery worker and Celery Beat scheduler also depend on the backend image and start only after Redis is confirmed healthy.
+When the stack boots, Docker brings up the database and Redis first, waits for their health checks to pass, and only then starts the Django backend. This startup ordering was not optional; without it, the backend would crash on boot trying to run migrations against a database that was not yet accepting connections. The Celery worker and Celery Beat scheduler also depend on the backend image and start only after Redis is confirmed healthy. Wazuh, operating as the SIEM data source, is deployed independently; prior work on ML-augmented Wazuh deployments confirms its suitability as a telemetry engine for configuration assessment workloads \cite{chamkar2025improving}.
 
 \subsection{Presentation Layer Implementation (Frontend)}
 The frontend is a React 19 Single Page Application built with Vite 8. Vite was chosen over older toolchains because it uses native ES modules during development, which reduces cold-start times to under 200ms. Routing is handled by React Router v7, which uses a declarative \texttt{<Route>} structure to enforce authentication at the component level.
@@ -146,11 +146,11 @@ The Celery application is initialized in \url{core/celery.py}. It reads configur
 Redis operates in a separate container and is the message broker and result backend. The Celery Beat scheduler uses the \texttt{Database\allowbreak Scheduler} from \url{django-celery-beat}. Scan frequency is stored in the PostgreSQL database and can be modified through the UI without restarting containers. When a manual scan is triggered, the \url{/api/run-scan/} endpoint returns a \texttt{202 Accepted} response and runs the task in the worker container.
 
 \subsection{Data Persistence Layer}
-PostgreSQL 18 is the primary database, running in its own container and accessible to the backend over the Docker bridge network. Django connects via \url{psycopg[binary]} version 3.2. Built-in persistent connection support handles connection reuse.
+PostgreSQL 18 is the primary database, running in its own container and accessible to the backend over the Docker bridge network. This network isolation approach, where the persistence tier is bound to a private bridge and never exposed to a host port, is a recognized security pattern for containerized applications \cite{casalicchio2020state}. Django connects via \url{psycopg[binary]} version 3.2. Built-in persistent connection support handles connection reuse.
 
 The schema is managed through Django ORM migrations. The backend container entrypoint script runs \texttt{python manage.py migrate} before starting the server to ensure the schema is current. Initial seed data, including regulatory controls and Wazuh rule mappings, is loaded via a management command that creates the relational records from a structured data file.
 
-Raw Wazuh SCA check data is stored in a \texttt{JSONField} on the \texttt{ScanResult} model. Storing the variable-structure SCA response as JSON preserves the original audit evidence while extracted compliance metrics are stored in relational columns for dashboard rendering.
+Raw Wazuh SCA check data is stored in a \texttt{JSONField} on the \texttt{ScanResult} model. Storing the variable-structure SCA response as JSON preserves the original audit evidence while extracted compliance metrics are stored in relational columns for dashboard rendering. Research into JSON versus column-oriented storage confirms that this hybrid approach provides field-level flexibility without sacrificing the indexing and aggregation benefits of the relational engine \cite{aji2026evaluating}.
 
 \subsection{Architectural Technology Stack}
 
