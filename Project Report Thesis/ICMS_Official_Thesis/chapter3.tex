@@ -277,82 +277,96 @@ Figure \ref{fig:use_case_diagram} shows the workflows for the System Administrat
 
 \begin{figure}[H]
     \centering
-    \resizebox{\textwidth}{!}{
+    \makebox[\textwidth][c]{
+    \resizebox{1.2\textwidth}{!}{
     \begin{tikzpicture}[
-        node distance=2cm,
-        usecase/.style={ellipse, draw=blue!80!black, thick, fill=blue!10, minimum width=4cm, minimum height=1.2cm, align=center, font=\bfseries\small},
-        authcase/.style={ellipse, draw=red!80!black, thick, fill=red!10, minimum width=4cm, minimum height=1.2cm, align=center, font=\bfseries\small},
-        stickman/.style={circle, draw=black!80, thick, minimum size=6mm, fill=white,
-            append after command={
-                \pgfextra{
-                    \draw[thick, draw=black!80] (\tikzlastnode.south) -- ++(0,-8mm) coordinate (body_bottom);
-                    \draw[thick, draw=black!80] (\tikzlastnode.south) ++(0,-2mm) -- ++(-4mm,-4mm);
-                    \draw[thick, draw=black!80] (\tikzlastnode.south) ++(0,-2mm) -- ++(4mm,-4mm);
-                    \draw[thick, draw=black!80] (body_bottom) -- ++(-4mm,-6mm);
-                    \draw[thick, draw=black!80] (body_bottom) -- ++(4mm,-6mm);
-                }
-            }
-        },
-        assoc/.style={thick, draw=black!50},
-        include/.style={-Stealth, dashed, thick, draw=black!80},
-        inclabel/.style={midway, fill=gray!5, font=\scriptsize, inner sep=2pt, text=black!90}
+        usecase/.style={ellipse, draw=blue!80!black, thick, fill=blue!5, minimum width=4.5cm, minimum height=1.6cm, align=center, font=\small},
+        systembox/.style={rectangle, draw=black!60, thick, dashed, fill=gray!5, rounded corners=10mm},
+        include/.style={-Stealth, dashed, thick, blue!80!black},
+        extend/.style={-Stealth, dashed, thick, red!80!black},
+        assoc/.style={-, thick, draw=black!70},
+        inherit/.style={-{Triangle[fill=white, length=4mm, width=3mm]}, thick, draw=black!80}
     ]
-        % System Boundary
-        \node[draw=gray!80!black, thick, minimum width=12cm, minimum height=13.5cm, fill=gray!5, rounded corners] (system) at (4.5, 0) {};
-        \node[anchor=north, font=\bfseries\Large, yshift=-3mm, text=black!80] at (system.north) {ICMS Platform};
 
-        % Actors (Left, well spaced to prevent line clipping)
-        \node[stickman] (superadmin) at (-5, 5) {}; 
-        \node[align=center, font=\bfseries\small, text=black!90] at (-5, 3.2) {Superadmin};
+    % Custom Macro for UML Stick Figure Actors
+    \def\actor#1#2#3#4{
+        \node[circle, draw=black!80, thick, minimum size=0.7cm, fill=white] (#1_head) at (#2,#3) {};
+        \draw[thick, black!80] (#1_head.south) -- ++(0,-1.1) coordinate (#1_body);
+        \draw[thick, black!80] (#1_head.south) ++(0,-0.2) -- ++(-0.6,-0.6);
+        \draw[thick, black!80] (#1_head.south) ++(0,-0.2) -- ++(0.6,-0.6);
+        \draw[thick, black!80] (#1_body) -- ++(-0.6,-0.8);
+        \draw[thick, black!80] (#1_body) -- ++(0.6,-0.8);
+        \node[align=center, font=\small\bfseries, text=black] (#1_text) at (#2, #3 - 2.8) {#4};
+        \coordinate (#1_anchor_R) at (#2+1.0, #3-0.5);
+        \coordinate (#1_anchor_L) at (#2-1.0, #3-0.5);
+    }
 
-        \node[stickman] (admin) at (-5, 0) {}; 
-        \node[align=center, font=\bfseries\small, text=black!90] at (-5, -1.8) {System\\Administrator};
+    % System Boundary (Expanded for breathing room)
+    \node[systembox, minimum width=14.5cm, minimum height=22cm] (system) at (5, -4.5) {};
+    \node[anchor=north, font=\large\bfseries, text=blue!30!black, align=center] at (5, 6) {Intelligent Compliance Management System\\(ICMS)};
 
-        \node[stickman] (auditor) at (-5, -5) {}; 
-        \node[align=center, font=\bfseries\small, text=black!90] at (-5, -6.8) {Security\\Auditor};
+    % Primary Actors (Left Side - Spaced out significantly)
+    \actor{sa}{-5.5}{3}{Superadmin}
+    \actor{adm}{-5.5}{-4}{Security\\Admin}
+    \actor{aud}{-5.5}{-12}{Auditor}
 
-        % Primary Use Cases (Center)
-        \node[usecase] (uc1) at (1.5, 5) {Manage Users};
-        \node[usecase] (uc2) at (1.5, 3) {Manage Frameworks};
-        \node[usecase] (uc3) at (1.5, 1) {Map SIEM Rules};
-        \node[usecase] (uc4) at (1.5, -1) {Sync Telemetry};
-        \node[usecase] (uc5) at (1.5, -3) {View Dashboard};
-        \node[usecase] (uc6) at (1.5, -5) {Export Reports};
+    % UML Actor Generalization (Inheritance)
+    \draw[inherit] (sa_text.south) -- node[right, font=\scriptsize, text=black!70] {<<inherits>>} (adm_head.north);
+    \draw[inherit] (adm_text.south) -- node[right, font=\scriptsize, text=black!70] {<<inherits>>} (aud_head.north);
 
-        % Included Auth Use Case (Right)
-        \node[authcase] (ucauth) at (8, 0) {User Authentication};
+    % Secondary / External Actors (Right Side)
+    \actor{auth}{15.5}{4.5}{<<System>>\\Authenticator}
+    \actor{wazuh}{15.5}{-2.5}{<<SIEM>>\\Wazuh API}
+    \actor{smtp}{15.5}{-7.5}{<<Service>>\\SMTP Relay}
 
-        % Actor Associations
-        % Superadmin
-        \draw[assoc] (superadmin.east) -- (uc1.west);
-        \draw[assoc] (superadmin.east) -- (uc2.west);
-        \draw[assoc] (superadmin.east) -- (uc3.west);
-        \draw[assoc] (superadmin.east) -- (uc4.west);
-        \draw[assoc] (superadmin.east) -- (uc5.west);
-        \draw[assoc] (superadmin.east) -- (uc6.west);
+    % Use Cases - Center Column
+    \node[usecase] (uc_login) at (1.5, 4.5) {Authenticate Session};
+    \node[usecase] (uc_rbac)  at (1.5, 1.5) {Manage Users\\\& RBAC};
+    \node[usecase] (uc_map)   at (1.5, -1.5) {Configure SCA\\Mapping Rules};
+    
+    \node[usecase] (uc_frame) at (1.5, -4.5) {Manage Regulatory\\Frameworks};
+    \node[usecase] (uc_sync)  at (1.5, -7.5) {Execute\\Telemetry Sync};
+    
+    \node[usecase] (uc_dash)  at (1.5, -11.5) {View Compliance\\Dashboard};
+    \node[usecase] (uc_pdf)   at (1.5, -14.5) {Generate Immutable\\Audit Dossier};
 
-        % System Admin
-        \draw[assoc] (admin.east) -- (uc2.west);
-        \draw[assoc] (admin.east) -- (uc3.west);
-        \draw[assoc] (admin.east) -- (uc4.west);
-        \draw[assoc] (admin.east) -- (uc5.west);
-        \draw[assoc] (admin.east) -- (uc6.west);
+    % Use Cases - Right Column
+    \node[usecase] (uc_2fa)   at (8.5, 4.5) {Verify TOTP\\Token};
+    \node[usecase] (uc_fetch) at (8.5, -2.5) {Ingest Endpoint\\Logs};
+    \node[usecase] (uc_alert) at (8.5, -7.5) {Dispatch\\Threshold Alert};
+    \node[usecase] (uc_calc)  at (8.5, -12.5) {Calculate Posture\\Metrics};
 
-        % Auditor
-        \draw[assoc] (auditor.east) -- (uc5.west);
-        \draw[assoc] (auditor.east) -- (uc6.west);
+    % --- RELATIONSHIPS ---
 
-        % Includes (using precise degree anchors to prevent overlap)
-        \draw[include] (uc1.east) -- (ucauth.145) node[inclabel, sloped] {$\langle\langle$include$\rangle\rangle$};
-        \draw[include] (uc2.east) -- (ucauth.155) node[inclabel, sloped] {$\langle\langle$include$\rangle\rangle$};
-        \draw[include] (uc3.east) -- (ucauth.165) node[inclabel, sloped] {$\langle\langle$include$\rangle\rangle$};
-        \draw[include] (uc4.east) -- (ucauth.195) node[inclabel, sloped] {$\langle\langle$include$\rangle\rangle$};
-        \draw[include] (uc5.east) -- (ucauth.205) node[inclabel, sloped] {$\langle\langle$include$\rangle\rangle$};
-        \draw[include] (uc6.east) -- (ucauth.215) node[inclabel, sloped] {$\langle\langle$include$\rangle\rangle$};
-        
+    % Includes & Extends
+    \draw[include] (uc_login) -- node[above, font=\scriptsize] {<<include>>} (uc_2fa);
+    \draw[include] (uc_sync)  -- node[above, sloped, font=\scriptsize] {<<include>>} (uc_fetch);
+    \draw[extend]  (uc_alert) -- node[above, sloped, font=\scriptsize] {<<extend>>} (uc_sync);
+    \draw[include] (uc_dash)  -- node[above, sloped, font=\scriptsize] {<<include>>} (uc_calc);
+    \draw[include] (uc_pdf)   -- node[below, sloped, font=\scriptsize] {<<include>>} (uc_calc);
+
+    % Primary Actors to Use Cases (Left)
+    \draw[assoc] (sa_anchor_R) -- (uc_login.west);
+    \draw[assoc] (sa_anchor_R) -- (uc_rbac.west);
+    \draw[assoc] (sa_anchor_R) -- (uc_map.west);
+
+    \draw[assoc] (adm_anchor_R) -- (uc_login.west);
+    \draw[assoc] (adm_anchor_R) -- (uc_frame.west);
+    \draw[assoc] (adm_anchor_R) -- (uc_sync.west);
+
+    \draw[assoc] (aud_anchor_R) -- (uc_login.west);
+    \draw[assoc] (aud_anchor_R) -- (uc_dash.west);
+    \draw[assoc] (aud_anchor_R) -- (uc_pdf.west);
+
+    % Use Cases to External Actors (Right)
+    \draw[assoc] (uc_2fa.east) -- (auth_anchor_L);
+    \draw[assoc] (uc_fetch.east) -- (wazuh_anchor_L);
+    \draw[assoc] (uc_alert.east) -- (smtp_anchor_L);
+
     \end{tikzpicture}
     }
-    \caption{System Use Case Diagram}
+    }
+    \caption{Advanced UML Use Case Diagram illustrating RBAC inheritance hierarchies, core compliance interactions, system boundaries, and integration with secondary external actors (Authenticator, SIEM, SMTP).}
     \label{fig:use_case_diagram}
 \end{figure}
 
