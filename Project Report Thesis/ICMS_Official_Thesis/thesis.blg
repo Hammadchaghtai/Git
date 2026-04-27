@@ -1,0 +1,58 @@
+This is BibTeX, Version 0.99e
+Capacity: max_strings=200000, hash_size=200000, hash_prime=170003
+The top-level auxiliary file: thesis.aux
+Reallocating 'name_of_file' (item size: 1) to 9 items.
+The style file: plainnat.bst
+Reallocating 'name_of_file' (item size: 1) to 11 items.
+Database file #1: references.bib
+Warning--entry type for "iso27001_2022" isn't style-file defined
+--line 10 of file references.bib
+Warning--entry type for "planetscale_n1" isn't style-file defined
+--line 19 of file references.bib
+Warning--entry type for "wazuh_doc" isn't style-file defined
+--line 53 of file references.bib
+Warning--entry type for "mdn_flexbox" isn't style-file defined
+--line 120 of file references.bib
+Warning--empty institution in cis_docker_2020
+You've used 15 entries,
+            2773 wiz_defined-function locations,
+            676 strings with 7298 characters,
+and the built_in function-call counts, 4941 in all, are:
+= -- 452
+> -- 230
+< -- 16
++ -- 84
+- -- 69
+* -- 314
+:= -- 828
+add.period$ -- 55
+call.type$ -- 15
+change.case$ -- 66
+chr.to.int$ -- 15
+cite$ -- 31
+duplicate$ -- 247
+empty$ -- 415
+format.name$ -- 86
+if$ -- 1008
+int.to.chr$ -- 1
+int.to.str$ -- 1
+missing$ -- 4
+newline$ -- 92
+num.names$ -- 60
+pop$ -- 136
+preamble$ -- 1
+purify$ -- 53
+quote$ -- 0
+skip$ -- 194
+stack$ -- 0
+substring$ -- 30
+swap$ -- 14
+text.length$ -- 4
+text.prefix$ -- 0
+top$ -- 0
+type$ -- 160
+warning$ -- 1
+while$ -- 45
+width$ -- 0
+write$ -- 214
+(There were 5 warnings)
