@@ -14,19 +14,40 @@ The following requirements are for system operation:
 
 \section{System Access}
 \begin{itemize}
-    \item Open a web browser and navigate to the ICMS URL.
+    \item Navigate to the ICMS URL in a supported web browser.
     \item Enter the registered email and password.
-    \item Enter the 6-digit TOTP code from the authenticator application.
-    \item The system directs the user to the Dashboard based on the assigned role (Superadmin, Admin, or Auditor).
+    \item Provide the 6-digit TOTP code from the authenticator application.
+    \item Access the dashboard corresponding to the assigned role (Superadmin, Admin, or Auditor).
 \end{itemize}
 
 \section{Main User Steps}
 
 \textbf{Step 1 -- Authentication and Role Verification}
 \begin{itemize}
-    \item Users authenticate through the login portal.
-    \item The system verifies the session and displays the interface corresponding to the user privilege level.
+    \item Authenticate through the login portal.
+    \item Verify the active session and the interface corresponding to the assigned privilege level.
 \end{itemize}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1.0\textwidth]{"images/login.png"}
+    \caption{ICMS authentication portal.}
+    \label{fig:manual_login}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1.0\textwidth]{"images/2fa.png"}
+    \caption{Two-factor authentication (2FA) verification interface.}
+    \label{fig:manual_2fa}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1.0\textwidth]{"images/forget password.png"}
+    \caption{Password recovery interface for credential resets.}
+    \label{fig:manual_forget_pass}
+\end{figure}
 
 \textbf{Step 2 -- Dashboard Overview}
 \begin{itemize}
@@ -40,6 +61,20 @@ The following requirements are for system operation:
     \item Use the "Frameworks" tab to view regulatory standards.
     \item Select a framework to view its clauses and technical controls.
 \end{itemize}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1.0\textwidth]{"images/policy1.png"}
+    \caption{The Regulatory Frameworks and Policy configuration interface.}
+    \label{fig:manual_policy}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1.0\textwidth]{"images/framework2.png"}
+    \caption{Detailed view of the regulatory framework requirements mapping interface.}
+    \label{fig:manual_framework2}
+\end{figure}
 
 \textbf{Step 4 -- Telemetry Mapping Configuration (Superadmins)}
 \begin{itemize}
@@ -61,6 +96,13 @@ The following requirements are for system operation:
     \item Select a workstation or server to view its compliance score and failed security checks.
 \end{itemize}
 
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1.0\textwidth]{"images/result.png"}
+    \caption{Interface for raw scan results and endpoint telemetry mapping.}
+    \label{fig:manual_scan_result}
+\end{figure}
+
 \textbf{Step 7 -- Automated Audit Report Generation}
 \begin{itemize}
     \item Use the "Reports" module to generate documentation.
@@ -68,11 +110,39 @@ The following requirements are for system operation:
     \item Click "Generate PDF" to download the audit report.
 \end{itemize}
 
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1.0\textwidth]{"images/reports.png"}
+    \caption{Audit Report Generation interface for compliance dossiers.}
+    \label{fig:manual_reports}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1.0\textwidth]{"images/audit trail pdf.png"}
+    \caption{Audit Trail PDF for log tracking.}
+    \label{fig:manual_audit_trail_pdf}
+\end{figure}
+
 \textbf{Step 8 -- System and User Management}
 \begin{itemize}
-    \item Superadmins use "Manage Users" to provision accounts and assign roles.
-    \item Configure SMTP alerts in System Settings for email notifications upon compliance failure.
+    \item Use "Manage Users" to provision accounts and assign roles.
+    \item Configure SMTP alerts in System Settings for email notifications.
 \end{itemize}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1.0\textwidth]{"images/settings1.png"}
+    \caption{System Settings interface for managing global configurations and thresholds.}
+    \label{fig:manual_settings}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1.0\textwidth]{"images/manage admins3.png"}
+    \caption{Expanded user management interface for configuring strict RBAC hierarchies.}
+    \label{fig:manual_admin_config}
+\end{figure}
 
 \section{Logout}
 \begin{itemize}
@@ -87,4 +157,4 @@ The following requirements are for system operation:
 \end{itemize}
 
 \section{Note}
-The ICMS platform automates compliance visibility and reporting. The system provides mappings based on SIEM telemetry and functions as an orchestration and governance tool. Maintaining compliance requires remediation of identified vulnerabilities. The ICMS highlights security gaps, but administrative action on the endpoints is necessary to resolve them.
+The ICMS platform automates compliance visibility and reporting. The system provides mappings based on SIEM telemetry and is an orchestration and governance tool. Maintaining compliance requires remediation of identified vulnerabilities. The ICMS highlights security gaps, but administrative action on the endpoints is necessary to resolve them.

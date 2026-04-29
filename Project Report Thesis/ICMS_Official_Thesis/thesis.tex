@@ -62,11 +62,15 @@
 % =========================================================
 \begin{titlepage}
     \centering
-    \vspace*{1cm}
+    \vspace*{0.8cm}
     
-    {\Huge \textbf{Intelligent Compliance Management System (ICMS)}}\\[1.5cm]
+    {\Huge \textbf{Intelligent Compliance Management System (ICMS)}}\\[1.2cm]
     
-    \includegraphics[width=0.3\textwidth]{bui_logo.jpg}\\[1.5cm]
+    \includegraphics[width=0.28\textwidth]{bui_logo.jpg}\\[0.8cm]
+    
+    {\large \textbf{Project ID: IT-F25-26}}\\[0.6cm]
+    
+    \vfill
     
     {\Large \textsc{Muhammad Ali Bukhari}}\\[0.1cm]
     {\Large \textbf{01-135222-096}}\\[0.8cm]
@@ -79,11 +83,10 @@
     {\large \textbf{Bachelor of Science in Information Technology}}\\[1.2cm]
     
     {\large Department of Computer Science}\\[0.1cm]
-    {\large Bahria University, Islamabad}\\[0.8cm]
-    
-    {\large April 2026}
+    {\large Bahria University, Islamabad}\\[1.0cm]
     
     \vfill
+    {\large April 2026}
 \end{titlepage}
 
 % =========================================================
@@ -99,11 +102,11 @@
 \vspace{10mm}
 
 \begin{singlespace}
-We accept the work contained in the report title \textbf{``Intelligent Compliance Management System (ICMS)''} written by \textbf{Mr. Muhammad Ali Bukhari} and \textbf{Mr. Muhammad Hammad Chaghtai} as a confirmation to the required standard for the partial fulfillment of the degree of Bachelor of Science in Information Technology.
+We acknowledge the work done in the report titled \textbf{``Intelligent Compliance Management System (ICMS)''} by authors \textbf{Mr. Muhammad Ali Bukhari} and \textbf{Mr. Muhammad Hammad Chaghtai} as an affirm to the standard of completion for the partial fulfillment of the degree of Bachelor of Science in Information Technology.
 
 \vspace{8mm}
 
-\noindent Approved by \ldots :
+\noindent Approved by :
 
 \vskip 6mm
 
@@ -148,11 +151,7 @@ We accept the work contained in the report title \textbf{``Intelligent Complianc
 \phantomsection
 \addcontentsline{toc}{chapter}{Abstract}
 \chapter*{Abstract}
-Manual security auditing and static compliance mapping create blind spots that leave enterprise infrastructure vulnerable to configuration drift. Traditional Governance, Risk, and Compliance (GRC) processes often do not account for real-time endpoint telemetry, leading to high administrative overhead and inaccurate security assessments. This project introduces the Intelligent Compliance Management System (ICMS), a centralized platform that automates continuous controls monitoring. Developed as an industrial collaboration, the platform integrates with the Wazuh Security Information and Event Management (SIEM) system to ingest Security Configuration Assessment (SCA) logs. A deterministic mapping algorithm translates raw technical events into verifiable regulatory controls, which allows for continuous compliance tracking against standards like ISO/IEC 27001.
-
-The system uses an N-tier architecture. A React Single Page Application (SPA) handles the presentation layer and communicates with a Django REST Framework API. To prevent main-thread blocking during SIEM polling and PDF report generation, the system offloads intensive I/O operations to an asynchronous Celery and Redis worker tier. Data persistence is managed via PostgreSQL, using a hybrid schema that combines relational constraints for Role-Based Access Control (RBAC) with JSON fields for telemetry storage. Platform security relies on stateless JSON Web Tokens (JWT) and Time-based One-Time Password (TOTP) two-factor authentication.
-
-Testing confirmed the platform works as intended. The asynchronous tier processed high-density endpoint synchronizations with an average API latency under 150ms. The mapping engine maintained data integrity even during collision attempts. The ICMS shows that replacing manual audits with continuous SIEM integration establishes a verifiable compliance posture and reduces the burden of organizational audits.
+Manual security auditing and static compliance mapping create blind spots that leave enterprise infrastructure vulnerable to configuration drift. Existing Governance, Risk and Compliance (GRC) policies do not consider endpoint telemetry, resulting in high administrative costs and unreliable security observations. This project combines an Intelligent Compliance Management System (ICMS) that centrally automates continuous controls monitoring. Developed as an industrial collaboration, the platform integrates with the Wazuh Security Information and Event Management (SIEM) system to ingest Security Configuration Assessment (SCA) logs. A deterministic mapping algorithm translates raw technical events into verifiable regulatory controls, which allows for continuous compliance tracking against standards like ISO/IEC 27001. The system uses an N-tier architecture. A React Single Page Application (SPA) handles the presentation layer and communicates with a Django REST Framework API. To prevent main-thread blocking during SIEM polling and PDF report generation, the system offloads intensive I/O operations to an asynchronous Celery and Redis worker tier. Data persistence is managed via PostgreSQL, using a hybrid schema that combines relational constraints for Role-Based Access Control (RBAC) with JSON fields for telemetry storage. Platform security relies on stateless JSON Web Tokens (JWT) and Time-based One-Time Password (TOTP) two-factor authentication. Testing confirmed the platform works as intended. The asynchronous tier processed high-density endpoint synchronizations with an average API latency under 150ms. The mapping engine maintained data integrity even during collision attempts. The ICMS shows that replacing manual audits with continuous SIEM integration establishes a verifiable compliance posture and reduces the burden of organizational audits.
 
 % =========================================================
 % ACKNOWLEDGMENTS

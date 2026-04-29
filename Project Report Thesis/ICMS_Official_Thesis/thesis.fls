@@ -274,11 +274,11 @@ INPUT .\bui_logo.jpg
 INPUT .\bui_logo.jpg
 INPUT .\bui_logo.jpg
 INPUT .\bui_logo.jpg
+INPUT C:\Users\malib\AppData\Local\Programs\MiKTeX\fonts\tfm\jknappen\ec\ecrm1440.tfm
+INPUT C:\Users\malib\AppData\Local\Programs\MiKTeX\fonts\tfm\jknappen\ec\ecbx1440.tfm
 INPUT C:\Users\malib\AppData\Local\Programs\MiKTeX\fonts\tfm\jknappen\ec\ecrm1728.tfm
 INPUT C:\Users\malib\AppData\Local\Programs\MiKTeX\fonts\tfm\jknappen\ec\eccc1728.tfm
 INPUT C:\Users\malib\AppData\Local\Programs\MiKTeX\fonts\tfm\jknappen\ec\ecbx1728.tfm
-INPUT C:\Users\malib\AppData\Local\Programs\MiKTeX\fonts\tfm\jknappen\ec\ecrm1440.tfm
-INPUT C:\Users\malib\AppData\Local\Programs\MiKTeX\fonts\tfm\jknappen\ec\ecbx1440.tfm
 INPUT C:\Users\malib\AppData\Local\MiKTeX\fonts\map\pdftex\pdftex.map
 INPUT C:\Users\malib\AppData\Local\Programs\MiKTeX\fonts\tfm\jknappen\ec\ecrm2074.tfm
 INPUT C:\Users\malib\AppData\Local\Programs\MiKTeX\fonts\tfm\jknappen\ec\ecbx2074.tfm
@@ -339,6 +339,62 @@ INPUT C:\Users\malib\AppData\Local\Programs\MiKTeX\fonts\tfm\jknappen\ec\ectt100
 INPUT C:\Users\malib\AppData\Local\Programs\MiKTeX\fonts\tfm\jknappen\ec\ecsx0800.tfm
 INPUT C:\Users\malib\AppData\Local\Programs\MiKTeX\fonts\tfm\jknappen\ec\ecbx1000.tfm
 INPUT C:\Users\malib\AppData\Local\Programs\MiKTeX\fonts\tfm\jknappen\ec\ecti1000.tfm
+INPUT .\images\login.png
+INPUT .\images\login.png
+INPUT .\images\login.png
+INPUT .\images\login.png
+INPUT .\images\login.png
+INPUT .\images\login.png
+INPUT .\images\login.png
+INPUT .\images\2fa.png
+INPUT .\images\2fa.png
+INPUT .\images\2fa.png
+INPUT .\images\2fa.png
+INPUT .\images\2fa.png
+INPUT .\images\2fa.png
+INPUT .\images\2fa.png
+INPUT .\images\superadmin dashboard dark.png
+INPUT .\images\superadmin dashboard dark.png
+INPUT .\images\superadmin dashboard dark.png
+INPUT .\images\superadmin dashboard dark.png
+INPUT .\images\superadmin dashboard dark.png
+INPUT .\images\superadmin dashboard dark.png
+INPUT .\images\superadmin dashboard dark.png
+INPUT .\images\superadmin dashboard1.png
+INPUT .\images\superadmin dashboard1.png
+INPUT .\images\superadmin dashboard1.png
+INPUT .\images\superadmin dashboard1.png
+INPUT .\images\superadmin dashboard1.png
+INPUT .\images\superadmin dashboard1.png
+INPUT .\images\superadmin dashboard1.png
+INPUT .\images\manage admins1.png
+INPUT .\images\manage admins1.png
+INPUT .\images\manage admins1.png
+INPUT .\images\manage admins1.png
+INPUT .\images\manage admins1.png
+INPUT .\images\manage admins1.png
+INPUT .\images\manage admins1.png
+INPUT .\images\auditor dashboard.png
+INPUT .\images\auditor dashboard.png
+INPUT .\images\auditor dashboard.png
+INPUT .\images\auditor dashboard.png
+INPUT .\images\auditor dashboard.png
+INPUT .\images\auditor dashboard.png
+INPUT .\images\auditor dashboard.png
+INPUT .\images\compliance report pdf.png
+INPUT .\images\compliance report pdf.png
+INPUT .\images\compliance report pdf.png
+INPUT .\images\compliance report pdf.png
+INPUT .\images\compliance report pdf.png
+INPUT .\images\compliance report pdf.png
+INPUT .\images\compliance report pdf.png
+INPUT .\images\email.png
+INPUT .\images\email.png
+INPUT .\images\email.png
+INPUT .\images\email.png
+INPUT .\images\email.png
+INPUT .\images\email.png
+INPUT .\images\email.png
 INPUT .\chapter5.tex
 INPUT .\chapter5.tex
 INPUT .\chapter5.tex
@@ -360,6 +416,70 @@ INPUT .\appendixA.tex
 INPUT .\appendixA.tex
 INPUT .\appendixA.tex
 INPUT appendixA.tex
+INPUT .\images\login.png
+INPUT .\images\login.png
+INPUT .\images\login.png
+INPUT .\images\login.png
+INPUT .\images\2fa.png
+INPUT .\images\2fa.png
+INPUT .\images\2fa.png
+INPUT .\images\2fa.png
+INPUT .\images\forget password.png
+INPUT .\images\forget password.png
+INPUT .\images\forget password.png
+INPUT .\images\forget password.png
+INPUT .\images\forget password.png
+INPUT .\images\forget password.png
+INPUT .\images\forget password.png
+INPUT .\images\policy1.png
+INPUT .\images\policy1.png
+INPUT .\images\policy1.png
+INPUT .\images\policy1.png
+INPUT .\images\policy1.png
+INPUT .\images\policy1.png
+INPUT .\images\policy1.png
+INPUT .\images\framework2.png
+INPUT .\images\framework2.png
+INPUT .\images\framework2.png
+INPUT .\images\framework2.png
+INPUT .\images\framework2.png
+INPUT .\images\framework2.png
+INPUT .\images\framework2.png
+INPUT .\images\result.png
+INPUT .\images\result.png
+INPUT .\images\result.png
+INPUT .\images\result.png
+INPUT .\images\result.png
+INPUT .\images\result.png
+INPUT .\images\result.png
+INPUT .\images\reports.png
+INPUT .\images\reports.png
+INPUT .\images\reports.png
+INPUT .\images\reports.png
+INPUT .\images\reports.png
+INPUT .\images\reports.png
+INPUT .\images\reports.png
+INPUT .\images\audit trail pdf.png
+INPUT .\images\audit trail pdf.png
+INPUT .\images\audit trail pdf.png
+INPUT .\images\audit trail pdf.png
+INPUT .\images\audit trail pdf.png
+INPUT .\images\audit trail pdf.png
+INPUT .\images\audit trail pdf.png
+INPUT .\images\settings1.png
+INPUT .\images\settings1.png
+INPUT .\images\settings1.png
+INPUT .\images\settings1.png
+INPUT .\images\settings1.png
+INPUT .\images\settings1.png
+INPUT .\images\settings1.png
+INPUT .\images\manage admins3.png
+INPUT .\images\manage admins3.png
+INPUT .\images\manage admins3.png
+INPUT .\images\manage admins3.png
+INPUT .\images\manage admins3.png
+INPUT .\images\manage admins3.png
+INPUT .\images\manage admins3.png
 INPUT .\thesis.bbl
 INPUT .\thesis.bbl
 INPUT thesis.bbl
@@ -408,14 +528,14 @@ INPUT C:\Users\malib\AppData\Local\MiKTeX\fonts\pk\ljfour\jknappen\ec\dpi600\ecr
 INPUT C:\Users\malib\AppData\Local\MiKTeX\fonts\pk\ljfour\jknappen\ec\dpi600\ecrm1200.pk
 INPUT C:\Users\malib\AppData\Local\MiKTeX\fonts\pk\ljfour\jknappen\ec\dpi600\ecbx2074.pk
 INPUT C:\Users\malib\AppData\Local\MiKTeX\fonts\pk\ljfour\jknappen\ec\dpi600\ecbx2074.pk
-INPUT C:\Users\malib\AppData\Local\MiKTeX\fonts\pk\ljfour\jknappen\ec\dpi600\ecbx1440.pk
-INPUT C:\Users\malib\AppData\Local\MiKTeX\fonts\pk\ljfour\jknappen\ec\dpi600\ecbx1440.pk
 INPUT C:\Users\malib\AppData\Local\MiKTeX\fonts\pk\ljfour\jknappen\ec\dpi600\ecrm1440.pk
 INPUT C:\Users\malib\AppData\Local\MiKTeX\fonts\pk\ljfour\jknappen\ec\dpi600\ecrm1440.pk
 INPUT C:\Users\malib\AppData\Local\MiKTeX\fonts\pk\ljfour\jknappen\ec\dpi600\ecbx1728.pk
 INPUT C:\Users\malib\AppData\Local\MiKTeX\fonts\pk\ljfour\jknappen\ec\dpi600\ecbx1728.pk
 INPUT C:\Users\malib\AppData\Local\MiKTeX\fonts\pk\ljfour\jknappen\ec\dpi600\eccc1728.pk
 INPUT C:\Users\malib\AppData\Local\MiKTeX\fonts\pk\ljfour\jknappen\ec\dpi600\eccc1728.pk
+INPUT C:\Users\malib\AppData\Local\MiKTeX\fonts\pk\ljfour\jknappen\ec\dpi600\ecbx1440.pk
+INPUT C:\Users\malib\AppData\Local\MiKTeX\fonts\pk\ljfour\jknappen\ec\dpi600\ecbx1440.pk
 INPUT C:\Users\malib\AppData\Local\MiKTeX\fonts\pk\ljfour\jknappen\ec\dpi600\ecbx2488.pk
 INPUT C:\Users\malib\AppData\Local\MiKTeX\fonts\pk\ljfour\jknappen\ec\dpi600\ecbx2488.pk
 INPUT C:\Users\malib\AppData\Local\Programs\MiKTeX\fonts\type1\public\amsfonts\cm\cmmi10.pfb

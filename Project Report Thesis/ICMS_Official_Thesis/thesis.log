@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.29 (MiKTeX 26.2) (preloaded format=pdflatex 2026.4.23)  27 APR 2026 18:09
+This is pdfTeX, Version 3.141592653-2.6-1.40.29 (MiKTeX 26.2) (preloaded format=pdflatex 2026.4.23)  29 APR 2026 18:23
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -588,14 +588,14 @@ Package hyperref Info: Link coloring ON on input line 57.
 File: bui_logo.jpg Graphic file (type jpg)
 <use bui_logo.jpg>
 Package pdftex.def Info: bui_logo.jpg  used on input line 69.
-(pdftex.def)             Requested size: 135.89174pt x 162.27008pt.
+(pdftex.def)             Requested size: 126.83044pt x 151.44933pt.
  [1
 
 {C:/Users/malib/AppData/Local/MiKTeX/fonts/map/pdftex/pdftex.map} <./bui_logo.jpg>]
 pdfTeX warning (ext4): destination with the same identifier (name{page.i}) has been already used, duplicate ignored
 <to be read again> 
                    \relax 
-l.147 \newpage
+l.150 \newpage
                [1] [2
 
 ] [3
@@ -619,16 +619,16 @@ LaTeX Font Info:    External font `cmex10' loaded for size
 \tf@lof=\write6
 \openout6 = `thesis.lof'.
 
- [11] (thesis.lot [12
+ [11] [12] (thesis.lot [13
 
 ])
 \tf@lot=\write7
 \openout7 = `thesis.lot'.
 
- [13]
-ignored: Infinite glue shrinkage found in box being split [14
+ [14]
+ignored: Infinite glue shrinkage found in box being split [15
 
-] [15] (chapter1.tex
+] [16] (chapter1.tex
 Chapter 1.
 [1
 
@@ -711,7 +711,52 @@ Underfull \hbox (badness 1990) in paragraph at lines 901--901
 [45]
 LaTeX Font Info:    External font `cmex10' loaded for size
 (Font)              <7> on input line 997.
- [46] [47] [48] [49] [50] [51] [52]) (chapter5.tex [53]
+ [46]
+<images/login.png, id=1097, 1915.155pt x 884.30376pt>
+File: images/login.png Graphic file (type png)
+<use images/login.png>
+Package pdftex.def Info: images/login.png  used on input line 1011.
+(pdftex.def)             Requested size: 452.9679pt x 209.14725pt.
+ [47]
+<images/2fa.png, id=1106, 1915.155pt x 884.30376pt>
+File: images/2fa.png Graphic file (type png)
+<use images/2fa.png>
+Package pdftex.def Info: images/2fa.png  used on input line 1018.
+(pdftex.def)             Requested size: 452.9679pt x 209.14725pt.
+<images/superadmin dashboard dark.png, id=1107, 1427.3325pt x 660.21657pt>
+File: images/superadmin dashboard dark.png Graphic file (type png)
+<use images/superadmin dashboard dark.png>
+Package pdftex.def Info: images/superadmin dashboard dark.png  used on input line 1028.
+(pdftex.def)             Requested size: 452.9679pt x 209.52072pt.
+ [48 <./images/login.png> <./images/2fa.png>]
+<images/superadmin dashboard1.png, id=1114, 1434.86063pt x 664.73344pt>
+File: images/superadmin dashboard1.png Graphic file (type png)
+<use images/superadmin dashboard1.png>
+Package pdftex.def Info: images/superadmin dashboard1.png  used on input line 1035.
+(pdftex.def)             Requested size: 452.9679pt x 209.84857pt.
+<images/manage admins1.png, id=1115, 1425.82687pt x 657.2053pt>
+File: images/manage admins1.png Graphic file (type png)
+<use images/manage admins1.png>
+Package pdftex.def Info: images/manage admins1.png  used on input line 1042.
+(pdftex.def)             Requested size: 452.9679pt x 208.7857pt.
+ [49 <./images/superadmin dashboard dark.png> <./images/superadmin dashboard1.png>]
+<images/auditor dashboard.png, id=1122, 1426.57968pt x 660.21657pt>
+File: images/auditor dashboard.png Graphic file (type png)
+<use images/auditor dashboard.png>
+Package pdftex.def Info: images/auditor dashboard.png  used on input line 1052.
+(pdftex.def)             Requested size: 452.9679pt x 209.63153pt.
+ [50 <./images/manage admins1.png> <./images/auditor dashboard.png>]
+<images/compliance report pdf.png, id=1130, 623.32875pt x 603.75563pt>
+File: images/compliance report pdf.png Graphic file (type png)
+<use images/compliance report pdf.png>
+Package pdftex.def Info: images/compliance report pdf.png  used on input line 1062.
+(pdftex.def)             Requested size: 452.9679pt x 438.74803pt.
+<images/email.png, id=1131, 539.01375pt x 630.10406pt>
+File: images/email.png Graphic file (type png)
+<use images/email.png>
+Package pdftex.def Info: images/email.png  used on input line 1069.
+(pdftex.def)             Requested size: 452.9679pt x 529.52417pt.
+ [51 <./images/compliance report pdf.png>] [52 <./images/email.png>]) (chapter5.tex [53]
 Chapter 5.
 [54
 
@@ -732,34 +777,88 @@ Chapter 7.
 Appendix A.
 [85
 
-] [86]) [87] [88] (thesis.bbl (thesis.brf)
+]
+File: images/login.png Graphic file (type png)
+<use images/login.png>
+Package pdftex.def Info: images/login.png  used on input line 33.
+(pdftex.def)             Requested size: 452.9679pt x 209.14725pt.
+File: images/2fa.png Graphic file (type png)
+<use images/2fa.png>
+Package pdftex.def Info: images/2fa.png  used on input line 40.
+(pdftex.def)             Requested size: 452.9679pt x 209.14725pt.
+ [86]
+<images/forget password.png, id=1308, 1915.155pt x 884.30376pt>
+File: images/forget password.png Graphic file (type png)
+<use images/forget password.png>
+Package pdftex.def Info: images/forget password.png  used on input line 47.
+(pdftex.def)             Requested size: 452.9679pt x 209.14725pt.
+ [87 <./images/forget password.png>]
+<images/policy1.png, id=1314, 1438.6247pt x 663.22781pt>
+File: images/policy1.png Graphic file (type png)
+<use images/policy1.png>
+Package pdftex.def Info: images/policy1.png  used on input line 67.
+(pdftex.def)             Requested size: 452.9679pt x 208.82678pt.
+<images/framework2.png, id=1315, 1432.60219pt x 659.46375pt>
+File: images/framework2.png Graphic file (type png)
+<use images/framework2.png>
+Package pdftex.def Info: images/framework2.png  used on input line 74.
+(pdftex.def)             Requested size: 452.9679pt x 208.50699pt.
+ [88 <./images/policy1.png> <./images/framework2.png>]
+<images/result.png, id=1322, 1440.88312pt x 657.95813pt>
+File: images/result.png Graphic file (type png)
+<use images/result.png>
+Package pdftex.def Info: images/result.png  used on input line 101.
+(pdftex.def)             Requested size: 452.9679pt x 206.83624pt.
+<images/reports.png, id=1323, 1435.61343pt x 664.73344pt>
+File: images/reports.png Graphic file (type png)
+<use images/reports.png>
+Package pdftex.def Info: images/reports.png  used on input line 115.
+(pdftex.def)             Requested size: 452.9679pt x 209.737pt.
+ [89 <./images/result.png>]
+<images/audit trail pdf.png, id=1329, 662.475pt x 579.66562pt>
+File: images/audit trail pdf.png Graphic file (type png)
+<use images/audit trail pdf.png>
+Package pdftex.def Info: images/audit trail pdf.png  used on input line 122.
+(pdftex.def)             Requested size: 452.9679pt x 396.34326pt.
+ [90 <./images/reports.png> <./images/audit trail pdf.png>]
+<images/settings1.png, id=1336, 1425.82687pt x 663.98062pt>
+File: images/settings1.png Graphic file (type png)
+<use images/settings1.png>
+Package pdftex.def Info: images/settings1.png  used on input line 135.
+(pdftex.def)             Requested size: 452.9679pt x 210.93814pt.
+<images/manage admins3.png, id=1337, 1428.83812pt x 661.72218pt>
+File: images/manage admins3.png Graphic file (type png)
+<use images/manage admins3.png>
+Package pdftex.def Info: images/manage admins3.png  used on input line 142.
+(pdftex.def)             Requested size: 452.9679pt x 209.7764pt.
+ [91 <./images/settings1.png> <./images/manage admins3.png>]) [92] (thesis.bbl (thesis.brf)
 \tf@brf=\write8
 \openout8 = `thesis.brf'.
 
- [89
+ [93
 
-]) [90] (thesis.aux)
+]) [94] (thesis.aux)
  ***********
 LaTeX2e <2025-11-01>
 L3 programming layer <2026-03-20>
  ***********
 Package rerunfilecheck Info: File `thesis.out' has not changed.
-(rerunfilecheck)             Checksum: E1AB77E5124070B4C89BDAA62BAA2421;22784.
+(rerunfilecheck)             Checksum: 4F0FDFA884114A7CDF7023DF1DF9EE6C;22903.
 Package rerunfilecheck Info: File `thesis.brf' has not changed.
 (rerunfilecheck)             Checksum: D11AB20E73D6A7CBFC242DE4BAE51C77;1257.
  ) 
 Here is how much of TeX's memory you used:
- 25641 strings out of 467691
- 501056 string characters out of 5414987
- 943756 words of memory out of 5000000
- 53954 multiletter control sequences out of 15000+600000
+ 25789 strings out of 467691
+ 505255 string characters out of 5414987
+ 944408 words of memory out of 5000000
+ 54089 multiletter control sequences out of 15000+600000
  648965 words of font info for 77 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 90i,13n,104p,1814b,1143s stack positions out of 10000i,1000n,20000p,200000b,200000s
- <C:\Users\malib\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ectt1200.pk> <C:\Users\malib\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecti1000.pk> <C:\Users\malib\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecrm1000.pk> <C:\Users\malib\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecbx1000.pk> <C:\Users\malib\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecsx0800.pk> <C:\Users\malib\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ectt1000.pk> <C:\Users\malib\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecrm0600.pk> <C:\Users\malib\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecbx0800.pk> <C:\Users\malib\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecti1200.pk> <C:\Users\malib\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecrm0800.pk> <C:\Users\malib\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecti1095.pk> <C:\Users\malib\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecrm1095.pk> <C:\Users\malib\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecbx1095.pk> <C:\Users\malib\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\tcrm1200.pk> <C:\Users\malib\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecbx1200.pk> <C:\Users\malib\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecrm1200.pk> <C:\Users\malib\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecbx2074.pk> <C:\Users\malib\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecbx1440.pk> <C:\Users\malib\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecrm1440.pk> <C:\Users\malib\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecbx1728.pk> <C:\Users\malib\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\eccc1728.pk> <C:\Users\malib\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecbx2488.pk><C:/Users/malib/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi10.pfb><C:/Users/malib/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi12.pfb><C:/Users/malib/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr10.pfb><C:/Users/malib/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr12.pfb><C:/Users/malib/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy10.pfb><C:/Users/malib/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy8.pfb>
-Output written on thesis.pdf (106 pages, 960160 bytes).
+ 90i,13n,104p,1997b,1143s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ <C:\Users\malib\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ectt1200.pk> <C:\Users\malib\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecti1000.pk> <C:\Users\malib\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecrm1000.pk> <C:\Users\malib\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecbx1000.pk> <C:\Users\malib\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecsx0800.pk> <C:\Users\malib\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ectt1000.pk> <C:\Users\malib\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecrm0600.pk> <C:\Users\malib\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecbx0800.pk> <C:\Users\malib\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecti1200.pk> <C:\Users\malib\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecrm0800.pk> <C:\Users\malib\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecti1095.pk> <C:\Users\malib\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecrm1095.pk> <C:\Users\malib\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecbx1095.pk> <C:\Users\malib\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\tcrm1200.pk> <C:\Users\malib\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecbx1200.pk> <C:\Users\malib\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecrm1200.pk> <C:\Users\malib\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecbx2074.pk> <C:\Users\malib\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecrm1440.pk> <C:\Users\malib\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecbx1728.pk> <C:\Users\malib\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\eccc1728.pk> <C:\Users\malib\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecbx1440.pk> <C:\Users\malib\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecbx2488.pk><C:/Users/malib/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi10.pfb><C:/Users/malib/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi12.pfb><C:/Users/malib/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr10.pfb><C:/Users/malib/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr12.pfb><C:/Users/malib/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy10.pfb><C:/Users/malib/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy8.pfb>
+Output written on thesis.pdf (111 pages, 3162204 bytes).
 PDF statistics:
- 2391 PDF objects out of 2487 (max. 8388607)
- 311 named destinations out of 1000 (max. 500000)
- 986 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 2466 PDF objects out of 2487 (max. 8388607)
+ 324 named destinations out of 1000 (max. 500000)
+ 1066 words of extra memory for PDF output out of 10000 (max. 10000000)
 

@@ -23,19 +23,27 @@
 \contentsline {figure}{\numberline {4.14}{\ignorespaces UML Class Diagram: Core Object-Relational Models}}{45}{figure.4.14}%
 \contentsline {figure}{\numberline {4.15}{\ignorespaces Physical Database Schema: Core Relational Data Model with Exact Data Types}}{46}{figure.4.15}%
 \contentsline {figure}{\numberline {4.16}{\ignorespaces Extended Entity Relationship Diagram (EERD) with Constraints and Attributes}}{47}{figure.4.16}%
-\contentsline {figure}{\numberline {4.17}{\ignorespaces GUI Design: Secure User Authentication Portal}}{48}{figure.4.17}%
-\contentsline {figure}{\numberline {4.18}{\ignorespaces GUI Design: Superadmin Global Compliance Dashboard}}{48}{figure.4.18}%
-\contentsline {figure}{\numberline {4.19}{\ignorespaces GUI Design: Framework and Wazuh Rule Mapping Interface}}{49}{figure.4.19}%
-\contentsline {figure}{\numberline {4.20}{\ignorespaces GUI Design: Monitored Endpoints and Telemetry Synchronization Status}}{49}{figure.4.20}%
-\contentsline {figure}{\numberline {4.21}{\ignorespaces GUI Design: System Admin Operational Dashboard}}{50}{figure.4.21}%
-\contentsline {figure}{\numberline {4.22}{\ignorespaces GUI Design: Security Auditor Read-Only Compliance View}}{50}{figure.4.22}%
-\contentsline {figure}{\numberline {4.23}{\ignorespaces GUI Design: Auditor Report Generation Modal}}{50}{figure.4.23}%
-\contentsline {figure}{\numberline {4.24}{\ignorespaces System Output: Automated PDF Report - Cover and Executive Summary}}{51}{figure.4.24}%
-\contentsline {figure}{\numberline {4.25}{\ignorespaces System Output: Automated PDF Report - Aggregated Framework Control Matrix}}{51}{figure.4.25}%
-\contentsline {figure}{\numberline {4.26}{\ignorespaces System Output: Automated PDF Report - Technical Wazuh Telemetry Evidence}}{52}{figure.4.26}%
+\contentsline {figure}{\numberline {4.17}{\ignorespaces GUI Design: Secure User Authentication Portal.}}{48}{figure.4.17}%
+\contentsline {figure}{\numberline {4.18}{\ignorespaces GUI Design: Time-based One-Time Password (TOTP) Verification.}}{48}{figure.4.18}%
+\contentsline {figure}{\numberline {4.19}{\ignorespaces GUI Design: Superadmin Global Compliance Dashboard (Dark Mode).}}{49}{figure.4.19}%
+\contentsline {figure}{\numberline {4.20}{\ignorespaces GUI Design: Superadmin Global Compliance Dashboard (Light Mode).}}{49}{figure.4.20}%
+\contentsline {figure}{\numberline {4.21}{\ignorespaces GUI Design: RBAC User and System Administrator Management Interface.}}{50}{figure.4.21}%
+\contentsline {figure}{\numberline {4.22}{\ignorespaces GUI Design: Security Auditor Read-Only Compliance View.}}{50}{figure.4.22}%
+\contentsline {figure}{\numberline {4.23}{\ignorespaces System Output: Automated PDF Audit Dossier Generation.}}{51}{figure.4.23}%
+\contentsline {figure}{\numberline {4.24}{\ignorespaces System Output: SMTP Alert for Rule Violation.}}{52}{figure.4.24}%
 \addvspace {10\p@ }
 \contentsline {figure}{\numberline {5.1}{\ignorespaces Implemented N-Tier System Architecture}}{55}{figure.5.1}%
 \contentsline {figure}{\numberline {5.2}{\ignorespaces Implemented Service Topology and Container Networking}}{55}{figure.5.2}%
 \addvspace {10\p@ }
 \addvspace {10\p@ }
 \addvspace {10\p@ }
+\contentsline {figure}{\numberline {A.1}{\ignorespaces ICMS authentication portal.}}{86}{figure.A.1}%
+\contentsline {figure}{\numberline {A.2}{\ignorespaces Two-factor authentication (2FA) verification interface.}}{87}{figure.A.2}%
+\contentsline {figure}{\numberline {A.3}{\ignorespaces Password recovery interface for credential resets.}}{87}{figure.A.3}%
+\contentsline {figure}{\numberline {A.4}{\ignorespaces The Regulatory Frameworks and Policy configuration interface.}}{88}{figure.A.4}%
+\contentsline {figure}{\numberline {A.5}{\ignorespaces Detailed view of the regulatory framework requirements mapping interface.}}{88}{figure.A.5}%
+\contentsline {figure}{\numberline {A.6}{\ignorespaces Interface for raw scan results and endpoint telemetry mapping.}}{89}{figure.A.6}%
+\contentsline {figure}{\numberline {A.7}{\ignorespaces Audit Report Generation interface for compliance dossiers.}}{90}{figure.A.7}%
+\contentsline {figure}{\numberline {A.8}{\ignorespaces Audit Trail PDF for log tracking.}}{90}{figure.A.8}%
+\contentsline {figure}{\numberline {A.9}{\ignorespaces System Settings interface for managing global configurations and thresholds.}}{91}{figure.A.9}%
+\contentsline {figure}{\numberline {A.10}{\ignorespaces Expanded user management interface for configuring strict RBAC hierarchies.}}{91}{figure.A.10}%

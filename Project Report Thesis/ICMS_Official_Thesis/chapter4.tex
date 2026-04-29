@@ -1001,89 +1001,74 @@ Notice the disjoint (\textbf{d}) specialization: a generic User Account splits s
 
 
 \section{Graphical User Interface (GUI) Design}
-For the frontend, I built a React Single Page Application (SPA). I wanted the interface to be clean and data-focused so analysts don't get overwhelmed by noise. The screenshots below show the default dark mode, though the app supports theme switching.
+The frontend is a React Single Page Application (SPA) designed to present compliance telemetry without visual clutter. The screenshots below demonstrate the default dark mode, though the application supports dynamic theme switching.
 
 \subsection{Authentication and Identity Management}
-The login screen is bare-bones by design. The user submits their credentials, the backend validates the JWT, and they get routed to their specific dashboard based on their role.
+The authentication portal validates user credentials and issues a JSON Web Token (JWT). The application then initializes the dashboard corresponding to the user's RBAC role.
 
 \begin{figure}[H]
     \centering
-    \framebox{\rule{0pt}{2.5in} \rule{0.8\textwidth}{0pt}} 
-    % INSTRUCTION: Replace the \framebox line above with: \includegraphics[width=0.8\textwidth]{your_login_screenshot.png}
-    \caption{GUI Design: Secure User Authentication Portal}
+    \includegraphics[width=1.0\textwidth]{"images/login.png"}
+    \caption{GUI Design: Secure User Authentication Portal.}
     \label{fig:gui_login}
 \end{figure}
 
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1.0\textwidth]{"images/2fa.png"}
+    \caption{GUI Design: Time-based One-Time Password (TOTP) Verification.}
+    \label{fig:gui_2fa}
+\end{figure}
+
 \subsection{Superadmin Configuration Portal}
-Superadmins have full read/write access. Their dashboard gives them complete control over the Wazuh pipeline, the framework rules, and user accounts. 
+Superadmins possess full administrative privileges, including configuration of the Wazuh pipeline, regulatory mapping rules, and user account provisioning. The interface supports dynamic theming for varied lighting conditions.
 
 \begin{figure}[H]
     \centering
-    \framebox{\rule{0pt}{3in} \rule{0.9\textwidth}{0pt}}
-    \caption{GUI Design: Superadmin Global Compliance Dashboard}
-    \label{fig:gui_superadmin_dashboard}
+    \includegraphics[width=1.0\textwidth]{"images/superadmin dashboard dark.png"}
+    \caption{GUI Design: Superadmin Global Compliance Dashboard (Dark Mode).}
+    \label{fig:gui_superadmin_dark}
 \end{figure}
 
 \begin{figure}[H]
     \centering
-    \framebox{\rule{0pt}{3in} \rule{0.9\textwidth}{0pt}}
-    \caption{GUI Design: Framework and Wazuh Rule Mapping Interface}
-    \label{fig:gui_superadmin_mapping}
+    \includegraphics[width=1.0\textwidth]{"images/superadmin dashboard1.png"}
+    \caption{GUI Design: Superadmin Global Compliance Dashboard (Light Mode).}
+    \label{fig:gui_superadmin_light}
 \end{figure}
 
 \begin{figure}[H]
     \centering
-    \framebox{\rule{0pt}{3in} \rule{0.9\textwidth}{0pt}}
-    \caption{GUI Design: Monitored Endpoints and Telemetry Synchronization Status}
-    \label{fig:gui_superadmin_endpoints}
+    \includegraphics[width=1.0\textwidth]{"images/manage admins1.png"}
+    \caption{GUI Design: RBAC User and System Administrator Management Interface.}
+    \label{fig:gui_manage_admins}
 \end{figure}
 
-\subsection{Admin and Auditor Workspaces}
-The React app changes what it renders depending on who logs in. System Admins can manage endpoints but can't touch the compliance frameworks. Security Auditors get a strict read-only view, ensuring they can't accidentally alter the audit evidence.
+\subsection{Auditor Workspace (RBAC Enforcement)}
+The application modifies the render tree based on the authenticated role. Auditors are restricted to a read-only interface to prevent unauthorized modifications to audit evidence or framework rules. Configuration and management modules are omitted from this view.
 
 \begin{figure}[H]
     \centering
-    \framebox{\rule{0pt}{2.5in} \rule{0.85\textwidth}{0pt}}
-    \caption{GUI Design: System Admin Operational Dashboard}
-    \label{fig:gui_admin_dashboard}
-\end{figure}
-
-\begin{figure}[H]
-    \centering
-    \framebox{\rule{0pt}{2.5in} \rule{0.85\textwidth}{0pt}}
-    \caption{GUI Design: Security Auditor Read-Only Compliance View}
+    \includegraphics[width=1.0\textwidth]{"images/auditor dashboard.png"}
+    \caption{GUI Design: Security Auditor Read-Only Compliance View.}
     \label{fig:gui_auditor_dashboard}
 \end{figure}
 
-\begin{figure}[H]
-    \centering
-    \framebox{\rule{0pt}{2.5in} \rule{0.85\textwidth}{0pt}}
-    \caption{GUI Design: Auditor Report Generation Modal}
-    \label{fig:gui_auditor_export}
-\end{figure}
-
-\subsection{Automated PDF Audit Artifacts}
-External auditors need physical files, so I built a PDF rendering engine on the backend. It aggregates the PostgreSQL data and generates formal reports like the ones below.
+\subsection{Automated Audit Artifacts and Notifications}
+The system provides PDF audit reports for external reviewers and SMTP alerts for administrators. The backend service aggregates PostgreSQL data to generate these artifacts and sends notifications when compliance thresholds are breached.
 
 \begin{figure}[H]
     \centering
-    \framebox{\rule{0pt}{3.5in} \rule{0.65\textwidth}{0pt}}
-    \caption{System Output: Automated PDF Report - Cover and Executive Summary}
-    \label{fig:gui_pdf_cover}
+    \includegraphics[width=1.0\textwidth]{"images/compliance report pdf.png"}
+    \caption{System Output: Automated PDF Audit Dossier Generation.}
+    \label{fig:gui_pdf_report}
 \end{figure}
 
 \begin{figure}[H]
     \centering
-    \framebox{\rule{0pt}{3.5in} \rule{0.65\textwidth}{0pt}}
-    \caption{System Output: Automated PDF Report - Aggregated Framework Control Matrix}
-    \label{fig:gui_pdf_matrix}
-\end{figure}
-
-\begin{figure}[H]
-    \centering
-    \framebox{\rule{0pt}{3.5in} \rule{0.65\textwidth}{0pt}}
-    \caption{System Output: Automated PDF Report - Technical Wazuh Telemetry Evidence}
-    \label{fig:gui_pdf_telemetry}
+    \includegraphics[width=1.0\textwidth]{"images/email.png"}
+    \caption{System Output: SMTP Alert for Rule Violation.}
+    \label{fig:gui_email_alert}
 \end{figure}
 
 
