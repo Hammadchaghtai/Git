@@ -539,6 +539,10 @@ class SystemSettings(models.Model):
     )
     critical_email_alerts = models.BooleanField(default=True)
     weekly_report = models.BooleanField(default=False)
+    total_reports_generated = models.PositiveIntegerField(
+        default=0,
+        help_text="Global count of all compliance reports generated across all users.",
+    )
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:

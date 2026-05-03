@@ -1,6 +1,7 @@
 import { useEffect, useState, useMemo } from 'react';
 import API from '../api/axios';
 import Toast from '../components/Toast';
+import { useAuth } from '../context/AuthContext';
 import { 
   CheckCircle, AlertCircle, Download, Loader2, FileText, Database, 
   History, Activity, Calendar, Layout, User, ListFilter, ArrowUpDown, RefreshCw, XCircle,
@@ -35,15 +36,12 @@ export default function Reports() {
   const [sortOrder, setSortOrder] = useState('latest');
   const [isStatusOpen, setIsStatusOpen] = useState(false);
   const [reportCount, setReportCount] = useState(0);
-  const [userRole, setUserRole] = useState('admin'); 
+  const { role: userRole } = useAuth();
 
   useEffect(() => {
-    // Load local report count
-    setReportCount(parseInt(localStorage.getItem('grc_report_count') || '0', 10));
-    
-    // Fetch profile to check role
-    API.get('users/me/').then((res) => {
-      setUserRole(res.data.role || 'admin');
+    // Load global report count from database
+    API.get('settings/').then((res) => {
+      setReportCount(res.data.total_reports_generated || 0);
     }).catch(() => {});
 
     API.get('frameworks/').then((res) => {
@@ -135,6 +133,8 @@ export default function Reports() {
       doc.setFontSize(12);
       doc.setFont(undefined, 'normal');
       doc.text(`Overall Compliance Score:  ${score}%`, 14, y);
+      y += 8;
+      doc.text(`Departmental Compliance Score:  ${data.departmental_compliance_score ?? 0}%`, 14, y);
       y += 8;
       doc.text(`System Status:  ${status}`, 14, y);
       y += 8;
@@ -319,9 +319,12 @@ export default function Reports() {
       // Refresh logs list to show the new entry
       API.get('audit-logs/?page_size=50').then(res => setAuditLogs(res.data.results || res.data || []));
 
-      const newCount = reportCount + 1;
-      localStorage.setItem('grc_report_count', newCount.toString());
-      setReportCount(newCount);
+      // Increment the global database counter
+      API.post('increment-report-count/').then((res) => {
+        setReportCount(res.data.total_reports_generated);
+      }).catch(() => {
+        setReportCount(prev => prev + 1);
+      });
       setToast({ msg: 'Compliance report generated and downloaded.', type: 'success' });
     } catch (err) {
       console.error('PDF Error:', err);
@@ -400,12 +403,14 @@ export default function Reports() {
 
       setToast({ msg: 'Audit trail log exported successfully.', type: 'success' });
     } catch (err) {
+      const errMsg = err?.message || 'Unknown error';
       // Log the Failure to Audit Trail
       API.post('audit-logs/', {
         action: 'Failed to Export System Audit Trail',
         module: 'Audit Trail',
         status: 'Failed'
       }).catch(() => {});
+      logFailure(`Audit Trail PDF export failed: ${errMsg}`, 'Audit Trail');
 
       setToast({ msg: 'Failed to generate audit report.', type: 'error' });
     } finally {
@@ -414,12 +419,17 @@ export default function Reports() {
   };
 
 
-  const resetCount = () => {
+  const resetCount = async () => {
     setIsResetting(true);
-    localStorage.setItem('grc_report_count', '0');
-    setReportCount(0);
-    setToast({ msg: 'Report counter has been successfully reset to zero.', type: 'success' });
-    setTimeout(() => setIsResetting(false), 600);
+    try {
+      await API.post('reset-report-count/');
+      setReportCount(0);
+      setToast({ msg: 'Report counter has been successfully reset to zero.', type: 'success' });
+    } catch {
+      setToast({ msg: 'Reset failed. Only Super Admin can reset the counter.', type: 'error' });
+    } finally {
+      setTimeout(() => setIsResetting(false), 600);
+    }
   };
 
   const filteredLogs = useMemo(() => {
@@ -429,7 +439,11 @@ export default function Reports() {
     if (statusFilter !== 'all') {
       result = result.filter(l => {
         const a = (l.action || '').toLowerCase();
-        const isSystem = !l.user || 
+        const rawStatus = (l.status || '').toLowerCase();
+        
+        // System logs are things like invites, revokes, blocks, etc.
+        // We want to reclassify them as 'System' UNLESS they explicitly failed.
+        const isSystemAction = !l.user || 
                          a.includes('admin') || 
                          a.includes('access') || 
                          a.includes('invite') || 
@@ -437,11 +451,17 @@ export default function Reports() {
                          a.includes('restore') || 
                          a.includes('expired') ||
                          a.includes('credential') ||
-                         a.includes('password');
+                         a.includes('password') ||
+                         a.includes('block') ||
+                         a.includes('reset') ||
+                         a.includes('account');
+        
+        const isFailed = rawStatus === 'failed' || rawStatus === 'alert';
+        const isSystem = isSystemAction && !isFailed;
         
         if (statusFilter === 'system') return isSystem;
         if (isSystem) return false; 
-        return (l.status || '').toLowerCase() === statusFilter.toLowerCase();
+        return rawStatus === statusFilter.toLowerCase();
       });
     }
 
@@ -618,8 +638,8 @@ export default function Reports() {
               </div>
 
               <div className="mt-8 relative overflow-hidden rounded-2xl bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 p-6 flex flex-col justify-center items-center text-center">
-                {userRole === 'admin' && (
-                  <button onClick={resetCount} className="absolute top-3 right-3 p-1.5 text-slate-400 hover:text-brand-600 bg-white dark:bg-slate-800 rounded-lg shadow-sm border border-slate-200 dark:border-slate-700 transition-all z-20" title="Reset Counter">
+                {userRole === 'super_admin' && (
+                  <button onClick={resetCount} className="absolute top-3 right-3 p-1.5 text-slate-400 hover:text-red-500 bg-white dark:bg-slate-800 rounded-lg shadow-sm border border-slate-200 dark:border-slate-700 transition-all z-20" title="Reset Counter (Super Admin Only)">
                     <RefreshCw className={`w-3.5 h-3.5 ${isResetting ? 'animate-spin [animation-duration:0.4s]' : ''}`} />
                   </button>
                 )}
@@ -727,7 +747,8 @@ export default function Reports() {
                   let description = log.user ? `Action performed by ${log.user}` : 'Triggered by System Automation';
 
                   const lowerAction = actionTitle.toLowerCase();
-                  const isSystemAction = !log.user || 
+                  
+                  const isActionSystemKeywords = !log.user || 
                                        lowerAction.includes('admin') || 
                                        lowerAction.includes('access') || 
                                        lowerAction.includes('invite') || 
@@ -735,7 +756,14 @@ export default function Reports() {
                                        lowerAction.includes('restore') || 
                                        lowerAction.includes('expired') ||
                                        lowerAction.includes('credential') ||
-                                       lowerAction.includes('password');
+                                       lowerAction.includes('password') ||
+                                       lowerAction.includes('block') ||
+                                       lowerAction.includes('reset') ||
+                                       lowerAction.includes('account');
+
+                  // If it's a failed action, keep it failed. Otherwise, if it matches system keywords, make it 'system'.
+                  const isFailedStatus = status === 'failed' || status === 'alert';
+                  const isSystemAction = isActionSystemKeywords && !isFailedStatus;
 
                   if (isSystemAction) {
                     status = 'system';

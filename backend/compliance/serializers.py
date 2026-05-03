@@ -327,6 +327,7 @@ class SystemSettingsSerializer(serializers.ModelSerializer):
             "audit_log_retention",
             "critical_email_alerts",
             "weekly_report",
+            "total_reports_generated",
             "updated_at",
         ]
 
@@ -437,9 +438,11 @@ class CustomTokenObtainPairSerializer(serializers.Serializer):
             try:
                 profile = user.profile
                 if profile.account_expiry_date and profile.account_expiry_date < timezone.now():
-                    # Auto-deactivate the user for good measure
-                    user.is_active = False
-                    user.save(update_fields=["is_active"])
+                    if user.is_active:
+                        user.is_active = False
+                        user.save(update_fields=["is_active"])
+                        from compliance.models import AuditLog
+                        AuditLog.objects.create(user=user, action="account automatically expired", module="Auth", status="System")
                     raise AuthenticationFailed("Account has expired. Contact your Super Administrator.")
             except Exception:
                 pass

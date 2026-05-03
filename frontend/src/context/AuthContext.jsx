@@ -43,6 +43,18 @@ export function AuthProvider({ children }) {
     else localStorage.removeItem('grc_user');
   }, [user]);
 
+  // Background Polling for Real-Time Logout
+  useEffect(() => {
+    if (!user) return;
+    const intervalId = setInterval(() => {
+      API.get('auth/me/').catch(() => {
+        // If API fails (e.g. 401 Unauthorized or 403 Forbidden due to expiry/revoke)
+        logout();
+      });
+    }, 5000); // 5 seconds — near-instant logout on expiry/revoke
+    return () => clearInterval(intervalId);
+  }, [user]);
+
   /**
    * Step 1: Send credentials to /api/auth/token/ to get JWT tokens.
    * Returns { success, role, username, needs_setup } on success.

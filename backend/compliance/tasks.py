@@ -273,3 +273,118 @@ Timestamp: {timezone.now().strftime('%Y-%m-%d %H:%M:%S UTC')}
         )
     except Exception as exc:
         logger.error(f"❌ Failed to send critical alert email: {exc}")
+
+
+@shared_task(name="compliance.archive_audit_logs")
+def archive_audit_logs():
+    """
+    Deletes AuditLog entries older than the retention policy set in SystemSettings.
+    """
+    from compliance.models import AuditLog, SystemSettings
+    from datetime import timedelta
+    from django.utils import timezone
+    from dateutil.relativedelta import relativedelta
+
+    settings = SystemSettings.load()
+    retention = settings.audit_log_retention
+
+    cutoff_date = timezone.now()
+    if retention == "6months":
+        cutoff_date -= relativedelta(months=6)
+    elif retention == "1year":
+        cutoff_date -= relativedelta(years=1)
+    elif retention == "3years":
+        cutoff_date -= relativedelta(years=3)
+    else:
+        logger.warning(f"Unknown retention policy {retention}. Defaulting to 1 year.")
+        cutoff_date -= relativedelta(years=1)
+
+    old_logs = AuditLog.objects.filter(timestamp__lt=cutoff_date)
+    deleted_count, _ = old_logs.delete()
+
+    if deleted_count > 0:
+        logger.info(f"🗑️ Archived (deleted) {deleted_count} audit logs older than {retention}.")
+        AuditLog.objects.create(
+            action=f"Archived {deleted_count} logs older than {retention}.",
+            module="System",
+            status="System"
+        )
+    else:
+        logger.info("No old audit logs to archive.")
+    return deleted_count
+
+
+@shared_task(name="compliance.send_weekly_report")
+def send_weekly_report():
+    """
+    Sends a weekly compliance summary email to Super Admins every Monday,
+    if the feature is enabled in SystemSettings.
+    """
+    from compliance.models import SystemSettings, SMTPSettings, ComplianceScan, ScanResult
+    from django.contrib.auth.models import User
+    from compliance.models import UserProfile
+    from django.db.models import Avg
+    from django.utils import timezone
+
+    settings = SystemSettings.load()
+    if not settings.weekly_report:
+        logger.info("Weekly report is disabled in settings. Skipping.")
+        return
+
+    smtp = SMTPSettings.load()
+    if not smtp.username or not smtp.password:
+        logger.error("❌ SMTP not configured — cannot send weekly report.")
+        return
+
+    super_admins = User.objects.filter(
+        profile__role=UserProfile.Role.SUPER_ADMIN,
+        is_active=True,
+        email__isnull=False,
+    ).exclude(email="")
+
+    recipients = [u.email for u in super_admins]
+    if not recipients:
+        logger.warning("⚠️  No super_admin emails found — skipping weekly report.")
+        return
+
+    # Calculate statistics
+    avg_score = ComplianceScan.objects.aggregate(Avg('overall_score'))['overall_score__avg'] or 0.0
+    failed_controls = ScanResult.objects.filter(is_passed=False).count()
+    total_agents = ComplianceScan.objects.values('agent_id').distinct().count()
+
+    subject = "📊 Weekly GRC Compliance Report"
+    body = f"""\
+WEEKLY GRC COMPLIANCE SUMMARY
+{'═' * 40}
+
+Here is your automated weekly compliance report:
+
+• Overall Compliance Score: {avg_score:.1f}%
+• Active Agents Scanned: {total_agents}
+• Total Failed Controls Detected: {failed_controls}
+
+Please log in to the GRC Dashboard for a detailed breakdown.
+
+This is an automated report generated on {timezone.now().strftime('%Y-%m-%d %H:%M:%S UTC')}.
+"""
+
+    msg = MIMEMultipart()
+    msg["From"] = smtp.username
+    msg["To"] = ", ".join(recipients)
+    msg["Subject"] = subject
+    msg.attach(MIMEText(body, "plain"))
+
+    try:
+        if smtp.use_tls:
+            server = smtplib.SMTP(smtp.host, smtp.port)
+            server.starttls()
+        else:
+            server = smtplib.SMTP(smtp.host, smtp.port)
+
+        server.login(smtp.username, smtp.password)
+        server.sendmail(smtp.username, recipients, msg.as_string())
+        server.quit()
+
+        logger.info(f"✅ Weekly report sent to {len(recipients)} super_admin(s).")
+    except Exception as exc:
+        logger.error(f"❌ Failed to send weekly report email: {exc}")

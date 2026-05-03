@@ -165,6 +165,7 @@ function MyProfileTab({ setToast }) {
       if (pwd.oldPassword || pwd.newPassword) {
         if (pwd.newPassword !== pwd.confirmPassword) {
            setToast({ msg: 'New passwords do not match!', type: 'error' });
+           logFailure(`Failed to change password: New passwords do not match for '${profile.displayName}'`, 'Settings');
            setLoading(false);
            return;
         }

@@ -117,4 +117,16 @@ urlpatterns = [
         views.SudoVerifyView.as_view(),
         name="sudo-verify",
     ),
+
+    # Report Counter
+    path(
+        "increment-report-count/",
+        views.IncrementReportCountView.as_view(),
+        name="increment-report-count",
+    ),
+    path(
+        "reset-report-count/",
+        views.ResetReportCountView.as_view(),
+        name="reset-report-count",
+    ),
 ]

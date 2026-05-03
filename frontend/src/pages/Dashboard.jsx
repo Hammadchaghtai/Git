@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import API from '../api/axios';
 import { useAuth } from '../context/AuthContext';
 import Toast from '../components/Toast';
+import { logFailure } from '../utils/logFailure';
 import {
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer,
   PieChart, Pie, Cell,
@@ -67,7 +68,9 @@ export default function Dashboard() {
       setToast({ msg: 'Scan completed successfully! Dashboard data refreshed.', type: 'success' });
       fetchDashboard();
     } catch (err) {
-      setToast({ msg: err.response?.data?.error || 'Scan failed. Please try again.', type: 'error' });
+      const errMsg = err.response?.data?.error || 'Scan failed. Please try again.';
+      setToast({ msg: errMsg, type: 'error' });
+      logFailure(`Manual Wazuh scan failed: ${errMsg}`, 'Scan');
     } finally {
       setScanning(false);
     }
@@ -89,7 +92,7 @@ export default function Dashboard() {
     );
   }
 
-  const { total_agents_scanned, overall_compliance_score, framework_scores, top_failed_controls, recent_scans, pc_scores, department_scores } = data;
+  const { total_agents_scanned, overall_compliance_score, departmental_compliance_score, framework_scores, top_failed_controls, recent_scans, pc_scores, department_scores } = data;
 
   // Calculate dynamic limit based on vertical rows in the left column
   const leftRows = Math.ceil((department_scores?.length || 0) / 3) + Math.ceil((pc_scores?.length || 0) / 3);
@@ -130,11 +133,14 @@ export default function Dashboard() {
       </div>
 
       {/* ── Stat Cards Row ──────────────────── */}
-      <div className="mb-10 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-5">
+      <div className="mb-10 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-6">
         <Link to="/scans" className="block no-underline">
           <StatCard icon={Activity} label="Active PCs" value={total_agents_scanned} color="text-brand-600" bgColor="bg-brand-50" />
         </Link>
         <StatCard icon={ShieldCheck} label="Overall Score" value={`${overall_compliance_score}%`} color="text-emerald-600" bgColor="bg-emerald-50" />
+        <Link to="/policies" className="block no-underline">
+          <StatCard icon={ShieldCheck} label="Dept Score" value={`${departmental_compliance_score ?? 0}%`} color="text-purple-600" bgColor="bg-purple-50" />
+        </Link>
         <Link to="/frameworks" className="block no-underline">
           <StatCard icon={ShieldAlert} label="Frameworks" value={framework_scores.length} color="text-indigo-600" bgColor="bg-indigo-50" />
         </Link>
@@ -282,7 +288,9 @@ export default function Dashboard() {
           {/* Departments row */}
           {department_scores && department_scores.length > 0 && (
             <div className="mb-6">
-              <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3">Departments</h4>
+              <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3">
+                Departments <span className="text-brand-500">({department_scores.length} Total)</span>
+              </h4>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 {department_scores.map((dept, idx) => {
                   let scoreColor = 'text-emerald-600 dark:text-emerald-400';
@@ -303,7 +311,9 @@ export default function Dashboard() {
           {/* PCs row */}
           {pc_scores && pc_scores.length > 0 && (
             <div>
-              <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3">Top PCs</h4>
+              <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3">
+                All PCs <span className="text-brand-500">({pc_scores.length} Total)</span>
+              </h4>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 {pc_scores.map((pc, idx) => {
                   let scoreColor = 'text-emerald-600 dark:text-emerald-400';
