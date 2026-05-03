@@ -15,7 +15,7 @@ from __future__ import annotations
 from django.core.management.base import BaseCommand
 from django.utils import timezone
 
-from compliance.models import ComplianceScan, ScanResult, WazuhMapping, AuditLog
+from compliance.models import ComplianceScan, ScanResult, WazuhMapping, AuditLog, AgentProfile
 from compliance.services.wazuh_client import WazuhAPIClient, WazuhAPIError
 
 
@@ -103,6 +103,12 @@ class Command(BaseCommand):
             agent_id = agent.get("id", "unknown")
             agent_name = agent.get("name", "unknown")
             agent_ip = agent.get("ip", "—")
+
+            # ── Save/Update AgentProfile ──────────────────
+            AgentProfile.objects.update_or_create(
+                agent_id=agent_id,
+                defaults={"wazuh_name": agent_name},
+            )
 
             self._header(f"Agent {agent_id}  ·  {agent_name}  ·  {agent_ip}")
 

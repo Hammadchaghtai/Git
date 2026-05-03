@@ -58,6 +58,7 @@ export default function App() {
             <Route path="scans"    element={<Scans />} />
             <Route path="frameworks" element={<Frameworks />} />
             <Route path="policies" element={<Policies />} />
+            <Route path="policies/:departmentId" element={<Policies />} />
 
             <Route path="reports"  element={<Reports />} />
             <Route path="settings" element={<Settings />} />

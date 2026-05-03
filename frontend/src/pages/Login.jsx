@@ -3,6 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { Shield, Eye, EyeOff, Sun, Moon } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
+import { logFailure } from '../utils/logFailure';
 
 export default function Login() {
   const navigate = useNavigate();
@@ -32,6 +33,7 @@ export default function Login() {
       navigate('/verify-otp');
     } else {
       setError(result.message || 'Invalid Username or Password!');
+      logFailure(`Failed login attempt for user '${username}'`, 'Auth');
     }
     setLoading(false);
   };

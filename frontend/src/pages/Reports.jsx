@@ -6,6 +6,7 @@ import {
   History, Activity, Calendar, Layout, User, ListFilter, ArrowUpDown, RefreshCw, XCircle,
   UserPlus, UserMinus, UserCheck, UserX, Lock, Trash2, Zap
 } from 'lucide-react';
+import { logFailure } from '../utils/logFailure';
 
 const STATUS_STYLES = {
   success: { badge: 'bg-emerald-50 text-emerald-600 dark:bg-emerald-500/10 dark:text-emerald-400', iconBg: 'bg-emerald-100 text-emerald-600 dark:bg-emerald-500/20 dark:text-emerald-400', icon: CheckCircle },
@@ -16,8 +17,11 @@ const STATUS_STYLES = {
 
 export default function Reports() {
   const [frameworks, setFrameworks] = useState([]);
-  const [selectedFw, setSelectedFw] = useState('');
+  const [departments, setDepartments] = useState([]);
+  const [selectedFw, setSelectedFw] = useState('all');
+  const [selectedDept, setSelectedDept] = useState('all');
   const [isFwOpen, setIsFwOpen] = useState(false);
+  const [isDeptOpen, setIsDeptOpen] = useState(false);
   const [isResetting, setIsResetting] = useState(false);
   const [auditLogs, setAuditLogs] = useState([]);
   const [loadingLogs, setLoadingLogs] = useState(true);
@@ -45,7 +49,11 @@ export default function Reports() {
     API.get('frameworks/').then((res) => {
       const fws = res.data.results || res.data;
       setFrameworks(fws || []);
-      if (fws && fws.length > 0) setSelectedFw(fws[0].id);
+      // Default is already 'all'
+    }).catch(() => {});
+
+    API.get('departments/?page_size=100').then((res) => {
+      setDepartments(res.data.results || res.data || []);
     }).catch(() => {});
 
     API.get('audit-logs/?page_size=50')
@@ -55,23 +63,44 @@ export default function Reports() {
   }, []);
 
   const handleDownload = async () => {
-    if (!selectedFw) return;
     setGenerating(true);
     
     try {
       const { jsPDF } = await import('jspdf');
       await import('jspdf-autotable');
 
-      // Fetch fresh data for the report
-      const { data } = await API.get('dashboard-summary/');
+      // Fetch fresh data (pass framework_id too so backend filters dept scores by framework)
+      const fwParam = selectedFw !== 'all' ? `&framework_id=${selectedFw}` : '';
+      const { data } = await API.get(`dashboard-summary/?department_id=${selectedDept}${fwParam}`);
       const doc = new jsPDF();
       const now = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
 
       // Determine report scope
-      const isAll = selectedFw === 'all';
-      const selectedFwData = isAll 
+      const isAllFw = selectedFw === 'all';
+      const isAllDept = selectedDept === 'all';
+      const selectedFwData = isAllFw 
         ? data.framework_scores 
         : data.framework_scores.filter(f => f.framework_id.toString() === selectedFw.toString());
+
+      // ── Filter department/policy/PC data by selected dept ──
+      const deptLabel = isAllDept 
+        ? 'All Departments' 
+        : (departments.find(d => d.id.toString() === selectedDept.toString())?.name || 'Department');
+
+      // Filter department_scores to selected dept if needed
+      const filteredDeptScores = isAllDept
+        ? (data.department_scores || [])
+        : (data.department_scores || []).filter(d => d.department === deptLabel);
+
+      // Filter failed_policies_by_dept to selected dept if needed
+      const filteredFailedPolicies = isAllDept
+        ? (data.failed_policies_by_dept || [])
+        : (data.failed_policies_by_dept || []).filter(d => d.department === deptLabel);
+
+      // Filter pc_scores to selected dept if needed
+      const filteredPcScores = isAllDept
+        ? (data.pc_scores || [])
+        : (data.pc_scores || []).filter(pc => pc.department === deptLabel);
 
       // ── Header ──
       doc.setFillColor(15, 23, 42); 
@@ -86,13 +115,14 @@ export default function Reports() {
       doc.setTextColor(148, 163, 184);
       // Dynamically show Admin or Auditor based on userRole state
       const roleLabel = userRole.charAt(0).toUpperCase() + userRole.slice(1);
-      doc.text(`Generated: ${now}  |  Platform: GRC Identity Hub  |  Auth: ${roleLabel}`, 14, 28);
+      const fwLabel = isAllFw ? 'All Frameworks' : (selectedFwData[0]?.framework_name || 'Framework');
+      doc.text(`Generated: ${now}  |  Dept: ${deptLabel}  |  Framework: ${fwLabel}  |  Auth: ${roleLabel}`, 14, 28);
 
       let y = 50;
 
       // ── Executive Summary Section ──
       const threshold = data.passing_threshold || 90;
-      const score = isAll ? data.overall_compliance_score : (selectedFwData[0]?.score || 0);
+      const score = isAllFw ? data.overall_compliance_score : (selectedFwData[0]?.score || 0);
       const status = score >= threshold ? 'Safe' : 'Critical';
       const agents = data.total_agents_scanned || 0;
 
@@ -117,7 +147,7 @@ export default function Reports() {
       doc.setTextColor(15, 23, 42);
       doc.setFontSize(14);
       doc.setFont(undefined, 'bold');
-      doc.text(isAll ? 'Framework Compliance Status (Combined)' : `${selectedFwData[0]?.framework_name || 'Framework'} Compliance Status`, 14, y);
+      doc.text(isAllFw ? 'Framework Compliance Status (Combined)' : `${selectedFwData[0]?.framework_name || 'Framework'} Compliance Status`, 14, y);
       y += 5;
 
       doc.autoTable({
@@ -137,7 +167,7 @@ export default function Reports() {
       y = doc.lastAutoTable.finalY + 15;
 
       // ── Top Failed Controls ──
-      const failedControls = isAll 
+      const failedControls = isAllFw 
         ? data.top_failed_controls 
         : data.top_failed_controls.filter(c => {
             const fwNameInLog = (c.framework_name || '').trim().toLowerCase();
@@ -169,6 +199,104 @@ export default function Reports() {
         });
       }
 
+      // ── Department Summary ──
+      if (filteredDeptScores.length > 0) {
+        y = doc.lastAutoTable ? doc.lastAutoTable.finalY + 15 : y;
+        if (y > 250) { doc.addPage(); y = 20; }
+
+        doc.setFontSize(14);
+        doc.setFont(undefined, 'bold');
+        doc.setTextColor(15, 23, 42);
+        doc.text('Department Summary (Policy-Based)', 14, y);
+        y += 5;
+
+        doc.autoTable({
+          startY: y,
+          head: [['Department', 'PCs', 'Total Controls', 'Failed Controls', 'Score']],
+          body: filteredDeptScores.map((dept) => [
+            dept.department,
+            dept.pc_count,
+            dept.total_controls ?? '-',
+            dept.failed_controls ?? '-',
+            `${dept.score}%`
+          ]),
+          theme: 'striped',
+          headStyles: { fillColor: [79, 70, 229], textColor: [255, 255, 255], fontStyle: 'bold' },
+          styles: { fontSize: 9, cellPadding: 3 },
+          didParseCell: (hookData) => {
+            if (hookData.column.index === 4 && hookData.section === 'body') {
+              const score = parseFloat(hookData.cell.raw);
+              hookData.cell.styles.fontStyle = 'bold';
+              hookData.cell.styles.textColor = score >= (data.passing_threshold || 90) ? [16, 185, 129] : score >= 50 ? [245, 158, 11] : [239, 68, 68];
+            }
+          }
+        });
+      }
+
+      // ── Failed Policies by Department ──
+      if (filteredFailedPolicies.length > 0) {
+        y = doc.lastAutoTable ? doc.lastAutoTable.finalY + 15 : y;
+        if (y > 250) { doc.addPage(); y = 20; }
+
+        doc.setFontSize(14);
+        doc.setFont(undefined, 'bold');
+        doc.setTextColor(15, 23, 42);
+        doc.text('Failed Policies by Department', 14, y);
+        y += 5;
+
+        const failedPolicyRows = [];
+        filteredFailedPolicies.forEach(dept => {
+          dept.failed_policies.forEach((policy, i) => {
+            failedPolicyRows.push([
+              i === 0 ? dept.department : '',
+              policy
+            ]);
+          });
+        });
+
+        doc.autoTable({
+          startY: y,
+          head: [['Department', 'Failed Policy']],
+          body: failedPolicyRows,
+          theme: 'striped',
+          headStyles: { fillColor: [220, 38, 38], textColor: [255, 255, 255], fontStyle: 'bold' },
+          styles: { fontSize: 9, cellPadding: 3 },
+          columnStyles: { 0: { fontStyle: 'bold', cellWidth: 50 } }
+        });
+      }
+
+      // ── PC Assessment ──
+      if (filteredPcScores.length > 0) {
+        y = doc.lastAutoTable ? doc.lastAutoTable.finalY + 15 : y;
+        if (y > 250) { doc.addPage(); y = 20; }
+
+        doc.setFontSize(14);
+        doc.setFont(undefined, 'bold');
+        doc.setTextColor(15, 23, 42);
+        doc.text('PC Assessment', 14, y);
+        y += 5;
+
+        doc.autoTable({
+          startY: y,
+          head: [['PC Alias / Agent ID', 'Department', 'Compliance Score', 'Status']],
+          body: filteredPcScores.map((pc) => [
+            pc.display_name,
+            pc.department,
+            `${pc.score}%`,
+            pc.score >= (data.passing_threshold || 90) ? 'PASS' : 'FAIL'
+          ]),
+          theme: 'striped',
+          headStyles: { fillColor: [56, 189, 248], textColor: [255, 255, 255], fontStyle: 'bold' },
+          styles: { fontSize: 9, cellPadding: 3 },
+          didParseCell: (hookData) => {
+            if (hookData.column.index === 3 && hookData.section === 'body') {
+              hookData.cell.styles.fontStyle = 'bold';
+              hookData.cell.styles.textColor = hookData.cell.raw === 'PASS' ? [16, 185, 129] : [239, 68, 68];
+            }
+          }
+        });
+      }
+
       // ── Footer ──
       const pageCount = doc.internal.getNumberOfPages();
       for (let i = 1; i <= pageCount; i++) {
@@ -178,12 +306,12 @@ export default function Reports() {
         doc.text(`GRC Compliance Platform  ·  Confidential Report  ·  Page ${i} of ${pageCount}`, 14, 285);
       }
 
-      const fileName = isAll ? 'Compliance_Report_Combined' : `Compliance_Report_${selectedFwData[0]?.framework_name || 'Export'}`;
+      const fileName = isAllFw ? 'Compliance_Report_Combined' : `Compliance_Report_${selectedFwData[0]?.framework_name || 'Export'}`;
       doc.save(`${fileName}_${new Date().toISOString().slice(0, 10)}.pdf`);
       
       // Log the action to Audit Trail
       await API.post('audit-logs/', {
-        action: `Generated Compliance Report: ${isAll ? 'Combined' : selectedFwData[0]?.framework_name}`,
+        action: `Generated Compliance Report: ${isAllFw ? 'Combined' : selectedFwData[0]?.framework_name} for ${deptLabel}`,
         module: 'Intelligence & Reports',
         status: 'Success'
       }).catch(() => {});
@@ -197,14 +325,15 @@ export default function Reports() {
       setToast({ msg: 'Compliance report generated and downloaded.', type: 'success' });
     } catch (err) {
       console.error('PDF Error:', err);
+      const errMsg = err?.message || 'Unknown error';
       // Log the Failure to Audit Trail
       API.post('audit-logs/', {
         action: `Failed to Generate Compliance Report: ${selectedFw === 'all' ? 'Combined' : 'Specific Framework'}`,
         module: 'Intelligence & Reports',
         status: 'Failed'
       }).catch(() => {});
-      
-      setToast({ msg: 'Failed to generate compliance report.', type: 'error' });
+      logFailure(`PDF Report generation failed: ${errMsg}`, 'Intelligence & Reports');
+      setToast({ msg: `Failed to generate report: ${errMsg}`, type: 'error' });
     } finally {
       setGenerating(false);
     }
@@ -417,6 +546,62 @@ export default function Reports() {
                       </div>
                     )}
                     {isFwOpen && <div className="fixed inset-0 z-40" onClick={() => setIsFwOpen(false)} />}
+                  </div>
+                </div>
+
+                <div>
+                  <label className="mb-2 block text-[11px] font-black uppercase tracking-widest text-slate-400">Department Scope</label>
+                  <div className="relative">
+                    <button 
+                      onClick={() => setIsDeptOpen(!isDeptOpen)}
+                      className="input-field pl-12 pr-10 cursor-pointer w-full text-left flex items-center justify-between group bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800"
+                    >
+                      <User className="absolute left-4 top-3.5 h-4 w-4 text-brand-600 dark:text-brand-400 transition-colors" />
+                      <span className="truncate text-sm font-semibold text-slate-700 dark:text-slate-200">
+                        {selectedDept === 'all' ? 'All Departments' : (departments.find(d => d.id.toString() === selectedDept.toString())?.name || 'Select Department')}
+                      </span>
+                      <ArrowUpDown className={`w-4 h-4 transition-all ${isDeptOpen ? 'rotate-180 text-brand-600 dark:text-brand-400' : 'text-slate-400'}`} />
+                    </button>
+
+                    {isDeptOpen && (
+                      <div className="absolute top-full left-0 w-full mt-2 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-2xl z-50 overflow-hidden max-h-60 overflow-y-auto">
+                        <button
+                          onClick={() => {
+                            setSelectedDept('all');
+                            setIsDeptOpen(false);
+                          }}
+                          className={`w-full text-left px-4 py-3 text-sm font-bold transition-all flex items-center justify-between
+                            ${selectedDept === 'all' 
+                              ? 'bg-brand-600 text-white' 
+                              : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800'
+                            }`}
+                        >
+                          All Departments
+                          {selectedDept === 'all' && <CheckCircle className="w-4 h-4" />}
+                        </button>
+                        {departments.map((dept) => {
+                          const isSelected = dept.id.toString() === selectedDept.toString();
+                          return (
+                            <button
+                              key={dept.id}
+                              onClick={() => {
+                                setSelectedDept(dept.id);
+                                setIsDeptOpen(false);
+                              }}
+                              className={`w-full text-left px-4 py-3 text-sm font-bold transition-all flex items-center justify-between
+                                ${isSelected 
+                                  ? 'bg-brand-600 text-white' 
+                                  : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800'
+                                }`}
+                            >
+                              {dept.name}
+                              {isSelected && <CheckCircle className="w-4 h-4" />}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    )}
+                    {isDeptOpen && <div className="fixed inset-0 z-40" onClick={() => setIsDeptOpen(false)} />}
                   </div>
                 </div>
 

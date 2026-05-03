@@ -20,6 +20,8 @@ from .models import (
     AuditLog,
     SystemSettings,
     SMTPSettings,
+    Department,
+    AgentProfile,
 )
 
 
@@ -43,11 +45,17 @@ class ControlAdmin(admin.ModelAdmin):
     ordering = ("framework", "control_code")
 
 
+@admin.register(Department)
+class DepartmentAdmin(admin.ModelAdmin):
+    list_display = ("name", "created_at")
+    search_fields = ("name",)
+
+
 @admin.register(Policy)
 class PolicyAdmin(admin.ModelAdmin):
     list_display = ("title", "created_at", "updated_at")
     search_fields = ("title", "description")
-    filter_horizontal = ("controls",)  # nice M2M widget
+    filter_horizontal = ("controls", "departments")
 
 
 # ═══════════════════════════════════════════════════
@@ -96,6 +104,13 @@ class ScanResultAdmin(admin.ModelAdmin):
         "mapping__wazuh_rule_id",
         "scan__agent_id",
     )
+
+
+@admin.register(AgentProfile)
+class AgentProfileAdmin(admin.ModelAdmin):
+    list_display = ("agent_id", "wazuh_name", "custom_alias", "department")
+    list_filter = ("department",)
+    search_fields = ("agent_id", "wazuh_name", "custom_alias")
 
 
 # ═══════════════════════════════════════════════════

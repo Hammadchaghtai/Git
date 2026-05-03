@@ -41,6 +41,8 @@ from .models import (
     UserProfile,
     SystemSettings,
     SMTPSettings,
+    Department,
+    AgentProfile,
 )
 from .serializers import (
     ComplianceScanSerializer,
@@ -56,6 +58,8 @@ from .serializers import (
     UserManagementSerializer,
     CreateUserSerializer,
     SMTPSettingsSerializer,
+    DepartmentSerializer,
+    AgentProfileSerializer,
 )
 
 
@@ -493,9 +497,17 @@ class ControlViewSet(viewsets.ModelViewSet):
 class PolicyViewSet(viewsets.ModelViewSet):
     """CRUD /api/policies/"""
 
-    queryset = Policy.objects.prefetch_related("controls__framework").all()
     serializer_class = PolicySerializer
     permission_classes = [IsAuthenticated, IsAdminOrSuperAdmin]
+
+    def get_queryset(self):
+        qs = Policy.objects.prefetch_related(
+            "controls__framework", "departments"
+        ).all()
+        dept_id = self.request.query_params.get("department_id")
+        if dept_id:
+            qs = qs.filter(departments__id=dept_id)
+        return qs
 
     def perform_create(self, serializer):
         obj = serializer.save()
@@ -509,6 +521,41 @@ class PolicyViewSet(viewsets.ModelViewSet):
         title = instance.title
         instance.delete()
         _audit(self.request.user, f"deleted policy '{title}'", "Policy")
+
+
+class DepartmentViewSet(viewsets.ModelViewSet):
+    """CRUD /api/departments/"""
+    queryset = Department.objects.all()
+    serializer_class = DepartmentSerializer
+    permission_classes = [IsAuthenticated, IsAdminOrSuperAdmin]
+
+    def perform_create(self, serializer):
+        obj = serializer.save()
+        _audit(self.request.user, f"created department '{obj.name}'", "Policy")
+
+    def perform_destroy(self, instance):
+        name = instance.name
+        instance.delete()
+        _audit(self.request.user, f"deleted department '{name}'", "Policy")
+
+
+class AgentProfileViewSet(viewsets.ModelViewSet):
+    """CRUD /api/agent-profiles/ — used to update alias & department"""
+    queryset = AgentProfile.objects.select_related("department").all()
+    serializer_class = AgentProfileSerializer
+    permission_classes = [IsAuthenticated]
+    lookup_field = "agent_id"
+
+    def get_object(self):
+        """Override to create the profile if it doesn't exist yet (upsert)."""
+        agent_id = self.kwargs.get("agent_id")
+        obj, _ = AgentProfile.objects.get_or_create(agent_id=agent_id)
+        self.check_object_permissions(self.request, obj)
+        return obj
+
+    def perform_update(self, serializer):
+        obj = serializer.save()
+        _audit(self.request.user, f"updated agent profile '{obj.display_name}'", "Scan")
 
 
 class RiskViewSet(viewsets.ReadOnlyModelViewSet):
@@ -681,6 +728,9 @@ class UserManagementViewSet(viewsets.ViewSet):
         except User.DoesNotExist:
             return Response({"error": "User not found."}, status=status.HTTP_404_NOT_FOUND)
 
+        if user.id == request.user.id:
+            return Response({"error": "You cannot revoke or restore your own access."}, status=status.HTTP_403_FORBIDDEN)
+
         user.is_active = not user.is_active
         user.save(update_fields=["is_active"])
 
@@ -795,6 +845,9 @@ class UserManagementViewSet(viewsets.ViewSet):
         except User.DoesNotExist:
             return Response({"error": "User not found."}, status=status.HTTP_404_NOT_FOUND)
 
+        if user.id == request.user.id:
+            return Response({"error": "You cannot delete your own account."}, status=status.HTTP_403_FORBIDDEN)
+
         username = user.username
         user.delete()
         _audit(request.user, f"permanently deleted admin '{username}'", "Admin")
@@ -844,7 +897,31 @@ class DashboardSummaryView(APIView):
                 status=status.HTTP_200_OK,
             )
 
+        department_id = request.query_params.get("department_id")
+        framework_id = request.query_params.get("framework_id")
+
         latest_scans = ComplianceScan.objects.filter(id__in=latest_scan_ids)
+
+        # Filter by department if provided
+        if department_id and department_id != 'all':
+            profiles = AgentProfile.objects.filter(department_id=department_id).values_list('agent_id', flat=True)
+            latest_scans = latest_scans.filter(agent_id__in=profiles)
+
+        if not latest_scans.exists():
+            return Response(
+                {
+                    "total_agents_scanned": 0,
+                    "overall_compliance_score": 0.0,
+                    "passing_threshold": settings.passing_score_threshold,
+                    "status": "No Data",
+                    "framework_scores": [],
+                    "top_failed_controls": [],
+                    "recent_scans": [],
+                    "pc_scores": [],
+                    "department_scores": [],
+                },
+                status=status.HTTP_200_OK,
+            )
 
         # ── 2. Aggregate metrics ────────────────────
         total_agents = latest_scans.count()
@@ -909,17 +986,104 @@ class DashboardSummaryView(APIView):
             for item in top_failed
         ]
 
-        # ── 5. Recent scans ────────────────────────
-        recent_scans = list(
+        # ── 5. PC Scores (from scan results = controls based) ──
+        pc_scores = []
+        agent_profiles = {p.agent_id: p for p in AgentProfile.objects.select_related('department').all()}
+
+        for scan in latest_scans:
+            profile = agent_profiles.get(scan.agent_id)
+            display_name = profile.custom_alias or profile.wazuh_name or scan.agent_id if profile else scan.agent_id
+            dept_name = profile.department.name if profile and profile.department else "Unassigned"
+            pc_scores.append({
+                "agent_id": scan.agent_id,
+                "display_name": display_name,
+                "department": dept_name,
+                "score": scan.overall_score
+            })
+
+        pc_scores.sort(key=lambda x: x["score"], reverse=True)
+
+        # ── 6. Department Scores (policy-based: failed controls per department's policies) ──
+        # Get all failed control IDs from current scans (optionally scoped to framework)
+        fail_filter = Q(scan__in=latest_scans, is_passed=False)
+        pass_filter = Q(scan__in=latest_scans, is_passed=True)
+        if framework_id and framework_id != 'all':
+            fail_filter &= Q(mapping__control__framework_id=framework_id)
+            pass_filter &= Q(mapping__control__framework_id=framework_id)
+
+        failed_ctrl_ids = set(
+            ScanResult.objects
+            .filter(fail_filter)
+            .values_list("mapping__control__id", flat=True)
+            .distinct()
+        )
+
+        from .models import Policy
+        formatted_department_scores = []
+        all_departments = Department.objects.prefetch_related("policies__controls").all()
+        for dept in all_departments:
+            dept_policy_control_ids = set()
+            for policy in dept.policies.all():
+                for ctrl in policy.controls.all():
+                    # If framework filter active, only count controls from that framework
+                    if framework_id and framework_id != 'all':
+                        if str(ctrl.framework_id) != str(framework_id):
+                            continue
+                    dept_policy_control_ids.add(ctrl.id)
+            total = len(dept_policy_control_ids)
+            if total == 0:
+                continue
+            failed_in_dept = len(dept_policy_control_ids & failed_ctrl_ids)
+            passed_in_dept = total - failed_in_dept
+            score = round((passed_in_dept / total) * 100, 1)
+            pc_count = sum(1 for s in pc_scores if s["department"] == dept.name)
+            formatted_department_scores.append({
+                "department": dept.name,
+                "score": score,
+                "pc_count": pc_count,
+                "total_controls": total,
+                "failed_controls": failed_in_dept,
+            })
+
+        formatted_department_scores.sort(key=lambda x: x["score"], reverse=True)
+
+        # ── 7. Failed Policies by Department (scoped by framework if selected) ──
+        failed_policies_by_dept = []
+        for dept in all_departments:
+            failed = []
+            for policy in dept.policies.all():
+                policy_ctrl_ids = set()
+                for ctrl in policy.controls.all():
+                    if framework_id and framework_id != 'all':
+                        if str(ctrl.framework_id) != str(framework_id):
+                            continue
+                    policy_ctrl_ids.add(ctrl.id)
+                if policy_ctrl_ids & failed_ctrl_ids:
+                    failed.append(policy.title)
+            if failed:
+                failed_policies_by_dept.append({
+                    "department": dept.name,
+                    "failed_policies": failed,
+                })
+
+        # ── 6. Recent scans (with profiles) ────────
+        recent_scans_raw = list(
             ComplianceScan.objects
             .order_by("-scan_date")[:5]
             .values("id", "agent_id", "scan_date", "overall_score")
         )
+        recent_scans = []
+        for s in recent_scans_raw:
+            profile = agent_profiles.get(s["agent_id"])
+            s["display_name"] = profile.custom_alias or profile.wazuh_name or s["agent_id"] if profile else s["agent_id"]
+            s["department_name"] = profile.department.name if profile and profile.department else "Unassigned"
+            recent_scans.append(s)
 
-        # ── 6. Total Admins ────────────────────────
+
+        # Total Admins
         total_admins = User.objects.filter(is_active=True).count()
 
-        # ── 7. Recent Activity (Mini Audit Log) ──
+        # Recent Activity (Mini Audit Log)
         recent_activity = list(
             AuditLog.objects
             .filter(module__icontains="Policy")
@@ -934,7 +1098,10 @@ class DashboardSummaryView(APIView):
                 "passing_threshold": settings.passing_score_threshold,
                 "status": compliance_status,
                 "framework_scores": framework_scores,
+                "pc_scores": pc_scores,
+                "department_scores": formatted_department_scores,
                 "top_failed_controls": top_failed_controls,
+                "failed_policies_by_dept": failed_policies_by_dept,
                 "recent_scans": recent_scans,
                 "total_admins": total_admins,
                 "recent_activity": recent_activity,

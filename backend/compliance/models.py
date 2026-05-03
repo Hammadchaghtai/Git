@@ -93,6 +93,25 @@ class Control(models.Model):
         return f"[{self.framework.name}] {self.control_code}"
 
 
+class Department(models.Model):
+    """
+    An organizational department (e.g. HR, IT, Finance).
+    Policies can belong to one or more departments.
+    Agents/PCs can be assigned to a department.
+    """
+    name = models.CharField(max_length=100, unique=True, help_text="Department name, e.g. 'HR', 'IT'")
+    description = models.TextField(blank=True, default="", help_text="Optional description.")
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ["name"]
+        verbose_name_plural = "Departments"
+
+    def __str__(self) -> str:
+        return self.name
+
+
 class Policy(models.Model):
     """
     An organizational policy document that satisfies one or more Controls
@@ -120,6 +139,12 @@ class Policy(models.Model):
         related_name="policies",
         blank=True,
         help_text="Controls this policy satisfies.",
+    )
+    departments = models.ManyToManyField(
+        Department,
+        related_name="policies",
+        blank=True,
+        help_text="Departments this policy belongs to.",
     )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -288,6 +313,58 @@ class ScanResult(models.Model):
 
 
 # ═══════════════════════════════════════════════════
+# 4b. AGENT PROFILE (PC Display Name & Department)
+# ═══════════════════════════════════════════════════
+
+class AgentProfile(models.Model):
+    """
+    Stores human-readable name and department mapping for each
+    Wazuh agent. Created/updated automatically during sync.
+    Custom alias can be set manually from the frontend.
+    """
+    agent_id = models.CharField(
+        max_length=20,
+        unique=True,
+        help_text="Wazuh agent ID (e.g. '001').",
+    )
+    wazuh_name = models.CharField(
+        max_length=255,
+        blank=True,
+        default="",
+        help_text="Name as registered in the Wazuh server.",
+    )
+    custom_alias = models.CharField(
+        max_length=255,
+        blank=True,
+        default="",
+        help_text="Custom human-readable name assigned by the admin.",
+    )
+    department = models.ForeignKey(
+        Department,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="agents",
+        help_text="Department this PC/agent belongs to.",
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ["agent_id"]
+        verbose_name = "Agent Profile"
+        verbose_name_plural = "Agent Profiles"
+
+    @property
+    def display_name(self) -> str:
+        """Returns custom alias if set, else wazuh name, else agent ID."""
+        return self.custom_alias or self.wazuh_name or f"Agent {self.agent_id}"
+
+    def __str__(self) -> str:
+        return f"{self.display_name} (ID: {self.agent_id})"
+
+
+# ═══════════════════════════════════════════════════
 # 5. USER PROFILES & ROLES
 # ═══════════════════════════════════════════════════
 
@@ -392,6 +469,7 @@ class AuditLog(models.Model):
 
     class Status(models.TextChoices):
         SUCCESS = "Success", "Success"
+        FAILED = "Failed", "Failed"
         ALERT = "Alert", "Alert"
         SYSTEM = "System", "System"
 

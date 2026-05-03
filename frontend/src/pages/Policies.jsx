@@ -1,8 +1,11 @@
+// GRC Policy Manager v2.1
 import { useEffect, useState, useMemo, useCallback, Fragment } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import API from '../api/axios';
 import { useAuth } from '../context/AuthContext';
-import { Plus, Search, Pencil, Trash2, X, FileText, ChevronDown, ChevronUp, Link as LinkIcon, Activity, AlertTriangle, ShieldCheck, ListFilter, ArrowUpDown } from 'lucide-react';
+import { Plus, Search, Pencil, Trash2, X, FileText, ChevronDown, ChevronUp, Link as LinkIcon, Activity, AlertTriangle, ShieldCheck, ListFilter, ArrowUpDown, Building2, ArrowLeft, Monitor } from 'lucide-react';
 import Toast from '../components/Toast';
+import { logFailure } from '../utils/logFailure';
 
 const STATUS_COLORS = {
   active:   'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400',
@@ -11,14 +14,18 @@ const STATUS_COLORS = {
 };
 
 /* ── Policy Modal (Create + Edit) ────────────── */
-function PolicyModal({ open, onClose, onSaved, editingPolicy, allControls }) {
+function PolicyModal({ open, onClose, onSaved, editingPolicy, allControls, allDepartments, initialDeptId, onAddDept }) {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [status, setStatus] = useState('active');
   const [selectedControlIds, setSelectedControlIds] = useState([]);
+  const [selectedDeptIds, setSelectedDeptIds] = useState([]);
   const [controlSearch, setControlSearch] = useState('');
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
+  const [newDeptName, setNewDeptName] = useState('');
+  const [showAddDept, setShowAddDept] = useState(false);
+  const [addingDept, setAddingDept] = useState(false);
   const isEdit = !!editingPolicy;
 
   useEffect(() => {
@@ -27,20 +34,30 @@ function PolicyModal({ open, onClose, onSaved, editingPolicy, allControls }) {
       setDescription(editingPolicy.description || '');
       setStatus(editingPolicy.status || 'active');
       setSelectedControlIds(editingPolicy.controls?.map(c => c.id) || []);
+      setSelectedDeptIds(editingPolicy.departments?.map(d => d.id) || []);
     } else {
       setTitle('');
       setDescription('');
       setStatus('active');
       setSelectedControlIds([]);
+      // Pre-select department if initialDeptId passed (ensure Number type)
+      setSelectedDeptIds(initialDeptId ? [Number(initialDeptId)] : []);
     }
     setControlSearch('');
     setError('');
-  }, [editingPolicy, open]);
+    setShowAddDept(false);
+    setNewDeptName('');
+  }, [editingPolicy, open, initialDeptId]);
 
   if (!open) return null;
 
   const toggleControl = (id) => {
     setSelectedControlIds(prev =>
+      prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]
+    );
+  };
+  const toggleDept = (id) => {
+    setSelectedDeptIds(prev =>
       prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]
     );
   };
@@ -55,6 +72,7 @@ function PolicyModal({ open, onClose, onSaved, editingPolicy, allControls }) {
         description: description.trim(),
         status,
         control_ids: selectedControlIds,
+        department_ids: selectedDeptIds,
       };
       if (isEdit) {
         await API.patch(`policies/${editingPolicy.id}/`, payload);
@@ -65,6 +83,7 @@ function PolicyModal({ open, onClose, onSaved, editingPolicy, allControls }) {
       onClose();
     } catch (err) {
       setError(err.response?.data?.detail || err.response?.data?.title?.[0] || 'Failed to save policy.');
+      logFailure(`Failed to ${isEdit ? 'update' : 'create'} policy '${title}'`, 'Policy');
     } finally {
       setSaving(false);
     }
@@ -165,6 +184,69 @@ function PolicyModal({ open, onClose, onSaved, editingPolicy, allControls }) {
                      </button>
                    ))}
                 </div>
+               </div>
+            </div>
+
+            {/* Department Assignment */}
+            <div className="pt-6 border-t border-slate-100 dark:border-slate-800/60">
+               <div className="flex items-center justify-between mb-3">
+                 <label className="block text-[11px] font-black uppercase tracking-widest text-slate-900 dark:text-white">Assign to Departments</label>
+                 <button
+                   type="button"
+                   onClick={() => setShowAddDept(v => !v)}
+                   className="flex items-center gap-1.5 text-[10px] font-black text-brand-600 uppercase tracking-widest hover:bg-brand-50 dark:hover:bg-brand-900/30 px-3 py-1.5 rounded-xl transition-all border border-brand-100 dark:border-brand-800"
+                 >
+                   <Plus className="w-3 h-3" /> Add New Dept
+                 </button>
+               </div>
+
+               {/* Inline Add Department */}
+               {showAddDept && (
+                 <div className="mb-3 flex items-center gap-2 p-3 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">
+                   <input
+                     type="text"
+                     value={newDeptName}
+                     onChange={e => setNewDeptName(e.target.value)}
+                     placeholder="Department name..."
+                     className="flex-1 px-3 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-bold text-slate-700 dark:text-slate-200 outline-none focus:ring-2 focus:ring-brand-500/20"
+                   />
+                   <button
+                     type="button"
+                     disabled={addingDept || !newDeptName.trim()}
+                     onClick={async () => {
+                       if (!newDeptName.trim()) return;
+                       setAddingDept(true);
+                       try {
+                         const res = await (await import('../api/axios')).default.post('departments/', { name: newDeptName.trim() });
+                         onAddDept && onAddDept(res.data);
+                         setNewDeptName('');
+                         setShowAddDept(false);
+                         // auto-select new dept
+                         setSelectedDeptIds(prev => [...prev, res.data.id]);
+                       } catch {}
+                       setAddingDept(false);
+                     }}
+                     className="px-4 py-2 rounded-xl bg-brand-600 text-white text-[10px] font-black uppercase disabled:opacity-50 transition-all"
+                   >
+                     {addingDept ? '...' : 'Save'}
+                   </button>
+                   <button type="button" onClick={() => setShowAddDept(false)} className="p-2 rounded-xl text-slate-400 hover:text-slate-700 hover:bg-slate-100">
+                     <X className="w-3.5 h-3.5" />
+                   </button>
+                 </div>
+               )}
+
+               <div className="flex flex-wrap gap-2">
+                 {(allDepartments || []).map(d => (
+                   <button key={d.id} type="button" onClick={() => toggleDept(d.id)}
+                     className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest border transition-all ${
+                       selectedDeptIds.includes(Number(d.id))
+                         ? 'bg-brand-600 border-brand-600 text-white shadow-lg shadow-brand-600/30'
+                         : 'bg-white dark:bg-slate-950 border-slate-200 dark:border-slate-800 text-slate-400 hover:border-brand-500'
+                     }`}>
+                     {d.name}
+                   </button>
+                 ))}
                </div>
             </div>
 
@@ -271,8 +353,11 @@ function PolicyModal({ open, onClose, onSaved, editingPolicy, allControls }) {
 /* ── Policies Page ──────────────────────────── */
 export default function Policies() {
   const { role } = useAuth();
+  const { departmentId } = useParams();
+  const navigate = useNavigate();
   const [policies, setPolicies] = useState([]);
   const [allControls, setAllControls] = useState([]);
+  const [departments, setDepartments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
@@ -282,23 +367,33 @@ export default function Policies() {
   const showToast = useCallback((msg, type = 'success') => setToast({ msg, type }), []);
   const [expandedId, setExpandedId] = useState(null);
   const [sortBy, setSortBy] = useState('a-z');
-  const [perPage, setPerPage] = useState(5);
+  const [perPage, setPerPage] = useState(5);       // inner policy list default
+  const [deptPerPage, setDeptPerPage] = useState(6); // outer dept list: 6/12/18/24
   const [isSortOpen, setIsSortOpen] = useState(false);
   const [isPerPageOpen, setIsPerPageOpen] = useState(false);
+  const [isDeptPerPageOpen, setIsDeptPerPageOpen] = useState(false);
+  // Department CRUD
+  const [showDeptModal, setShowDeptModal] = useState(false);
+  const [editingDept, setEditingDept] = useState(null);
+  const [deptName, setDeptName] = useState('');
+  const [initialDeptId, setInitialDeptId] = useState(null);
 
   const fetchData = useCallback(() => {
     setLoading(true);
+    const policyUrl = departmentId ? `policies/?page_size=200&department_id=${departmentId}` : 'policies/?page_size=200';
     Promise.all([
-      API.get('policies/?page_size=200'),
+      API.get(policyUrl),
       API.get('controls/?page_size=200'),
+      API.get('departments/?page_size=100'),
     ])
-      .then(([polRes, ctrlRes]) => {
+      .then(([polRes, ctrlRes, deptRes]) => {
         setPolicies(polRes.data.results || polRes.data);
         setAllControls(ctrlRes.data.results || ctrlRes.data);
+        setDepartments(deptRes.data.results || deptRes.data);
       })
       .catch(() => {})
       .finally(() => setLoading(false));
-  }, []);
+  }, [departmentId]);
 
   useEffect(() => { fetchData(); }, [fetchData]);
 
@@ -313,9 +408,11 @@ export default function Policies() {
     setShowModal(true);
   }, []);
 
-  const openCreate = useCallback(() => {
+  const openCreate = useCallback((preDeptId) => {
     setEditingPolicy(null);
     setShowModal(true);
+    // Pass pre-selected dept to modal via a ref trick — handled via initialDeptId state
+    setInitialDeptId(preDeptId || null);
   }, []);
 
   const handleDelete = useCallback(async (policy) => {
@@ -326,6 +423,7 @@ export default function Policies() {
       showToast(`Policy "${policy.title}" deleted successfully.`);
     } catch {
       showToast('Failed to delete policy.', 'error');
+      logFailure(`Failed to delete policy '${policy.title}'`, 'Policy');
     }
   }, [fetchData, showToast]);
 
@@ -336,25 +434,66 @@ export default function Policies() {
       showToast(`Status updated to "${newStatus.charAt(0).toUpperCase() + newStatus.slice(1)}"`);
     } catch {
       showToast('Failed to update status.', 'error');
+      logFailure(`Failed to update status for policy '${policy.title}'`, 'Policy');
     }
   }, [fetchData, showToast]);
+
+  // Department-aware filtering
+  const filteredDepts = useMemo(() => {
+    if (!search) return departments;
+    return departments.filter(d => d.name.toLowerCase().includes(search.toLowerCase()));
+  }, [departments, search]);
 
   const filtered = useMemo(() => {
     let result = policies.filter((p) =>
       (p.title || '').toLowerCase().includes(search.toLowerCase()) ||
       (p.description || '').toLowerCase().includes(search.toLowerCase())
     );
-
     if (sortBy === 'a-z') result.sort((a, b) => a.title.localeCompare(b.title));
     else if (sortBy === 'z-a') result.sort((a, b) => b.title.localeCompare(a.title));
     else if (sortBy === 'latest') result.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
     else if (sortBy === 'oldest') result.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
-
     return result;
   }, [policies, search, sortBy]);
 
+  const deptTotalPages = useMemo(() => Math.ceil(filteredDepts.length / deptPerPage), [filteredDepts, deptPerPage]);
+  const deptPaginated = useMemo(() => filteredDepts.slice((page - 1) * deptPerPage, page * deptPerPage), [filteredDepts, page, deptPerPage]);
+
   const totalPages = useMemo(() => Math.ceil(filtered.length / perPage), [filtered, perPage]);
   const paginated = useMemo(() => filtered.slice((page - 1) * perPage, page * perPage), [filtered, page, perPage]);
+
+  const currentDeptName = departments.find(d => String(d.id) === String(departmentId))?.name || '';
+
+  // Department CRUD
+  const handleSaveDept = async () => {
+    if (!deptName.trim()) return;
+    try {
+      if (editingDept) {
+        await API.patch(`departments/${editingDept.id}/`, { name: deptName.trim() });
+        showToast(`Department "${deptName}" updated.`);
+      } else {
+        await API.post('departments/', { name: deptName.trim() });
+        showToast(`Department "${deptName}" created.`);
+      }
+      setShowDeptModal(false); setEditingDept(null); setDeptName('');
+      fetchData();
+    } catch {
+      showToast('Failed to save department.', 'error');
+      logFailure(`Failed to save department '${deptName}'`, 'Policy');
+    }
+  };
+
+  const handleDeleteDept = async (dept) => {
+    if (!confirm(`Delete department "${dept.name}"? Policies won't be deleted.`)) return;
+    try {
+      await API.delete(`departments/${dept.id}/`);
+      showToast(`Department "${dept.name}" deleted.`);
+      fetchData();
+    } catch {
+      showToast('Failed to delete department.', 'error');
+      logFailure(`Failed to delete department '${dept.name}'`, 'Policy');
+    }
+  };
 
   if (loading) {
     return (
@@ -364,21 +503,151 @@ export default function Policies() {
     );
   }
 
-  return (
-    <>
-      <Toast message={toast.msg} type={toast.type} onClose={() => setToast({ msg: '', type: 'success' })} />
-      <div className="max-w-7xl mx-auto">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-10">
-          <div>
-            <h1 className="text-4xl font-black text-slate-900 dark:text-white tracking-tight">Policy Manager</h1>
-          <p className="text-slate-500 font-medium mt-1">Design and enforce governance requirements across the platform.</p>
+  // ── DEPARTMENT LIST VIEW (when no departmentId in URL) ──
+  if (!departmentId) {
+    return (
+      <>
+        <Toast message={toast.msg} type={toast.type} onClose={() => setToast({ msg: '', type: 'success' })} />
+        <div className="max-w-7xl mx-auto">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-10">
+            <div>
+              <h1 className="text-4xl font-black text-slate-900 dark:text-white tracking-tight">Policy Manager</h1>
+              <p className="text-slate-500 font-medium mt-1">Select a department to manage its policies.</p>
+            </div>
+            {role !== 'auditor' && (
+              <button onClick={() => openCreate()} className="btn-primary">
+                <Plus className="h-5 w-5" /> Add Policy
+              </button>
+            )}
+          </div>
+
+          <div className="mb-8 flex flex-col md:flex-row items-center justify-between gap-4">
+            <div className="relative flex-1 w-full max-w-xl group">
+              <Search className="absolute left-5 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400 group-focus-within:text-brand-600 transition-colors" />
+              <input type="text" value={search} onChange={(e) => { setSearch(e.target.value); setPage(1); }}
+                placeholder="Search departments..."
+                className="w-full pl-14 pr-6 py-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-full text-sm font-bold text-slate-700 dark:text-slate-200 focus:ring-4 focus:ring-brand-500/10 focus:border-brand-500 outline-none shadow-sm transition-all" />
+            </div>
+            <div className="flex items-center gap-3">
+              <div className="relative">
+                <button onClick={() => setIsDeptPerPageOpen(!isDeptPerPageOpen)}
+                  className="flex items-center gap-3 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 px-5 py-3 rounded-2xl shadow-sm hover:border-brand-500 transition-all group">
+                  <ListFilter className="w-4 h-4 text-slate-400" />
+                  <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Show</span>
+                  <span className="text-xs font-black text-brand-600 dark:text-brand-400">{deptPerPage}</span>
+                  <ChevronDown className={`w-3.5 h-3.5 text-slate-300 transition-transform ${isDeptPerPageOpen ? 'rotate-180' : ''}`} />
+                </button>
+                {isDeptPerPageOpen && (
+                  <>
+                    <div className="fixed inset-0 z-20" onClick={() => setIsDeptPerPageOpen(false)} />
+                    <div className="absolute top-full right-0 mt-2 w-32 bg-white/80 dark:bg-slate-900/90 backdrop-blur-xl border border-slate-200 dark:border-slate-800 rounded-2xl shadow-xl z-30 py-2">
+                      {[6, 12, 18, 24].map(v => (
+                        <button key={v} onClick={() => { setDeptPerPage(v); setPage(1); setIsDeptPerPageOpen(false); }}
+                          className={`w-full px-4 py-2.5 text-left text-xs font-black transition-colors ${deptPerPage === v ? 'text-brand-600 bg-brand-50' : 'text-slate-600 hover:bg-slate-50'}`}>
+                          {v} Depts
+                        </button>
+                      ))}
+                    </div>
+                  </>
+                )}
+              </div>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {deptPaginated.map(dept => (
+              <div key={dept.id}
+                onClick={() => navigate(`/policies/${dept.id}`)}
+                className="cyber-card p-6 cursor-pointer group transition-all hover:translate-y-[-2px] hover:shadow-xl border border-transparent hover:border-brand-200 dark:hover:border-brand-800">
+                <div className="flex items-center gap-4 mb-5">
+                  <div className="p-3.5 rounded-2xl bg-brand-50 dark:bg-brand-900/20 text-brand-600 shadow-sm group-hover:shadow-lg group-hover:scale-110 transition-all">
+                    <Building2 className="w-7 h-7" />
+                  </div>
+                  <h3 className="text-xl font-black text-slate-900 dark:text-white tracking-tight">{dept.name}</h3>
+                </div>
+                <div className="flex items-center gap-6 text-sm font-black uppercase tracking-wide text-slate-500 mb-4">
+                  <span className="flex items-center gap-1.5"><FileText className="w-4 h-4" /> {dept.policy_count || 0} Policies</span>
+                  <span className="flex items-center gap-1.5"><Monitor className="w-4 h-4" /> {dept.agent_count || 0} PCs</span>
+                </div>
+                {role !== 'auditor' && (
+                  <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-all pt-3 border-t border-slate-100 dark:border-slate-800">
+                    <button onClick={(e) => { e.stopPropagation(); setEditingDept(dept); setDeptName(dept.name); setShowDeptModal(true); }}
+                      className="p-2 rounded-xl border border-brand-100 text-brand-600 hover:bg-brand-50 dark:border-brand-900/30 transition-all"><Pencil className="h-4 w-4" /></button>
+                    <button onClick={(e) => { e.stopPropagation(); handleDeleteDept(dept); }}
+                      className="p-2 rounded-xl border border-red-100 text-red-500 hover:bg-red-50 dark:border-red-900/30 transition-all"><Trash2 className="h-4 w-4" /></button>
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+
+          {deptPaginated.length === 0 && (
+            <div className="cyber-card py-20 text-center text-slate-400 font-bold uppercase tracking-widest text-xs">No departments found.</div>
+          )}
+
+          {deptTotalPages > 1 && (
+            <div className="flex items-center justify-center gap-2 py-4 mt-2">
+              <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1}
+                className="h-10 w-10 rounded-xl text-sm font-black text-slate-400 hover:bg-white dark:hover:bg-slate-900 disabled:opacity-40 transition-all border border-transparent hover:border-slate-100">‹</button>
+              {Array.from({ length: deptTotalPages }, (_, i) => i + 1).map((n) => (
+                <button key={n} onClick={() => setPage(n)}
+                  className={`h-10 w-10 rounded-xl text-sm font-black transition-all ${n === page ? 'bg-brand-600 text-white shadow-lg' : 'text-slate-400 hover:bg-white'}`}>{n}</button>
+              ))}
+              <button onClick={() => setPage(p => Math.min(deptTotalPages, p + 1))} disabled={page === deptTotalPages}
+                className="h-10 w-10 rounded-xl text-sm font-black text-slate-400 hover:bg-white dark:hover:bg-slate-900 disabled:opacity-40 transition-all border border-transparent hover:border-slate-100">›</button>
+            </div>
+          )}
+
+          {/* Department Add/Edit Modal */}
+          {showDeptModal && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/70 backdrop-blur-md p-4">
+              <div className="w-full max-w-md rounded-[2rem] bg-white dark:bg-slate-900 shadow-2xl border border-slate-200 dark:border-slate-800 p-8">
+                <h2 className="text-xl font-black text-slate-900 dark:text-white mb-6">{editingDept ? 'Edit Department' : 'Add Department'}</h2>
+                <input type="text" value={deptName} onChange={(e) => setDeptName(e.target.value)} placeholder="Department name"
+                  className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl text-sm font-bold text-slate-700 dark:text-slate-200 focus:ring-4 focus:ring-brand-500/10 focus:border-brand-500 outline-none mb-6" />
+                <div className="flex justify-end gap-3">
+                  <button onClick={() => { setShowDeptModal(false); setEditingDept(null); }}
+                    className="px-6 py-3 rounded-2xl text-[10px] font-black uppercase text-slate-500 hover:text-slate-900 transition-all">Cancel</button>
+                  <button onClick={handleSaveDept}
+                    className="px-8 py-3 rounded-2xl text-[10px] font-black uppercase bg-brand-600 text-white shadow-lg hover:bg-brand-700 transition-all">{editingDept ? 'Update' : 'Create'}</button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Policy Modal — available in dept list view too */}
+          <PolicyModal
+            open={showModal}
+            onClose={() => { setShowModal(false); setEditingPolicy(null); setInitialDeptId(null); }}
+            onSaved={handleSaved}
+            editingPolicy={editingPolicy}
+            allControls={allControls}
+            allDepartments={departments}
+            initialDeptId={initialDeptId}
+            onAddDept={(newDept) => setDepartments(prev => [...prev, newDept])}
+          />
         </div>
-        {role !== 'auditor' && (
-          <button onClick={openCreate} className="btn-primary">
-            <Plus className="h-5 w-5" /> Initialize Policy
-          </button>
-        )}
-      </div>
+      </>
+    );
+  }
+
+  // ── INNER POLICY VIEW (when departmentId is present) ──
+
+  return (
+      <>
+        <Toast message={toast.msg} type={toast.type} onClose={() => setToast({ msg: '', type: 'success' })} />
+        <div className="max-w-7xl mx-auto">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-10">
+            <div className="flex items-center gap-4">
+              <button onClick={() => navigate(-1)} className="p-3 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-brand-500 transition-all shadow-sm">
+                <ArrowLeft className="w-5 h-5 text-slate-500" />
+              </button>
+              <div>
+                <h1 className="text-4xl font-black text-slate-900 dark:text-white tracking-tight">{currentDeptName || 'Department'} Policies</h1>
+                <p className="text-slate-500 font-medium mt-1">Manage policies assigned to this department.</p>
+              </div>
+          </div>
+        </div>
 
       <div className="mb-8 flex flex-col md:flex-row items-center justify-between gap-4">
         <div className="relative flex-1 w-full max-w-xl group">
@@ -586,12 +855,16 @@ export default function Policies() {
 
       <PolicyModal
         open={showModal}
-        onClose={() => { setShowModal(false); setEditingPolicy(null); }}
+        onClose={() => { setShowModal(false); setEditingPolicy(null); setInitialDeptId(null); }}
         onSaved={handleSaved}
         editingPolicy={editingPolicy}
         allControls={allControls}
+        allDepartments={departments}
+        initialDeptId={initialDeptId}
+        onAddDept={(newDept) => setDepartments(prev => [...prev, newDept])}
       />
     </div>
     </>
   );
 }
+

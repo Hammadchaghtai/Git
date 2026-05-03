@@ -4,6 +4,7 @@ import {
   Shield, BookOpen, Layers, Zap, Info, Link as LinkIcon, 
   ChevronDown, Activity, LayoutGrid, X, FileText, CheckCircle2
 } from 'lucide-react';
+import { logFailure } from '../utils/logFailure';
 
 export default function Frameworks() {
   const [frameworks, setFrameworks] = useState([]);
@@ -53,7 +54,10 @@ export default function Frameworks() {
         });
         setControlStatuses(statusMap);
       })
-      .catch((err) => console.error(err))
+      .catch((err) => {
+        console.error(err);
+        logFailure('Failed to fetch framework data', 'System');
+      })
       .finally(() => setLoading(false));
   };
 
@@ -309,19 +313,26 @@ export default function Frameworks() {
                <div>
                   <h3 className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-2">Description & Guidance</h3>
                   <div className="p-6 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 shadow-inner">
-                     <p className="text-[13px] text-slate-600 dark:text-slate-400 leading-relaxed font-medium">
-                        {selectedControl.description || "This control requirement defines the essential governance benchmarks for organizational security. It ensures that technical implementations align with regulatory standards through continuous telemetric monitoring and automated verification cycles."}
-                     </p>
+                     <div className="space-y-4">
+                        <p className="text-[13px] text-slate-600 dark:text-slate-400 leading-relaxed font-medium">
+                           {selectedControl.description ||
+                             `This control requirement (${selectedControl.control_code}) establishes essential governance benchmarks for organizational security posture. It mandates that technical implementations remain fully aligned with applicable regulatory standards through structured policy enforcement, continuous telemetric monitoring, and automated verification cycles.`}
+                        </p>
+                        <p className="text-[13px] text-slate-600 dark:text-slate-400 leading-relaxed font-medium">
+                           Organizations must ensure documented evidence of compliance, periodic internal reviews, and remediation workflows for any detected deviations. Furthermore, this benchmark strictly dictates that access controls, configuration management, and vulnerability assessments must be executed systematically. 
+                        </p>
+                        <p className="text-[13px] text-slate-600 dark:text-slate-400 leading-relaxed font-medium">
+                           Responsible personnel must be assigned for continuous oversight, and immutable audit trails must be maintained to support third-party assessments and regulatory inspections. Failure to comply with these stringent measures may expose the organization to significant operational risks and regulatory penalties.
+                        </p>
+                     </div>
                   </div>
                </div>
 
-               <div className="flex items-center justify-between pt-6 border-t border-slate-100 dark:border-slate-800">
-                  <div className={`px-4 py-1.5 rounded-xl text-[9px] font-black uppercase tracking-widest border ${getImpactData(selectedControl.weight).class}`}>
-                     IMPACT: {getImpactData(selectedControl.weight).label}
-                  </div>
-                  <button onClick={() => setSelectedControl(null)} className="btn-primary px-8 py-3 text-[10px] font-black uppercase tracking-widest">Acknowledge</button>
+               <div className="pt-6 border-t border-slate-100 dark:border-slate-800 flex justify-center">
+                  <button onClick={() => setSelectedControl(null)} className="btn-primary px-12 py-3 text-[10px] font-black uppercase tracking-widest">Acknowledge</button>
                </div>
             </div>
+
           </div>
         </div>
       )}

@@ -22,6 +22,8 @@ from .models import (
     AuditLog,
     SystemSettings,
     SMTPSettings,
+    Department,
+    AgentProfile,
 )
 
 
@@ -82,6 +84,39 @@ class ControlSerializer(serializers.ModelSerializer):
         ]
 
 
+class DepartmentSerializer(serializers.ModelSerializer):
+    policy_count = serializers.SerializerMethodField()
+    agent_count = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Department
+        fields = ["id", "name", "description", "policy_count", "agent_count", "created_at", "updated_at"]
+
+    def get_policy_count(self, obj):
+        return obj.policies.count()
+
+    def get_agent_count(self, obj):
+        return obj.agents.count()
+
+
+class AgentProfileSerializer(serializers.ModelSerializer):
+    display_name = serializers.CharField(read_only=True)
+    department_name = serializers.CharField(source="department.name", read_only=True)
+    department_id = serializers.PrimaryKeyRelatedField(
+        queryset=Department.objects.all(),
+        source="department",
+        required=False,
+        allow_null=True,
+        write_only=True,
+    )
+
+    class Meta:
+        model = AgentProfile
+        fields = ["id", "agent_id", "wazuh_name", "custom_alias", "display_name",
+                  "department", "department_id", "department_name", "created_at", "updated_at"]
+        read_only_fields = ["agent_id", "wazuh_name"]
+
+
 class PolicySerializer(serializers.ModelSerializer):
     controls = ControlSerializer(many=True, read_only=True)
     control_ids = serializers.PrimaryKeyRelatedField(
@@ -89,6 +124,14 @@ class PolicySerializer(serializers.ModelSerializer):
         many=True,
         write_only=True,
         source="controls",
+        required=False,
+    )
+    departments = DepartmentSerializer(many=True, read_only=True)
+    department_ids = serializers.PrimaryKeyRelatedField(
+        queryset=Department.objects.all(),
+        many=True,
+        write_only=True,
+        source="departments",
         required=False,
     )
 
@@ -101,6 +144,8 @@ class PolicySerializer(serializers.ModelSerializer):
             "status",
             "controls",
             "control_ids",
+            "departments",
+            "department_ids",
             "created_at",
             "updated_at",
         ]
@@ -210,12 +255,16 @@ class ComplianceScanSerializer(serializers.ModelSerializer):
         source="results.count", read_only=True
     )
     passed_checks = serializers.SerializerMethodField()
+    display_name = serializers.SerializerMethodField()
+    department_name = serializers.SerializerMethodField()
 
     class Meta:
         model = ComplianceScan
         fields = [
             "id",
             "agent_id",
+            "display_name",
+            "department_name",
             "scan_date",
             "overall_score",
             "total_checks",
@@ -226,6 +275,20 @@ class ComplianceScanSerializer(serializers.ModelSerializer):
 
     def get_passed_checks(self, obj) -> int:
         return obj.results.filter(is_passed=True).count()
+
+    def get_display_name(self, obj) -> str:
+        try:
+            profile = AgentProfile.objects.get(agent_id=obj.agent_id)
+            return profile.custom_alias or profile.wazuh_name or obj.agent_id
+        except AgentProfile.DoesNotExist:
+            return obj.agent_id
+
+    def get_department_name(self, obj) -> str:
+        try:
+            profile = AgentProfile.objects.get(agent_id=obj.agent_id)
+            return profile.department.name if profile.department else "Unassigned"
+        except AgentProfile.DoesNotExist:
+            return "Unassigned"
 
 
 # ═══════════════════════════════════════════════════

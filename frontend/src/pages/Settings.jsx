@@ -3,6 +3,7 @@ import { useAuth } from '../context/AuthContext';
 import { Sliders, Bell, User, Lock, ShieldAlert, Mail, Camera, FileText, Eye, EyeOff, Check, X as XIcon, Globe, MapPin, Phone, ShieldCheck, Zap, ArrowRight, Shield, Database, LockKeyhole, RefreshCw, ChevronDown } from 'lucide-react';
 import API from '../api/axios';
 import Toast from '../components/Toast';
+import { logFailure } from '../utils/logFailure';
 
 export default function SettingsPage() {
   const { role } = useAuth();
@@ -208,6 +209,7 @@ function MyProfileTab({ setToast }) {
       }
       
       setToast({ msg: errorMsg, type: 'error' });
+      logFailure(`Failed to update profile for '${profile.displayName}': ${errorMsg}`, 'Settings');
     }
     setLoading(false);
   };
@@ -460,6 +462,7 @@ function SystemSettingsTab({ setToast }) {
         .then(() => setToast({ msg: 'Settings updated successfully.', type: 'success' }))
         .catch(() => {
           setToast({ msg: 'Auto-save failed.', type: 'error' });
+          logFailure(`Failed to auto-save system setting '${key}'`, 'Settings');
           setSettings(prev);
         });
       return updated;
@@ -606,6 +609,7 @@ function SMTPConfigurationTab({ setToast }) {
       }
     } catch {
       setError('Identity verification failure. Access restricted.');
+      logFailure('Failed sudo verification for SMTP configuration', 'Auth');
     }
   };
 
@@ -619,6 +623,7 @@ function SMTPConfigurationTab({ setToast }) {
       setPasswordConfigured(true);
     } catch {
       setToast({ msg: 'Pipeline configuration failure.', type: 'error' });
+      logFailure('Failed to update SMTP configuration', 'Settings');
     }
     setSaving(false);
   };

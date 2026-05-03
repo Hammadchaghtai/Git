@@ -89,7 +89,11 @@ export default function Dashboard() {
     );
   }
 
-  const { total_agents_scanned, overall_compliance_score, framework_scores, top_failed_controls, recent_scans } = data;
+  const { total_agents_scanned, overall_compliance_score, framework_scores, top_failed_controls, recent_scans, pc_scores, department_scores } = data;
+
+  // Calculate dynamic limit based on vertical rows in the left column
+  const leftRows = Math.ceil((department_scores?.length || 0) / 3) + Math.ceil((pc_scores?.length || 0) / 3);
+  const auditLimit = Math.max(5, (leftRows * 2) + 1); 
 
   /* Donut data */
   const donutData = [
@@ -128,7 +132,7 @@ export default function Dashboard() {
       {/* ── Stat Cards Row ──────────────────── */}
       <div className="mb-10 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-5">
         <Link to="/scans" className="block no-underline">
-          <StatCard icon={Activity} label="Active Agents" value={total_agents_scanned} color="text-brand-600" bgColor="bg-brand-50" />
+          <StatCard icon={Activity} label="Active PCs" value={total_agents_scanned} color="text-brand-600" bgColor="bg-brand-50" />
         </Link>
         <StatCard icon={ShieldCheck} label="Overall Score" value={`${overall_compliance_score}%`} color="text-emerald-600" bgColor="bg-emerald-50" />
         <Link to="/frameworks" className="block no-underline">
@@ -263,27 +267,65 @@ export default function Dashboard() {
       </div>
 
       {/* ── Bottom Row (Recent Scans + Activity Log) ───────── */}
-      <div className="mt-8 grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
+      <div className="mt-8 grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12 items-start">
         
-        {/* Recent Scans */}
-        {recent_scans.length > 0 && (
-          <div className="cyber-card p-8">
-            <h3 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-6">Recent Reports</h3>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              {recent_scans.slice(0, 3).map((scan) => (
-                <div key={scan.id} className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 text-center transition-all hover:shadow-md">
-                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Agent {scan.agent_id}</span>
-                  <div className={`mt-2 text-2xl font-black ${scan.overall_score >= 70 ? 'text-emerald-600' : 'text-amber-600'}`}>
-                    {scan.overall_score}%
-                  </div>
-                  <div className="mt-2 text-[10px] font-bold text-slate-400 flex items-center justify-center gap-1.5 uppercase">
-                     <Clock className="w-3.5 h-3.5" /> {new Date(scan.scan_date).toLocaleDateString()}
-                  </div>
-                </div>
-              ))}
+        {/* Recent Reports / Departments & PCs */}
+        <div className="cyber-card p-8">
+          <div className="mb-6 flex items-center justify-between">
+            <div>
+              <h3 className="text-xs font-bold text-slate-400 uppercase tracking-widest">Recent Reports</h3>
+              <p className="text-lg font-bold text-slate-900 dark:text-white mt-1">Departments & PCs</p>
             </div>
+            <Link to="/scans" className="text-brand-600 hover:text-brand-700 font-bold text-sm no-underline">View Details</Link>
           </div>
-        )}
+
+          {/* Departments row */}
+          {department_scores && department_scores.length > 0 && (
+            <div className="mb-6">
+              <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3">Departments</h4>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                {department_scores.map((dept, idx) => {
+                  let scoreColor = 'text-emerald-600 dark:text-emerald-400';
+                  if (dept.score < 50) scoreColor = 'text-red-600 dark:text-red-400';
+                  else if (dept.score < 75) scoreColor = 'text-amber-500 dark:text-amber-400';
+                  return (
+                    <div key={idx} className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 text-center transition-all hover:shadow-md">
+                      <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block truncate">{dept.department}</span>
+                      <div className={`mt-2 text-2xl font-black ${scoreColor}`}>{dept.score}%</div>
+                      <div className="mt-1 text-[10px] font-bold text-slate-400 uppercase">{dept.pc_count} PCs</div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
+          {/* PCs row */}
+          {pc_scores && pc_scores.length > 0 && (
+            <div>
+              <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3">Top PCs</h4>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                {pc_scores.map((pc, idx) => {
+                  let scoreColor = 'text-emerald-600 dark:text-emerald-400';
+                  if (pc.score < 50) scoreColor = 'text-red-600 dark:text-red-400';
+                  else if (pc.score < 75) scoreColor = 'text-amber-500 dark:text-amber-400';
+                  return (
+                    <div key={idx} className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 text-center transition-all hover:shadow-md">
+                      <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block truncate">{pc.display_name}</span>
+                      <div className={`mt-2 text-2xl font-black ${scoreColor}`}>{pc.score}%</div>
+                      <div className="mt-1 text-[10px] font-bold text-slate-400 uppercase">{pc.department}</div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
+          {/* Fallback if no data */}
+          {(!department_scores || department_scores.length === 0) && (!pc_scores || pc_scores.length === 0) && (
+            <div className="py-8 text-center text-slate-400 text-xs font-bold uppercase tracking-widest">No scan data available.</div>
+          )}
+        </div>
 
         {/* Mini Audit Log */}
         {data.recent_activity?.length > 0 && (
@@ -296,7 +338,7 @@ export default function Dashboard() {
               <Link to="/reports" className="text-brand-600 hover:text-brand-700 font-bold text-sm no-underline">See Full Log</Link>
             </div>
             <div className="space-y-5">
-              {data.recent_activity.slice(0, 4).map((log) => (
+              {data.recent_activity.slice(0, auditLimit).map((log) => (
                 <div key={log.id} className="flex items-start gap-4 group">
                   <div className="mt-1.5 h-2 w-2 flex-shrink-0 rounded-full bg-brand-600 shadow-lg shadow-brand-600/40" />
                   <div className="flex-1">
