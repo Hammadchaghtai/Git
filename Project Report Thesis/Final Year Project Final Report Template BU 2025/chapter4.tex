@@ -1,0 +1,40 @@
+\chapter{Design} \label{chap:design}
+
+%\version{v1.10.2015}
+
+\section*{}
+
+Systems design is the process of defining the architecture, components, modules, interfaces, and data for a system to satisfy specified requirements. This chapter should have the following sections:
+
+\section{System Architecture}
+This section describes the system in narrative form using non-technical terms.  It should provide a high-level system architecture diagram showing a subsystem breakout of the system, if applicable.  The high-level system architecture or subsystem diagrams should, if applicable, show interfaces to external systems.  Supply a high-level context diagram for the system and subsystems, if applicable.  
+\section{Design Constraints}
+
+This section describes any constraints in the system design (reference any trade-off analyses conducted such, as resource use versus productivity, or conflicts with other systems) and includes any assumptions made during the developing the system design.
+\section{Design Methodology}
+
+Summarize the approach that will be used to create and evolve the designs for this system. Cover any processes, conventions, policies, techniques or other issues which will guide design work. This is for deciding whether you will use structured, object-oriented or other specific methodologies.  Most people will use some object-oriented technique with UML.
+\section{High Level Design}
+This section describes in further detail elements discussed in the Architecture. 
+High-level designs are most effective if they attempt to model groups of system elements from a number of different views.  Typical viewpoints are: 
+\begin{enumerate}
+	\item   Conceptual or Logical: This view shows the logical functional elements of the system.  Each component represents a similar grouping of functionality.  For UML, this would be a component diagram or a package diagram.
+	\item   Process:  this view is the runtime view of the system.  The components are threads or processes or distributed applications.  In UML, this would be a process interaction diagram.
+	\item   Physical:  this view is for distributed systems. The components are physical processors that have parts of the system running on them.  For UML, this would be a deployment diagram.
+	\item   Module:  this view is for project management and code organization.  The components are typically files or directories.  This picture shows how the directory structure of the build and development environment will be designed.
+	\item   Security: this view typically focuses on the components that cooperate to provide security features of the system.  It is often a subset of the Conceptual view.
+\end{enumerate}
+
+\section{Low Level Design}
+This section provides low-level design descriptions that directly support construction of modules. Normally this section would be split into separate documents for different areas of the design.  For each component we now need to break it down into its fundamental units or modules.  For an OO implementation in Java, our components would become packages.  Then the low level design will take each package and break it down into its classes.  For smaller systems, you may have a single UML class diagram that each module description refers to.
+
+\section{Database Design}
+The section should reveal the final design of all database management system (DBMS) files and the non-DBMS files associated with the system under development.  Provide a comprehensive data dictionary showing data element name, type, length, source, validation rules, maintenance (create, read, update, delete capability), data stores, outputs, aliases, and description.
+
+\section{GUI Design}
+This section provides the detailed design of the system and subsystem inputs and outputs relative to the user.  Depending on the particular nature of the project, it may be appropriate to repeat these sections at both the subsystem and design module levels.  
+
+\section{External Interfaces}
+External systems are any systems that are not within the scope of the system under development.  In this section, describe the electronic interface(s) between this system and each of the other systems and/or subsystem(s), emphasizing the point of view of the system being developed.
+
+

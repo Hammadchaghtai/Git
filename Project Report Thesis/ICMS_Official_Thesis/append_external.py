@@ -6,16 +6,16 @@ with open(file_path, 'r', encoding='utf-8') as f:
 
 new_section_4_8 = r'''
 \section{External Interfaces}
-The Intelligent Compliance Management System (ICMS) operates within a broader enterprise ecosystem, requiring deterministic and secure communication with external services. This section defines the technical specifications, protocols, and data exchange formats for all external interfaces interacting with the platform.
+The Intelligent Security Compliance Management System (ISCMS) operates within a broader enterprise ecosystem, requiring deterministic and secure communication with external services. This section defines the technical specifications, protocols, and data exchange formats for all external interfaces interacting with the platform.
 
 \subsection{Wazuh SIEM REST API}
-The core analytical engine of the ICMS relies on raw telemetry ingested from the external Wazuh Manager. The Celery worker fleet interfaces with the Wazuh RESTful API over HTTPS (TLS 1.3) to retrieve endpoint security states, vulnerability assessments, and active rule configurations. To ensure secure communication, the system authenticates using dynamically generated Bearer tokens or pre-shared API keys provisioned directly on the Wazuh Manager. All data payloads are serialized in JSON format, requiring rigorous parsing and validation against the internal Django ORM schema prior to persistence.
+The core analytical engine of the ISCMS relies on raw telemetry ingested from the external Wazuh Manager. The Celery worker fleet interfaces with the Wazuh RESTful API over HTTPS (TLS 1.3) to retrieve endpoint security states, vulnerability assessments, and active rule configurations. To ensure secure communication, the system authenticates using dynamically generated Bearer tokens or pre-shared API keys provisioned directly on the Wazuh Manager. All data payloads are serialized in JSON format, requiring rigorous parsing and validation against the internal Django ORM schema prior to persistence.
 
 \subsection{SMTP Notification Gateway}
 To fulfill the real-time alerting mandates of the compliance workflows, the platform interfaces with an external Simple Mail Transfer Protocol (SMTP) server. When the rules engine detects a critical compliance failure, the backend constructs an HTML-formatted alert payload and transmits it via SMTP over TCP port 587, utilizing STARTTLS encryption. This interface is strictly outbound and operates asynchronously via the message broker to prevent blocking the primary request-response cycle of the API Gateway.
 
 \subsection{Outbound Webhook Integration}
-To support interoperability with third-party enterprise tools, such as external incident response platforms or communication channels (e.g., Slack, Microsoft Teams), the ICMS provides an outbound webhook interface. The system dispatches automated HTTP POST requests containing structured JSON event data whenever a defined compliance threshold is breached. To ensure non-repudiation, these payloads include a cryptographic HMAC-SHA256 signature in the request header, allowing the receiving external system to verify the authenticity and integrity of the alert payload.
+To support interoperability with third-party enterprise tools, such as external incident response platforms or communication channels (e.g., Slack, Microsoft Teams), the ISCMS provides an outbound webhook interface. The system dispatches automated HTTP POST requests containing structured JSON event data whenever a defined compliance threshold is breached. To ensure non-repudiation, these payloads include a cryptographic HMAC-SHA256 signature in the request header, allowing the receiving external system to verify the authenticity and integrity of the alert payload.
 
 \subsection{Interface Specification Matrix}
 Table \ref{tab:external_interfaces} summarizes the technical parameters and boundary constraints of the platform's external interfaces.

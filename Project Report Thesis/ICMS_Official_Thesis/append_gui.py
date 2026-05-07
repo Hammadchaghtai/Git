@@ -9,7 +9,7 @@ new_section_4_7 = r'''
 The Graphical User Interface (GUI) serves as the primary interaction layer between the system administrators, auditors, and the underlying compliance engine. Built as a React Single Page Application (SPA), the interface prioritizes Human-Computer Interaction (HCI) principles, minimizing cognitive load through a clean, data-driven layout. The system natively supports global theme switching (Dark/Light mode) for accessibility; however, to maintain document conciseness, the following architectural views are primarily demonstrated in the default Dark Mode.
 
 \subsection{Authentication and Identity Management}
-The authentication portal serves as the secure entry point to the ICMS platform. The interface is deliberately minimalist to focus the user's attention on credential submission, securely routing them to their respective Role-Based Access Control (RBAC) dashboards upon JWT validation.
+The authentication portal serves as the secure entry point to the ISCMS platform. The interface is deliberately minimalist to focus the user's attention on credential submission, securely routing them to their respective Role-Based Access Control (RBAC) dashboards upon JWT validation.
 
 \begin{figure}[H]
     \centering
@@ -20,7 +20,7 @@ The authentication portal serves as the secure entry point to the ICMS platform.
 \end{figure}
 
 \subsection{Superadmin Configuration Portal}
-The Superadmin role possesses absolute read/write authority over the ICMS platform. The interface provides deep visibility into the Wazuh telemetry pipeline, framework mapping configurations, and user management. 
+The Superadmin role possesses absolute read/write authority over the ISCMS platform. The interface provides deep visibility into the Wazuh telemetry pipeline, framework mapping configurations, and user management. 
 
 \begin{figure}[H]
     \centering
@@ -68,7 +68,7 @@ To enforce strict separation of duties, the UI dynamically re-renders based on t
 \end{figure}
 
 \subsection{Automated PDF Audit Artifacts}
-A critical deliverable of the ICMS platform is the automated compilation of executive audit reports. The backend rendering engine aggregates dynamic PostgreSQL states into heavily formatted PDF artifacts. The following views represent the system-generated output utilized by external governance bodies.
+A critical deliverable of the ISCMS platform is the automated compilation of executive audit reports. The backend rendering engine aggregates dynamic PostgreSQL states into heavily formatted PDF artifacts. The following views represent the system-generated output utilized by external governance bodies.
 
 \begin{figure}[H]
     \centering

@@ -1,20 +1,20 @@
 \chapter{User Manual}
 
 \section{Purpose}
-The Intelligent Compliance Management System (ICMS) is a Governance, Risk, and Compliance (GRC) platform. It automates the auditing process by mapping technical telemetry from the Wazuh SIEM to regulatory frameworks, reducing the need for manual spreadsheet-based assessments.
+The Intelligent Security Compliance Management System (ISCMS) is a Governance, Risk, and Compliance (GRC) platform. It automates the auditing process by mapping technical telemetry from the Wazuh SIEM to regulatory frameworks, reducing the need for manual spreadsheet-based assessments.
 
 \section{System Requirements}
 The following requirements are for system operation:
 \begin{itemize}
     \item \textbf{Device:} Workstation with a minimum 1080p resolution recommended for viewing data tables.
     \item \textbf{Web Browser:} Google Chrome v100+, Mozilla Firefox v100+, or Microsoft Edge.
-    \item \textbf{Network:} Intranet or VPN access to the ICMS environment.
+    \item \textbf{Network:} Intranet or VPN access to the ISCMS environment.
     \item \textbf{Authentication:} Authenticator Application (e.g., Google Authenticator, Authy) for TOTP Two-Factor Authentication.
 \end{itemize}
 
 \section{System Access}
 \begin{itemize}
-    \item Navigate to the ICMS URL in a supported web browser.
+    \item Navigate to the ISCMS URL in a supported web browser.
     \item Enter the registered email and password.
     \item Provide the 6-digit TOTP code from the authenticator application.
     \item Access the dashboard corresponding to the assigned role (Superadmin, Admin, or Auditor).
@@ -31,7 +31,7 @@ The following requirements are for system operation:
 \begin{figure}[H]
     \centering
     \includegraphics[width=1.0\textwidth]{"images/login.png"}
-    \caption{ICMS authentication portal.}
+    \caption{ISCMS authentication portal.}
     \label{fig:manual_login}
 \end{figure}
 
@@ -157,4 +157,4 @@ The following requirements are for system operation:
 \end{itemize}
 
 \section{Note}
-The ICMS platform automates compliance visibility and reporting. The system provides mappings based on SIEM telemetry and is an orchestration and governance tool. Maintaining compliance requires remediation of identified vulnerabilities. The ICMS highlights security gaps, but administrative action on the endpoints is necessary to resolve them.
+The ISCMS platform automates compliance visibility and reporting based on SIEM telemetry. It highlights security gaps and maps them to regulatory controls, but resolving those gaps requires administrative action on the affected endpoints.
