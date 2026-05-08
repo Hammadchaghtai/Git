@@ -1,13 +1,13 @@
 \chapter{Design}
 
 \section{System Architecture}
-The Intelligent Compliance Management System (ICMS) uses an N-tier architecture. Separating the frontend, API, background workers, and database allows for scaling and debugging of individual components without affecting the entire system. Figure \ref{fig:tier_architecture} shows the four main layers.
+The Intelligent Security Compliance Management System (ISCMS) uses an N-tier architecture. Separating the frontend, API, background workers, and database allows for scaling and debugging of individual components without affecting the entire system. Figure \ref{fig:tier_architecture} shows the four main layers.
 
 \subsection{Client and Presentation Tier}
-The frontend is a React 18 Single Page Application (SPA). Moving the rendering logic to the browser reduces server load. This architecture also ensures that analysts can review compliance alerts without full page reloads.
+The frontend is a React 18 Single Page Application (SPA). Moving the rendering logic to the browser reduces server load and lets analysts review compliance alerts without full page reloads.
 
 \subsection{Application and Middleware Tier}
-The backend uses the Django REST Framework. It functions as the primary gateway, verifying JWTs and enforcing role-based access before processing queries. Database traffic is routed through Django to maintain a consistent security boundary.
+The backend uses the Django REST Framework. It is the primary gateway, verifying JWTs and enforcing role-based access before processing queries. Database traffic is routed through Django to maintain a consistent security boundary.
 
 \subsection{Asynchronous Processing Tier}
 Retrieving telemetry from the Wazuh SIEM is an I/O-intensive process. Executing these tasks on the main Django thread would cause API latency and timeouts. To prevent this, the system offloads I/O tasks to background Celery workers using Redis as the message broker.
@@ -53,19 +53,19 @@ PostgreSQL 18 is the primary database for its ACID guarantees. The schema uses r
             node[midway, above=6pt, label] {State Commits};
     \end{tikzpicture}
     }
-    \caption{Tier-wise System Architecture of the ICMS Platform}
+    \caption{Tier-wise System Architecture of the ISCMS Platform}
     \label{fig:tier_architecture}
 \end{figure}
 
 \section{Design Constraints}
-The design of the ICMS involved addressing several technical and environmental constraints.
+The design of the ISCMS involved addressing several technical and environmental constraints.
 
 \subsection{Technical Constraints}
 For security, the database and Redis broker operate inside a private Docker bridge network. Their ports are not exposed to the host machine. Access to data requires requests through the Django API container.
 
 The integration with the Wazuh API introduced rate limits and network latency. Celery workers are configured to batch and throttle polling requests. Consequently, the dashboard displays the compliance state from the last successful synchronization rather than a real-time feed.
 
-On the frontend, rendering large compliance grids can impact browser performance. Loading thousands of DOM nodes simultaneously can block the main thread. This is addressed by using React virtualization, which ensures the UI only renders visible elements.
+On the frontend, rendering large compliance grids can impact browser performance. Loading thousands of DOM nodes simultaneously can block the main thread. React virtualization addresses this by rendering only the visible elements.
 
 \subsection{Infrastructure and Operational Constraints}
 External factors, such as restricted access to university facilities, required the transition to developing and testing the architecture in a home-lab environment.
@@ -110,7 +110,7 @@ Figure \ref{fig:component_diagram} shows the interactions between system modules
     ]
         % System Boundary (Shifted up slightly for title clearance)
         \node[draw=blue!80!black, thick, minimum width=19.5cm, minimum height=8.2cm, fill=blue!2, rounded corners=5pt, dashed] (system) at (3, 0.85) {};
-        \node[anchor=north west, xshift=2mm, yshift=-1mm, font=\bfseries\large, text=blue!80!black] at (system.north west) {ICMS Application Subsystem};
+        \node[anchor=north west, xshift=2mm, yshift=-1mm, font=\bfseries\large, text=blue!80!black] at (system.north west) {ISCMS Application Subsystem};
 
         % ROW 0: External Top
         \node[extcomp] (wazuh) at (9.5, 7.2) {External Wazuh\\Manager API};
@@ -145,7 +145,7 @@ Figure \ref{fig:component_diagram} shows the interactions between system modules
 \end{figure}
 
 \subsection{Deployment Diagram}
-Figure \ref{fig:deployment_diagram} outlines the Docker container environment. The Django backend, Celery workers, Redis, and PostgreSQL are deployed on the same host but isolated within a private bridge network. This configuration ensures the database remains inaccessible from external networks.
+Figure \ref{fig:deployment_diagram} outlines the Docker container environment. The Django backend, Celery workers, Redis, and PostgreSQL are deployed on the same host but isolated within a private bridge network. This keeps the database inaccessible from external networks.
 
 \begin{figure}[H]
     \centering
@@ -493,10 +493,12 @@ The platform includes an alerting pipeline as shown in Figure \ref{fig:activity_
 \end{figure}
 
 \subsection{System Sequence Diagrams}
-The sequence diagrams below show the interactions between internal system components over time.
+The sequence diagrams below trace the linear interactions between internal system components for each use case. Each diagram is identified by an SD-XX-Y code that maps directly to the parent UC-XX use case.
 
-\subsubsection{Authentication and JWT Issuance}
-Figure \ref{fig:seq_auth} shows the API calls during the login process. If the credentials match, the IAM module issues a JWT. If the verification fails, the system returns an HTTP 401 Unauthorized response.
+\subsubsection{SD-01: User Authentication}
+The authentication sequence covers both the success and failure paths for UC-01. A valid credential submission results in JWT issuance, while an invalid submission terminates with an HTTP 401 response. These two paths are documented as SD-01-1 and SD-01-2 respectively.
+
+Figure \ref{fig:sd_01_1} traces the success path. The client submits credentials via POST /login, the IAM module verifies the password hash against the database, signs a JWT, and returns it to the client.
 
 \begin{figure}[H]
     \centering
@@ -509,53 +511,66 @@ Figure \ref{fig:seq_auth} shows the API calls during the login process. If the c
         reply/.style={Stealth-, thick, dashed, draw=black!80},
         label/.style={font=\scriptsize, inner sep=2pt}
     ]
-        % Instances
         \node[inst] (client) at (0, 0) {React SPA};
         \node[inst] (api) at (4.5, 0) {API Gateway};
         \node[inst] (iam) at (9, 0) {IAM Module};
         \node[inst] (db) at (13.5, 0) {PostgreSQL};
-
-        % Lifelines
-        \draw[dashed, draw=black!60, thick] (client.south) -- ++(0, -10.5);
-        \draw[dashed, draw=black!60, thick] (api.south) -- ++(0, -10.5);
-        \draw[dashed, draw=black!60, thick] (iam.south) -- ++(0, -10.5);
-        \draw[dashed, draw=black!60, thick] (db.south) -- ++(0, -10.5);
-
-        % Activation Boxes
-        \draw[act] ([xshift=-0.15cm, yshift=-1cm]client.south) rectangle ([xshift=0.15cm, yshift=-10cm]client.south);
-        \draw[act] ([xshift=-0.15cm, yshift=-1.2cm]api.south) rectangle ([xshift=0.15cm, yshift=-9.8cm]api.south);
-        \draw[act] ([xshift=-0.15cm, yshift=-2cm]iam.south) rectangle ([xshift=0.15cm, yshift=-9.5cm]iam.south);
+        \draw[dashed, draw=black!60, thick] (client.south) -- ++(0, -8);
+        \draw[dashed, draw=black!60, thick] (api.south) -- ++(0, -8);
+        \draw[dashed, draw=black!60, thick] (iam.south) -- ++(0, -8);
+        \draw[dashed, draw=black!60, thick] (db.south) -- ++(0, -8);
+        \draw[act] ([xshift=-0.15cm, yshift=-1cm]client.south) rectangle ([xshift=0.15cm, yshift=-7.5cm]client.south);
+        \draw[act] ([xshift=-0.15cm, yshift=-1.2cm]api.south) rectangle ([xshift=0.15cm, yshift=-7.3cm]api.south);
+        \draw[act] ([xshift=-0.15cm, yshift=-2cm]iam.south) rectangle ([xshift=0.15cm, yshift=-7cm]iam.south);
         \draw[act] ([xshift=-0.15cm, yshift=-3cm]db.south) rectangle ([xshift=0.15cm, yshift=-4.5cm]db.south);
-
-        % Messages
-        \draw[msg] ([yshift=-1.5cm]client.south) -- ([yshift=-1.5cm]api.south) node[midway, above=2pt, label] {1. Submit Login Credentials};
-        \draw[msg] ([yshift=-2.5cm]api.south) -- ([yshift=-2.5cm]iam.south) node[midway, above=2pt, label] {2. Request Authentication};
-        \draw[msg] ([yshift=-3.5cm]iam.south) -- ([yshift=-3.5cm]db.south) node[midway, above=2pt, label] {3. Query User Hash};
-        \draw[reply] ([yshift=-4cm]iam.south) -- ([yshift=-4cm]db.south) node[midway, above=2pt, label] {4. Return Encrypted Hash};
-
-        % ALT Fragment
-        \draw[thick, draw=black!80, fill=none] (-1, -4.5) rectangle (14.5, -9.5);
-        \draw[thick, draw=black!80, fill=gray!20] (-1, -4.5) -- ++(1.2,0) -- ++(0,-0.5) -- ++(-1.2,0) -- cycle;
-        \node[font=\scriptsize\bfseries] at (-0.4, -4.75) {alt};
-        \node[font=\scriptsize, right] at (0.3, -4.75) {[Valid Credentials]};
-        
-        \draw[msg] ([yshift=-5.5cm]iam.south) ++(0.15cm,0) -- ++(0.8,0) -- ++(0,-0.8) -- ++(-0.8,0) node[midway, right=4pt, label, text width=2.5cm, opacity=1] {5. Sign \& Issue JWT};
-        \draw[reply] ([yshift=-6.8cm]api.south) -- ([yshift=-6.8cm]iam.south) node[midway, above=2pt, label, opacity=1] {6. Return Stateless JWT};
-        \draw[reply] ([yshift=-7.3cm]client.south) -- ([yshift=-7.3cm]api.south) node[midway, above=2pt, label, opacity=1] {7. HTTP 200 OK + JWT Pair};
-
-        \draw[dashed, thick, draw=black!80] (-1, -7.8) -- (14.5, -7.8);
-        \node[font=\scriptsize, right] at (-0.8, -8.1) {[Invalid Credentials]};
-
-        \draw[reply] ([yshift=-8.6cm]api.south) -- ([yshift=-8.6cm]iam.south) node[midway, above=2pt, label, opacity=1] {8. Raise Authentication Error};
-        \draw[reply] ([yshift=-9.1cm]client.south) -- ([yshift=-9.1cm]api.south) node[midway, above=2pt, label, opacity=1] {9. HTTP 401 Unauthorized};
+        \draw[msg] ([yshift=-1.5cm]client.south) -- ([yshift=-1.5cm]api.south) node[midway, above=2pt, label] {1. POST /login};
+        \draw[msg] ([yshift=-2.5cm]api.south) -- ([yshift=-2.5cm]iam.south) node[midway, above=2pt, label] {2. Verify()};
+        \draw[msg] ([yshift=-3.5cm]iam.south) -- ([yshift=-3.5cm]db.south) node[midway, above=2pt, label] {3. Query User};
+        \draw[reply] ([yshift=-4.2cm]iam.south) -- ([yshift=-4.2cm]db.south) node[midway, above=2pt, label] {4. Return Hash};
+        \draw[msg] ([yshift=-5.2cm]iam.south) ++(0.15cm,0) -- ++(0.8,0) -- ++(0,-0.6) -- ++(-0.8,0) node[midway, right=4pt, label, text width=2cm] {5. Sign JWT};
+        \draw[reply] ([yshift=-6.5cm]client.south) -- ([yshift=-6.5cm]api.south) node[midway, above=2pt, label] {6. 200 OK (JWT)};
     \end{tikzpicture}
     }
-    \caption{Sequence Diagram: Authentication Flow with UML Alt Fragment}
-    \label{fig:seq_auth}
+    \caption{SD-01-1: Valid Authentication Flow}
+    \label{fig:sd_01_1}
 \end{figure}
 
-\subsubsection{Asynchronous Telemetry Ingestion}
-The telemetry synchronization uses a bulk update pattern to optimize database performance, as shown in Figure \ref{fig:seq_sync}. The Celery worker retrieves endpoint states from Wazuh, processes the impacts on the regulatory framework, and commits the results to PostgreSQL in a single transaction.
+Figure \ref{fig:sd_01_2} traces the failure path. The submitted password hash does not match, and the system returns an HTTP 401 response without issuing any tokens.
+
+\begin{figure}[H]
+    \centering
+    \resizebox{0.85\textwidth}{!}{
+    \begin{tikzpicture}[
+        node distance=2cm,
+        inst/.style={rectangle, draw=black!90, thick, fill=blue!5, minimum width=2.8cm, minimum height=0.8cm, font=\small\bfseries, rounded corners=2pt},
+        act/.style={rectangle, draw=black!90, fill=gray!20, minimum width=0.3cm},
+        msg/.style={-Stealth, thick, draw=black!90},
+        reply/.style={Stealth-, thick, dashed, draw=black!80},
+        label/.style={font=\scriptsize, inner sep=2pt}
+    ]
+        \node[inst] (client) at (0, 0) {React SPA};
+        \node[inst] (api) at (4.5, 0) {API Gateway};
+        \node[inst] (iam) at (9, 0) {IAM Module};
+        \draw[dashed, draw=black!60, thick] (client.south) -- ++(0, -6);
+        \draw[dashed, draw=black!60, thick] (api.south) -- ++(0, -6);
+        \draw[dashed, draw=black!60, thick] (iam.south) -- ++(0, -6);
+        \draw[act] ([xshift=-0.15cm, yshift=-1cm]client.south) rectangle ([xshift=0.15cm, yshift=-5.5cm]client.south);
+        \draw[act] ([xshift=-0.15cm, yshift=-1.2cm]api.south) rectangle ([xshift=0.15cm, yshift=-5.3cm]api.south);
+        \draw[act] ([xshift=-0.15cm, yshift=-2cm]iam.south) rectangle ([xshift=0.15cm, yshift=-4cm]iam.south);
+        \draw[msg] ([yshift=-1.5cm]client.south) -- ([yshift=-1.5cm]api.south) node[midway, above=2pt, label] {1. POST /login};
+        \draw[msg] ([yshift=-2.5cm]api.south) -- ([yshift=-2.5cm]iam.south) node[midway, above=2pt, label] {2. Verify()};
+        \draw[reply] ([yshift=-3.5cm]api.south) -- ([yshift=-3.5cm]iam.south) node[midway, above=2pt, label] {3. Hash Mismatch};
+        \draw[reply] ([yshift=-4.8cm]client.south) -- ([yshift=-4.8cm]api.south) node[midway, above=2pt, label] {4. 401 Unauthorized};
+    \end{tikzpicture}
+    }
+    \caption{SD-01-2: Invalid Authentication Flow}
+    \label{fig:sd_01_2}
+\end{figure}
+
+\subsubsection{SD-02: Manage Wazuh Telemetry Synchronization}
+This sequence traces UC-02, the telemetry synchronization pipeline. The Django API dispatches the task to a Celery worker, which polls the Wazuh SIEM, maps the returned rules to framework controls, and commits the resolved states to PostgreSQL.
+
+Figure \ref{fig:sd_02_1} documents the linear success path for the synchronization operation.
 
 \begin{figure}[H]
     \centering
@@ -568,54 +583,34 @@ The telemetry synchronization uses a bulk update pattern to optimize database pe
         reply/.style={Stealth-, thick, dashed, draw=black!80},
         label/.style={font=\scriptsize, inner sep=2pt}
     ]
-        % Instances
-        \node[inst] (api) at (0, 0) {Django API};
-        \node[inst] (redis) at (4, 0) {Redis Broker};
-        \node[inst] (celery) at (8, 0) {Celery Worker};
-        \node[inst] (wazuh) at (12, 0) {Wazuh SIEM};
-        \node[inst] (db) at (16, 0) {PostgreSQL};
-
-        % Lifelines
-        \draw[dashed, draw=black!60, thick] (api.south) -- ++(0, -9.5);
-        \draw[dashed, draw=black!60, thick] (redis.south) -- ++(0, -9.5);
-        \draw[dashed, draw=black!60, thick] (celery.south) -- ++(0, -9.5);
-        \draw[dashed, draw=black!60, thick] (wazuh.south) -- ++(0, -9.5);
-        \draw[dashed, draw=black!60, thick] (db.south) -- ++(0, -9.5);
-
-        % Activation Boxes
-        \draw[act] ([xshift=-0.15cm, yshift=-0.8cm]api.south) rectangle ([xshift=0.15cm, yshift=-2.2cm]api.south);
-        \draw[act] ([xshift=-0.15cm, yshift=-1cm]redis.south) rectangle ([xshift=0.15cm, yshift=-3.5cm]redis.south);
-        \draw[act] ([xshift=-0.15cm, yshift=-2.8cm]celery.south) rectangle ([xshift=0.15cm, yshift=-9cm]celery.south);
-        \draw[act] ([xshift=-0.15cm, yshift=-4cm]wazuh.south) rectangle ([xshift=0.15cm, yshift=-5.5cm]wazuh.south);
-        \draw[act] ([xshift=-0.15cm, yshift=-8cm]db.south) rectangle ([xshift=0.15cm, yshift=-9cm]db.south);
-
-        % Messages
-        \draw[msg] ([yshift=-1.2cm]api.south) -- ([yshift=-1.2cm]redis.south) node[midway, above=2pt, label] {1. Enqueue Synchronization Task};
-        \draw[reply] ([yshift=-1.8cm]api.south) -- ([yshift=-1.8cm]redis.south) node[midway, above=2pt, label] {2. Acknowledge Queue (HTTP 202)};
-        
-        \draw[msg] ([yshift=-3cm]redis.south) -- ([yshift=-3cm]celery.south) node[midway, above=2pt, label] {3. Consume Task Payload};
-        \draw[msg] ([yshift=-4.2cm]celery.south) -- ([yshift=-4.2cm]wazuh.south) node[midway, above=2pt, label] {4. Request Endpoint Telemetry};
-        \draw[reply] ([yshift=-5.2cm]celery.south) -- ([yshift=-5.2cm]wazuh.south) node[midway, above=2pt, label] {5. Return JSON Telemetry Array};
-        
-        % LOOP Fragment
-        \draw[thick, draw=black!80, fill=none] (6.5, -5.7) rectangle (11.5, -7.2);
-        \draw[thick, draw=black!80, fill=gray!20] (6.5, -5.7) -- ++(1.4,0) -- ++(0,-0.5) -- ++(-1.4,0) -- cycle;
-        \node[font=\scriptsize\bfseries] at (7.2, -5.95) {loop};
-        \node[font=\scriptsize, right] at (8.0, -5.95) {[For Each Event]};
-
-        % Shortened self-loop to 0.8
-        \draw[msg] ([yshift=-6.3cm]celery.south) ++(0.15cm,0) -- ++(0.8,0) -- ++(0,-0.8) -- ++(-0.8,0) node[midway, right=4pt, label, text width=2.5cm, opacity=1] {6. Map Control to Framework};
-
-        \draw[msg] ([yshift=-8.3cm]celery.south) -- ([yshift=-8.3cm]db.south) node[midway, above=2pt, label] {7. Commit Resolved States};
-        \draw[reply] ([yshift=-8.8cm]celery.south) -- ([yshift=-8.8cm]db.south) node[midway, above=2pt, label] {8. Transaction Success};
+        \node[inst] (api) at (0, 0) {API Gateway};
+        \node[inst] (celery) at (5, 0) {Celery Worker};
+        \node[inst] (wazuh) at (10, 0) {Wazuh SIEM};
+        \node[inst] (db) at (15, 0) {PostgreSQL};
+        \draw[dashed, draw=black!60, thick] (api.south) -- ++(0, -8.5);
+        \draw[dashed, draw=black!60, thick] (celery.south) -- ++(0, -8.5);
+        \draw[dashed, draw=black!60, thick] (wazuh.south) -- ++(0, -8.5);
+        \draw[dashed, draw=black!60, thick] (db.south) -- ++(0, -8.5);
+        \draw[act] ([xshift=-0.15cm, yshift=-0.8cm]api.south) rectangle ([xshift=0.15cm, yshift=-2cm]api.south);
+        \draw[act] ([xshift=-0.15cm, yshift=-1.5cm]celery.south) rectangle ([xshift=0.15cm, yshift=-8cm]celery.south);
+        \draw[act] ([xshift=-0.15cm, yshift=-3cm]wazuh.south) rectangle ([xshift=0.15cm, yshift=-4.5cm]wazuh.south);
+        \draw[act] ([xshift=-0.15cm, yshift=-6cm]db.south) rectangle ([xshift=0.15cm, yshift=-7.5cm]db.south);
+        \draw[msg] ([yshift=-1.2cm]api.south) -- ([yshift=-1.2cm]celery.south) node[midway, above=2pt, label] {1. GET /sync};
+        \draw[msg] ([yshift=-3.2cm]celery.south) -- ([yshift=-3.2cm]wazuh.south) node[midway, above=2pt, label] {2. GET /wazuh/agents};
+        \draw[reply] ([yshift=-4.2cm]celery.south) -- ([yshift=-4.2cm]wazuh.south) node[midway, above=2pt, label] {3. 200 OK (JSON)};
+        \draw[msg] ([yshift=-5.2cm]celery.south) ++(0.15cm,0) -- ++(0.8,0) -- ++(0,-0.6) -- ++(-0.8,0) node[midway, right=4pt, label, text width=2cm] {4. Map Rules()};
+        \draw[msg] ([yshift=-6.5cm]celery.south) -- ([yshift=-6.5cm]db.south) node[midway, above=2pt, label] {5. Commit DB()};
+        \draw[reply] ([yshift=-7.8cm]api.south) -- ([yshift=-7.8cm]celery.south) node[midway, above=2pt, label] {6. 200 OK};
     \end{tikzpicture}
     }
-    \caption{Sequence Diagram: Background Telemetry Synchronization with UML Loop}
-    \label{fig:seq_sync}
+    \caption{SD-02-1: Telemetry Synchronization Success}
+    \label{fig:sd_02_1}
 \end{figure}
 
-\subsubsection{Framework Configuration and Rule Mapping}
-Figure \ref{fig:seq_mapping} shows the API flow for linking Wazuh rules to policies. The backend verifies permissions and records the mapping in the database. This synchronous process ensures that subsequent telemetry processing can utilize the new rule associations immediately.
+\subsubsection{SD-03: Map Framework Controls to Wazuh Rules}
+This sequence covers UC-03, the framework-to-rule mapping operation. SD-03-1 documents the success path where a new mapping is validated and persisted. SD-03-2 documents the collision path where the backend detects and rejects a duplicate entry.
+
+Figure \ref{fig:sd_03_1} traces the success path for creating a new control mapping.
 
 \begin{figure}[H]
     \centering
@@ -628,43 +623,30 @@ Figure \ref{fig:seq_mapping} shows the API flow for linking Wazuh rules to polic
         reply/.style={Stealth-, thick, dashed, draw=black!80},
         label/.style={font=\scriptsize, inner sep=2pt}
     ]
-        % Instances
         \node[inst] (client) at (0, 0) {Admin UI};
         \node[inst] (api) at (4.5, 0) {API Gateway};
         \node[inst] (db) at (9, 0) {PostgreSQL};
-
-        % Lifelines
         \draw[dashed, draw=black!60, thick] (client.south) -- ++(0, -6.5);
         \draw[dashed, draw=black!60, thick] (api.south) -- ++(0, -6.5);
         \draw[dashed, draw=black!60, thick] (db.south) -- ++(0, -6.5);
-
-        % Activation Boxes
         \draw[act] ([xshift=-0.15cm, yshift=-1cm]client.south) rectangle ([xshift=0.15cm, yshift=-6cm]client.south);
         \draw[act] ([xshift=-0.15cm, yshift=-1.2cm]api.south) rectangle ([xshift=0.15cm, yshift=-5.5cm]api.south);
         \draw[act] ([xshift=-0.15cm, yshift=-2.5cm]db.south) rectangle ([xshift=0.15cm, yshift=-4.5cm]db.south);
-
-        % Messages
-        \draw[msg] ([yshift=-1.5cm]client.south) -- ([yshift=-1.5cm]api.south) node[midway, above=2pt, label] {1. Submit Framework Mapping};
-        
-        % Shortened self-loop to 0.8
-        \draw[msg] ([yshift=-2cm]api.south) ++(0.15cm,0) -- ++(0.8,0) -- ++(0,-0.6) -- ++(-0.8,0) node[midway, right=4pt, label, text width=3cm] {2. Verify RBAC Constraints};
-
-        \draw[msg] ([yshift=-3.7cm]api.south) -- ([yshift=-3.7cm]db.south) node[midway, above=2pt, label] {3. Insert Relational Mapping};
-        \draw[reply] ([yshift=-4.7cm]api.south) -- ([yshift=-4.7cm]db.south) node[midway, above=2pt, label] {4. Return Database ACK};
-        
-        \draw[reply] ([yshift=-5.7cm]client.south) -- ([yshift=-5.7cm]api.south) node[midway, above=2pt, label] {5. HTTP 201 Created};
+        \draw[msg] ([yshift=-1.5cm]client.south) -- ([yshift=-1.5cm]api.south) node[midway, above=2pt, label] {1. POST /mappings};
+        \draw[msg] ([yshift=-2.2cm]api.south) ++(0.15cm,0) -- ++(0.8,0) -- ++(0,-0.6) -- ++(-0.8,0) node[midway, right=4pt, label, text width=2cm] {2. Validate()};
+        \draw[msg] ([yshift=-3.5cm]api.south) -- ([yshift=-3.5cm]db.south) node[midway, above=2pt, label] {3. Insert DB()};
+        \draw[reply] ([yshift=-5.5cm]client.south) -- ([yshift=-5.5cm]api.south) node[midway, above=2pt, label] {4. 201 Created};
     \end{tikzpicture}
     }
-    \caption{Sequence Diagram: Framework Rule Mapping}
-    \label{fig:seq_mapping}
+    \caption{SD-03-1: Map Controls Success}
+    \label{fig:sd_03_1}
 \end{figure}
 
-\subsubsection{Audit Report Generation}
-Figure \ref{fig:seq_report} outlines the PDF generation process. If the database query returns no records, the system terminates the request. If data is present, the reporting engine generates the PDF binary and streams it to the client.
+Figure \ref{fig:sd_03_2} traces the collision path where the backend detects a duplicate mapping and rejects it with HTTP 400.
 
 \begin{figure}[H]
     \centering
-    \resizebox{0.95\textwidth}{!}{
+    \resizebox{0.8\textwidth}{!}{
     \begin{tikzpicture}[
         node distance=2cm,
         inst/.style={rectangle, draw=black!90, thick, fill=blue!5, minimum width=2.8cm, minimum height=0.8cm, font=\small\bfseries, rounded corners=2pt},
@@ -673,56 +655,134 @@ Figure \ref{fig:seq_report} outlines the PDF generation process. If the database
         reply/.style={Stealth-, thick, dashed, draw=black!80},
         label/.style={font=\scriptsize, inner sep=2pt}
     ]
-        % Instances
-        \node[inst] (client) at (0, 0) {Auditor UI};
-        \node[inst] (api) at (4.5, 0) {Django API};
-        \node[inst] (engine) at (9, 0) {Reporting Engine};
-        \node[inst] (db) at (13.5, 0) {PostgreSQL};
-
-        % Lifelines
-        \draw[dashed, draw=black!60, thick] (client.south) -- ++(0, -9.5);
-        \draw[dashed, draw=black!60, thick] (api.south) -- ++(0, -9.5);
-        \draw[dashed, draw=black!60, thick] (engine.south) -- ++(0, -9.5);
-        \draw[dashed, draw=black!60, thick] (db.south) -- ++(0, -9.5);
-
-        % Activation Boxes
-        \draw[act] ([xshift=-0.15cm, yshift=-1cm]client.south) rectangle ([xshift=0.15cm, yshift=-9cm]client.south);
-        \draw[act] ([xshift=-0.15cm, yshift=-1.2cm]api.south) rectangle ([xshift=0.15cm, yshift=-8.5cm]api.south);
-        \draw[act] ([xshift=-0.15cm, yshift=-2cm]engine.south) rectangle ([xshift=0.15cm, yshift=-7cm]engine.south);
-        \draw[act] ([xshift=-0.15cm, yshift=-2.8cm]db.south) rectangle ([xshift=0.15cm, yshift=-4cm]db.south);
-
-        % Messages
-        \draw[msg] ([yshift=-1.5cm]client.south) -- ([yshift=-1.5cm]api.south) node[midway, above=2pt, label] {1. Request Audit Report};
-        \draw[msg] ([yshift=-2.2cm]api.south) -- ([yshift=-2.2cm]engine.south) node[midway, above=2pt, label] {2. Initialize Report Compilation};
-        \draw[msg] ([yshift=-3cm]engine.south) -- ([yshift=-3cm]db.south) node[midway, above=2pt, label] {3. Aggregate Compliance Data};
-        \draw[reply] ([yshift=-3.8cm]engine.south) -- ([yshift=-3.8cm]db.south) node[midway, above=2pt, label] {4. Return Data Collection};
-
-        % ALT Fragment
-        \draw[thick, draw=black!80, fill=none] (-1, -4.5) rectangle (14.5, -8.3);
-        \draw[thick, draw=black!80, fill=gray!20] (-1, -4.5) -- ++(1.2,0) -- ++(0,-0.5) -- ++(-1.2,0) -- cycle;
-        \node[font=\scriptsize\bfseries] at (-0.4, -4.75) {alt};
-        \node[font=\scriptsize, right] at (0.3, -4.75) {[Data Exists]};
-        
-        % Valid Path
-        \draw[msg] ([yshift=-5.5cm]engine.south) ++(0.15cm,0) -- ++(0.8,0) -- ++(0,-0.8) -- ++(-0.8,0) node[midway, right=4pt, label, text width=2.5cm, opacity=1] {5. Render PDF via Template};
-        \draw[reply] ([yshift=-6.8cm]api.south) -- ([yshift=-6.8cm]engine.south) node[midway, above=2pt, label, opacity=1] {6. Return Binary Buffer};
-
-        % Divider
-        \draw[dashed, thick, draw=black!80] (-1, -7.2) -- (14.5, -7.2);
-        \node[font=\scriptsize, right] at (-0.8, -7.5) {[Dataset Empty]};
-
-        % Invalid Path
-        \draw[reply] ([yshift=-7.8cm]api.south) -- ([yshift=-7.8cm]engine.south) node[midway, above=2pt, label, opacity=1] {7. Abort Generation (Error 404)};
-        
-        \draw[reply] ([yshift=-8.6cm]client.south) -- ([yshift=-8.6cm]api.south) node[midway, above=2pt, label, opacity=1] {8. Stream Payload or Error};
-
+        \node[inst] (client) at (0, 0) {Admin UI};
+        \node[inst] (api) at (4.5, 0) {API Gateway};
+        \draw[dashed, draw=black!60, thick] (client.south) -- ++(0, -6);
+        \draw[dashed, draw=black!60, thick] (api.south) -- ++(0, -6);
+        \draw[act] ([xshift=-0.15cm, yshift=-1cm]client.south) rectangle ([xshift=0.15cm, yshift=-5.5cm]client.south);
+        \draw[act] ([xshift=-0.15cm, yshift=-1.2cm]api.south) rectangle ([xshift=0.15cm, yshift=-5cm]api.south);
+        \draw[msg] ([yshift=-1.5cm]client.south) -- ([yshift=-1.5cm]api.south) node[midway, above=2pt, label] {1. POST /mappings};
+        \draw[msg] ([yshift=-2.5cm]api.south) ++(0.15cm,0) -- ++(0.8,0) -- ++(0,-0.6) -- ++(-0.8,0) node[midway, right=4pt, label, text width=2cm] {2. Validate()};
+        \draw[reply] ([yshift=-3.8cm]api.south) ++(0.15cm,0) -- ++(0.8,0) -- ++(0,-0.6) -- ++(-0.8,0) node[midway, right=4pt, label, text width=2.5cm] {3. Duplicate Found()};
+        \draw[reply] ([yshift=-5cm]client.south) -- ([yshift=-5cm]api.south) node[midway, above=2pt, label] {4. 400 Bad Request};
     \end{tikzpicture}
     }
-    \caption{Sequence Diagram: Report Generation with Alternative Data States}
-    \label{fig:seq_report}
+    \caption{SD-03-2: Map Collision}
+    \label{fig:sd_03_2}
 \end{figure}
+
+\subsubsection{SD-04: Monitor Endpoint Compliance Status}
+This sequence traces UC-04, the dashboard compliance monitoring flow. The React SPA requests the aggregated compliance metrics from the API, which queries PostgreSQL and returns the calculated data array for visualization on the dashboard gauge.
+
+Figure \ref{fig:sd_04_1} documents the data retrieval path for the compliance dashboard.
+
+\begin{figure}[H]
+    \centering
+    \resizebox{0.85\textwidth}{!}{
+    \begin{tikzpicture}[
+        node distance=2cm,
+        inst/.style={rectangle, draw=black!90, thick, fill=blue!5, minimum width=2.8cm, minimum height=0.8cm, font=\small\bfseries, rounded corners=2pt},
+        act/.style={rectangle, draw=black!90, fill=gray!20, minimum width=0.3cm},
+        msg/.style={-Stealth, thick, draw=black!90},
+        reply/.style={Stealth-, thick, dashed, draw=black!80},
+        label/.style={font=\scriptsize, inner sep=2pt}
+    ]
+        \node[inst] (client) at (0, 0) {React SPA};
+        \node[inst] (api) at (5, 0) {API Gateway};
+        \node[inst] (db) at (10, 0) {PostgreSQL};
+        \draw[dashed, draw=black!60, thick] (client.south) -- ++(0, -7);
+        \draw[dashed, draw=black!60, thick] (api.south) -- ++(0, -7);
+        \draw[dashed, draw=black!60, thick] (db.south) -- ++(0, -7);
+        \draw[act] ([xshift=-0.15cm, yshift=-1cm]client.south) rectangle ([xshift=0.15cm, yshift=-6.5cm]client.south);
+        \draw[act] ([xshift=-0.15cm, yshift=-1.2cm]api.south) rectangle ([xshift=0.15cm, yshift=-6cm]api.south);
+        \draw[act] ([xshift=-0.15cm, yshift=-2.5cm]db.south) rectangle ([xshift=0.15cm, yshift=-4cm]db.south);
+        \draw[msg] ([yshift=-1.5cm]client.south) -- ([yshift=-1.5cm]api.south) node[midway, above=2pt, label] {1. GET /api/compliance};
+        \draw[msg] ([yshift=-2.8cm]api.south) -- ([yshift=-2.8cm]db.south) node[midway, above=2pt, label] {2. Query Aggregated Metrics()};
+        \draw[reply] ([yshift=-3.8cm]api.south) -- ([yshift=-3.8cm]db.south) node[midway, above=2pt, label] {3. Return Data Array};
+        \draw[reply] ([yshift=-5.5cm]client.south) -- ([yshift=-5.5cm]api.south) node[midway, above=2pt, label] {4. 200 OK};
+    \end{tikzpicture}
+    }
+    \caption{SD-04-1: Monitor Endpoint Compliance Status}
+    \label{fig:sd_04_1}
+\end{figure}
+
+\subsubsection{SD-05: Resolve Compliance Anomalies}
+This sequence traces UC-05, the anomaly remediation workflow. An administrator submits a remediation request through the UI. The API dispatches the task to a Celery worker, which updates the control status in PostgreSQL and confirms the resolution.
+
+Figure \ref{fig:sd_05_1} documents the remediation dispatch and confirmation path.
+
+\begin{figure}[H]
+    \centering
+    \resizebox{0.9\textwidth}{!}{
+    \begin{tikzpicture}[
+        node distance=2cm,
+        inst/.style={rectangle, draw=black!90, thick, fill=blue!5, minimum width=2.8cm, minimum height=0.8cm, font=\small\bfseries, rounded corners=2pt},
+        act/.style={rectangle, draw=black!90, fill=gray!20, minimum width=0.3cm},
+        msg/.style={-Stealth, thick, draw=black!90},
+        reply/.style={Stealth-, thick, dashed, draw=black!80},
+        label/.style={font=\scriptsize, inner sep=2pt}
+    ]
+        \node[inst] (client) at (0, 0) {Admin UI};
+        \node[inst] (api) at (4.5, 0) {API Gateway};
+        \node[inst] (celery) at (9, 0) {Celery Worker};
+        \node[inst] (db) at (13.5, 0) {PostgreSQL};
+        \draw[dashed, draw=black!60, thick] (client.south) -- ++(0, -8);
+        \draw[dashed, draw=black!60, thick] (api.south) -- ++(0, -8);
+        \draw[dashed, draw=black!60, thick] (celery.south) -- ++(0, -8);
+        \draw[dashed, draw=black!60, thick] (db.south) -- ++(0, -8);
+        \draw[act] ([xshift=-0.15cm, yshift=-1cm]client.south) rectangle ([xshift=0.15cm, yshift=-7.5cm]client.south);
+        \draw[act] ([xshift=-0.15cm, yshift=-1.2cm]api.south) rectangle ([xshift=0.15cm, yshift=-3cm]api.south);
+        \draw[act] ([xshift=-0.15cm, yshift=-2.5cm]celery.south) rectangle ([xshift=0.15cm, yshift=-6.5cm]celery.south);
+        \draw[act] ([xshift=-0.15cm, yshift=-4.5cm]db.south) rectangle ([xshift=0.15cm, yshift=-6cm]db.south);
+        \draw[msg] ([yshift=-1.5cm]client.south) -- ([yshift=-1.5cm]api.south) node[midway, above=2pt, label] {1. POST /api/remediate};
+        \draw[msg] ([yshift=-2.8cm]api.south) -- ([yshift=-2.8cm]celery.south) node[midway, above=2pt, label] {2. Dispatch Remediation Task()};
+        \draw[msg] ([yshift=-5cm]celery.south) -- ([yshift=-5cm]db.south) node[midway, above=2pt, label] {3. Update Control Status()};
+        \draw[reply] ([yshift=-5.8cm]celery.south) -- ([yshift=-5.8cm]db.south) node[midway, above=2pt, label] {4. Commit OK};
+        \draw[reply] ([yshift=-7cm]client.south) -- ([yshift=-7cm]api.south) node[midway, above=2pt, label] {5. 200 OK};
+    \end{tikzpicture}
+    }
+    \caption{SD-05-1: Resolve Compliance Anomalies}
+    \label{fig:sd_05_1}
+\end{figure}
+
+\subsubsection{SD-06: Export Audit Reports}
+This sequence traces UC-06, the PDF audit report generation pipeline. The auditor requests a compliance report, the API queries historical data from PostgreSQL, renders the PDF binary, and streams it back to the client browser.
+
+Figure \ref{fig:sd_06_1} documents the report generation and delivery path.
+
+\begin{figure}[H]
+    \centering
+    \resizebox{0.9\textwidth}{!}{
+    \begin{tikzpicture}[
+        node distance=2cm,
+        inst/.style={rectangle, draw=black!90, thick, fill=blue!5, minimum width=2.8cm, minimum height=0.8cm, font=\small\bfseries, rounded corners=2pt},
+        act/.style={rectangle, draw=black!90, fill=gray!20, minimum width=0.3cm},
+        msg/.style={-Stealth, thick, draw=black!90},
+        reply/.style={Stealth-, thick, dashed, draw=black!80},
+        label/.style={font=\scriptsize, inner sep=2pt}
+    ]
+        \node[inst] (client) at (0, 0) {Auditor UI};
+        \node[inst] (api) at (4.5, 0) {API Gateway};
+        \node[inst] (db) at (9, 0) {PostgreSQL};
+        \draw[dashed, draw=black!60, thick] (client.south) -- ++(0, -7);
+        \draw[dashed, draw=black!60, thick] (api.south) -- ++(0, -7);
+        \draw[dashed, draw=black!60, thick] (db.south) -- ++(0, -7);
+        \draw[act] ([xshift=-0.15cm, yshift=-1cm]client.south) rectangle ([xshift=0.15cm, yshift=-6.5cm]client.south);
+        \draw[act] ([xshift=-0.15cm, yshift=-1.2cm]api.south) rectangle ([xshift=0.15cm, yshift=-6cm]api.south);
+        \draw[act] ([xshift=-0.15cm, yshift=-2.5cm]db.south) rectangle ([xshift=0.15cm, yshift=-3.5cm]db.south);
+        \draw[msg] ([yshift=-1.5cm]client.south) -- ([yshift=-1.5cm]api.south) node[midway, above=2pt, label] {1. GET /reports/pdf};
+        \draw[msg] ([yshift=-2.8cm]api.south) -- ([yshift=-2.8cm]db.south) node[midway, above=2pt, label] {2. Query Data()};
+        \draw[msg] ([yshift=-4.2cm]api.south) ++(0.15cm,0) -- ++(0.8,0) -- ++(0,-0.6) -- ++(-0.8,0) node[midway, right=4pt, label, text width=2cm] {3. Render PDF()};
+        \draw[reply] ([yshift=-5.8cm]client.south) -- ([yshift=-5.8cm]api.south) node[midway, above=2pt, label] {4. 200 OK (Binary Stream)};
+    \end{tikzpicture}
+    }
+    \caption{SD-06-1: Report Generation}
+    \label{fig:sd_06_1}
+\end{figure}
+
+
 \section{Low Level Design}
-The Low-Level Design (LLD) translates the high-level system architecture into fundamental software building blocks. This section maps the specific object-oriented structures, persistence models, and relational bindings that dictate the execution of the ICMS platform's core business logic.
+The Low-Level Design (LLD) translates the high-level system architecture into fundamental software building blocks. This section maps the specific object-oriented structures, persistence models, and relational bindings that dictate the execution of the ISCMS platform's core business logic.
 
 \subsection{UML Class Diagram}
 Figure \ref{fig:class_diagram} shows the Django ORM classes and their relationships. Relational constraints link regulatory frameworks to specific endpoint telemetry logs.
@@ -1021,7 +1081,7 @@ The authentication portal validates user credentials and issues a JSON Web Token
 \end{figure}
 
 \subsection{Superadmin Configuration Portal}
-Superadmins possess full administrative privileges, including configuration of the Wazuh pipeline, regulatory mapping rules, and user account provisioning. The interface supports dynamic theming for varied lighting conditions.
+Superadmins have full administrative privileges, including configuration of the Wazuh pipeline, regulatory mapping rules, and user account provisioning. The interface supports dynamic theming for varied lighting conditions.
 
 \begin{figure}[H]
     \centering
@@ -1073,7 +1133,7 @@ The system provides PDF audit reports for external reviewers and SMTP alerts for
 
 
 \section{External Interfaces}
-The ICMS doesn't run in a vacuum. It talks to several external services. This section lists out the protocols and authentication methods I used to keep those connections secure.
+The ISCMS doesn't run in a vacuum. It talks to several external services. This section lists out the protocols and authentication methods I used to keep those connections secure.
 
 \subsection{Wazuh SIEM REST API}
 The whole system relies on raw logs coming from the Wazuh Manager. My Celery workers hit the Wazuh REST API over HTTPS. I secured this with Bearer tokens generated by the Wazuh server. We pull down the JSON payloads and validate them against the Django ORM before saving them.

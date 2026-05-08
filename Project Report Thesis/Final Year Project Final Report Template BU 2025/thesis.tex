@@ -1,0 +1,210 @@
+%% BUICS THESIS STYLE for LaTeX2e
+%%
+%% badwanpk, Tue March 10 18:53:15 2015
+%%
+%% PLEASE send improvements to badwanpk at bui dot edu dot pk
+%%
+%%========================================
+%% Commands: pdflatex tese
+%%           bibtex tese
+%%           makeindex tese (only if creating an index) 
+%%           pdflatex tese
+%%========================================
+
+\documentclass[11pt,a4paper,oneside,openright]{report}
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+%\usepackage[portuges]{babel}
+\usepackage{fancyvrb}
+\usepackage{multirow}
+%\usepackage{epstopdf}
+\usepackage{rotating}
+\usepackage{slashbox,pict2e}
+\usepackage{soul}
+\usepackage{amssymb}
+\usepackage{lscape}
+\usepackage{longtable}
+\usepackage{makeidx}
+\usepackage{amsmath}
+\usepackage{multirow}
+\usepackage{makecell}
+\usepackage{wrapfig}
+
+
+%% For the final version, comment next line and uncomment the second line
+%\usepackage[provisional,alpharefs]{buics}
+\usepackage[numericrefs]{buics} %alpharefs
+\usepackage[utf8]{inputenc}
+
+ %PDF properties 
+\hypersetup{
+pdftitle = {Title goes here...},
+pdfauthor = {Author name},
+		pdfsubject={Subject...},
+    pdfcreator={MiKTex 2.9},
+    pdfproducer={MiKTex 2.9},
+    pdfkeywords = {Keywords},
+    %pdfstartview={FitH},%fits the width of the page to the window
+		pdfinfo={
+    AuthorNameEnrollment1={AuthorName (Enrollment)},
+		%AuthorNameEnrollment2={AuthorName (Enrollment)},%%uncomment this line if 2 authors
+		Supervisor={SupervisorName (Designation)},
+    Session={Fall 2015},%%Session in which the defense was arranged (Spring / Fall 20XX)
+		InternalExaminer={Dr. ABC (Designation)},
+		ExternalExaminer={Dr. XYZ (Designation)},
+		ProjectCoordinator={Dr. XYZ (Designation)},
+		HOD={Dr. XYZ (Designation)},
+		DefenseDate={\today},
+  }
+}
+
+%% Options: 
+%% - english: titles, etc in english
+%% - provisional: the thesis has not been approved yet
+%% - print: links are not shown (for paper versions)
+%% - alpharefs: bibliography references are alphabetic
+%% - numericrefs: bibliography references are numbered (in order of citation)
+%% ( by default: author-date format of the ``natbib'' package is used 
+
+
+%% Provide a version number in order to keep track of
+%% thesis versions (it will printed in the footer of most pages)
+
+\version{v1.12.2015}
+
+
+
+
+%% uncomment in the final version in order to make version footer disappear
+%\noversiontrue
+
+%% uncomment to create an index (at the end of the document)
+\makeindex 
+
+
+
+
+
+%%  path to the figures directory
+%%  TIP: use folder ``figures'' to keep all your figures
+\graphicspath{{figures/}}
+
+%%----------------------------------------
+%% TIP: if you want to define more macros, use an external file to
+%% keep them
+\include{mymacros}
+%%----------------------------------------
+
+%%========================================
+%% Start of document
+%%========================================
+\begin{document}
+
+%%----------------------------------------
+%% Information about the work
+%%----------------------------------------
+\title{title}
+
+\author{{\sc author name}\\Enrollment\\
+{\sc author name}\\Enrollment    %%%uncomment this line if there is a second author
+}
+
+
+\degree{\textbf{\Large{Bachelor of Science in Computer Science}}}
+
+%\degree{\emph{Thesis submitted to the Department of Computer Science, Bahria University, Islamabad\\for fulfillment of the requirements of Bachelors of Science in Computer Science degree.}}
+%% Date of submission
+
+\department{Department of Computer Science\\Bahria University, Islamabad}
+\thesisdate{October 2025}
+%\thesisdate{\Large{\textbf{September 2012}}}
+
+%% insert copyright text if used
+%\copyrightnotice{Author Name, 2025}
+
+%% uncomment next line if necessary
+\supervisor{Supervisor}{supervisor name}{}% {(Title)}
+\supervisor{Co-Supervisor}{co supervisor name}{}%{(Title)}
+
+% uncomment committee stuff in the final version if used
+
+\certificatetext{We accept the work contained in the report titled ``TITLE OF THE REPORT'', written by Mr. AUTHOR1 NAME  AND Mr. AUTHOR2 NAME as a confirmation to the required standard for the partial fulfillment of the degree of Bachelor of Science in Computer Science.}
+
+\committeetext{Approved by \ldots:}
+
+\committeemember{Supervisor}{}{}
+\signature
+\committeemember{Internal Examiner}{}{}
+\signature
+\committeemember{External Examiner}{}{}
+\signature
+\committeemember{Project Coordinator}{}{}
+\signature
+\committeemember{Head of the Department}{}{}
+\signature
+%\committeedate{October, 2025}
+
+%% specify cover logo (in folder ``figures'')
+\logo{BUI-Logo}
+
+%%----------------------------------------
+%% Cover page(s)
+%%----------------------------------------
+\maketitle
+%% uncomment next line in the final version if used
+\committeepage
+
+%% Preliminary materials
+\StartPrelim
+\begin{singlespace}
+  \include{abstract} % the abstract
+  \include{acknows}  % the acknowledgments
+  \cleardoublepage
+  \pdfbookmark[0]{Table of Contents}{contents}
+  \tableofcontents
+  \cleardoublepage
+  \pdfbookmark[0]{List of Figures}{figures}
+  \listoffigures
+  \cleardoublepage
+  \pdfbookmark[0]{List of Tables}{tables}
+  \listoftables
+  \include{abbrevs}  % the list of abbreviations used
+\end{singlespace}
+
+%%----------------------------------------
+%% Body
+%%----------------------------------------
+\StartBody
+
+%% TIP: use a separate  file for each
+\include{chapter1} 
+\include{chapter2}
+\include{chapter3}
+\include{chapter4}
+\include{chapter5}
+\include{chapter6}
+\include{chapter7}
+%\include{chapter8}
+%%\printindex
+%% comment next 2 commands if numbered appendixes not used
+\appendix
+\include{appendix1}
+%\include{appendix2}
+
+%%----------------------------------------
+%% Final materials
+%%----------------------------------------
+
+\begin{singlespace}
+  %% Bibliography
+  %% comment the next command if BibTeX file not used
+  %% bibliography is in ``references.bib''
+  \PrintBib{references}
+
+  %% Index
+  %% uncomment next command if index is required
+  %% don't forget to run ``makeindex tese'' command
+  \PrintIndex
+\end{singlespace}
+
+\end{document}

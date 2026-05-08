@@ -1,49 +1,53 @@
 \addvspace {10\p@ }
 \addvspace {10\p@ }
 \addvspace {10\p@ }
-\contentsline {figure}{\numberline {3.1}{\ignorespaces Refined N-Tier System Architecture and Protocol Flow}}{18}{figure.3.1}%
-\contentsline {figure}{\numberline {3.2}{\ignorespaces Docker Service Mesh: Port Exposure and Health-Check Dependencies}}{19}{figure.3.2}%
-\contentsline {figure}{\numberline {3.3}{\ignorespaces Context Diagram: High-Level System Interactions}}{22}{figure.3.3}%
-\contentsline {figure}{\numberline {3.4}{\ignorespaces Level-1 Data Flow Diagram detailing internal compliance processes.}}{22}{figure.3.4}%
-\contentsline {figure}{\numberline {3.5}{\ignorespaces Advanced UML Use Case Diagram illustrating RBAC inheritance hierarchies, core compliance interactions, system boundaries, and integration with secondary external actors (Authenticator, SIEM, SMTP).}}{24}{figure.3.5}%
+\contentsline {figure}{\numberline {3.1}{\ignorespaces Refined N-Tier System Architecture and Protocol Flow}}{15}{figure.3.1}%
+\contentsline {figure}{\numberline {3.2}{\ignorespaces Docker Service Mesh: Port Exposure and Health-Check Dependencies}}{16}{figure.3.2}%
+\contentsline {figure}{\numberline {3.3}{\ignorespaces Context Diagram: High-Level System Interactions}}{18}{figure.3.3}%
+\contentsline {figure}{\numberline {3.4}{\ignorespaces Level-1 Data Flow Diagram detailing internal compliance processes.}}{19}{figure.3.4}%
+\contentsline {figure}{\numberline {3.5}{\ignorespaces Advanced UML Use Case Diagram illustrating RBAC inheritance hierarchies, core compliance interactions, system boundaries, and integration with secondary external actors (Authenticator, SIEM, SMTP).}}{20}{figure.3.5}%
 \addvspace {10\p@ }
-\contentsline {figure}{\numberline {4.1}{\ignorespaces Tier-wise System Architecture of the ICMS Platform}}{32}{figure.4.1}%
-\contentsline {figure}{\numberline {4.2}{\ignorespaces Conceptual View: UML Component Diagram}}{34}{figure.4.2}%
-\contentsline {figure}{\numberline {4.3}{\ignorespaces Physical View: UML Deployment Diagram}}{35}{figure.4.3}%
-\contentsline {figure}{\numberline {4.4}{\ignorespaces Activity Diagram: Authentication and IAM Routing}}{36}{figure.4.4}%
-\contentsline {figure}{\numberline {4.5}{\ignorespaces Activity Diagram: Parallel Asynchronous Telemetry Ingestion}}{37}{figure.4.5}%
-\contentsline {figure}{\numberline {4.6}{\ignorespaces Activity Diagram: Iterative Compliance Evaluation and Worst-Case Priority}}{38}{figure.4.6}%
-\contentsline {figure}{\numberline {4.7}{\ignorespaces Activity Diagram: Automated PDF Audit Report Generation}}{39}{figure.4.7}%
-\contentsline {figure}{\numberline {4.8}{\ignorespaces Activity Diagram: Framework Rule Mapping and API Validation}}{40}{figure.4.8}%
-\contentsline {figure}{\numberline {4.9}{\ignorespaces Activity Diagram: Real-Time Alerting and Notification Fan-out}}{41}{figure.4.9}%
-\contentsline {figure}{\numberline {4.10}{\ignorespaces Sequence Diagram: Authentication Flow with UML Alt Fragment}}{42}{figure.4.10}%
-\contentsline {figure}{\numberline {4.11}{\ignorespaces Sequence Diagram: Background Telemetry Synchronization with UML Loop}}{43}{figure.4.11}%
-\contentsline {figure}{\numberline {4.12}{\ignorespaces Sequence Diagram: Framework Rule Mapping}}{43}{figure.4.12}%
-\contentsline {figure}{\numberline {4.13}{\ignorespaces Sequence Diagram: Report Generation with Alternative Data States}}{44}{figure.4.13}%
-\contentsline {figure}{\numberline {4.14}{\ignorespaces UML Class Diagram: Core Object-Relational Models}}{45}{figure.4.14}%
-\contentsline {figure}{\numberline {4.15}{\ignorespaces Physical Database Schema: Core Relational Data Model with Exact Data Types}}{46}{figure.4.15}%
-\contentsline {figure}{\numberline {4.16}{\ignorespaces Extended Entity Relationship Diagram (EERD) with Constraints and Attributes}}{47}{figure.4.16}%
-\contentsline {figure}{\numberline {4.17}{\ignorespaces GUI Design: Secure User Authentication Portal.}}{48}{figure.4.17}%
-\contentsline {figure}{\numberline {4.18}{\ignorespaces GUI Design: Time-based One-Time Password (TOTP) Verification.}}{48}{figure.4.18}%
-\contentsline {figure}{\numberline {4.19}{\ignorespaces GUI Design: Superadmin Global Compliance Dashboard (Dark Mode).}}{49}{figure.4.19}%
-\contentsline {figure}{\numberline {4.20}{\ignorespaces GUI Design: Superadmin Global Compliance Dashboard (Light Mode).}}{49}{figure.4.20}%
-\contentsline {figure}{\numberline {4.21}{\ignorespaces GUI Design: RBAC User and System Administrator Management Interface.}}{50}{figure.4.21}%
-\contentsline {figure}{\numberline {4.22}{\ignorespaces GUI Design: Security Auditor Read-Only Compliance View.}}{50}{figure.4.22}%
-\contentsline {figure}{\numberline {4.23}{\ignorespaces System Output: Automated PDF Audit Dossier Generation.}}{51}{figure.4.23}%
-\contentsline {figure}{\numberline {4.24}{\ignorespaces System Output: SMTP Alert for Rule Violation.}}{52}{figure.4.24}%
+\contentsline {figure}{\numberline {4.1}{\ignorespaces Tier-wise System Architecture of the ISCMS Platform}}{28}{figure.4.1}%
+\contentsline {figure}{\numberline {4.2}{\ignorespaces Conceptual View: UML Component Diagram}}{30}{figure.4.2}%
+\contentsline {figure}{\numberline {4.3}{\ignorespaces Physical View: UML Deployment Diagram}}{30}{figure.4.3}%
+\contentsline {figure}{\numberline {4.4}{\ignorespaces Activity Diagram: Authentication and IAM Routing}}{31}{figure.4.4}%
+\contentsline {figure}{\numberline {4.5}{\ignorespaces Activity Diagram: Parallel Asynchronous Telemetry Ingestion}}{32}{figure.4.5}%
+\contentsline {figure}{\numberline {4.6}{\ignorespaces Activity Diagram: Iterative Compliance Evaluation and Worst-Case Priority}}{33}{figure.4.6}%
+\contentsline {figure}{\numberline {4.7}{\ignorespaces Activity Diagram: Automated PDF Audit Report Generation}}{34}{figure.4.7}%
+\contentsline {figure}{\numberline {4.8}{\ignorespaces Activity Diagram: Framework Rule Mapping and API Validation}}{35}{figure.4.8}%
+\contentsline {figure}{\numberline {4.9}{\ignorespaces Activity Diagram: Real-Time Alerting and Notification Fan-out}}{36}{figure.4.9}%
+\contentsline {figure}{\numberline {4.10}{\ignorespaces SD-01-1: Valid Authentication Flow}}{37}{figure.4.10}%
+\contentsline {figure}{\numberline {4.11}{\ignorespaces SD-01-2: Invalid Authentication Flow}}{37}{figure.4.11}%
+\contentsline {figure}{\numberline {4.12}{\ignorespaces SD-02-1: Telemetry Synchronization Success}}{38}{figure.4.12}%
+\contentsline {figure}{\numberline {4.13}{\ignorespaces SD-03-1: Map Controls Success}}{38}{figure.4.13}%
+\contentsline {figure}{\numberline {4.14}{\ignorespaces SD-03-2: Map Collision}}{39}{figure.4.14}%
+\contentsline {figure}{\numberline {4.15}{\ignorespaces SD-04-1: Monitor Endpoint Compliance Status}}{39}{figure.4.15}%
+\contentsline {figure}{\numberline {4.16}{\ignorespaces SD-05-1: Resolve Compliance Anomalies}}{40}{figure.4.16}%
+\contentsline {figure}{\numberline {4.17}{\ignorespaces SD-06-1: Report Generation}}{41}{figure.4.17}%
+\contentsline {figure}{\numberline {4.18}{\ignorespaces UML Class Diagram: Core Object-Relational Models}}{42}{figure.4.18}%
+\contentsline {figure}{\numberline {4.19}{\ignorespaces Physical Database Schema: Core Relational Data Model with Exact Data Types}}{42}{figure.4.19}%
+\contentsline {figure}{\numberline {4.20}{\ignorespaces Extended Entity Relationship Diagram (EERD) with Constraints and Attributes}}{43}{figure.4.20}%
+\contentsline {figure}{\numberline {4.21}{\ignorespaces GUI Design: Secure User Authentication Portal.}}{44}{figure.4.21}%
+\contentsline {figure}{\numberline {4.22}{\ignorespaces GUI Design: Time-based One-Time Password (TOTP) Verification.}}{44}{figure.4.22}%
+\contentsline {figure}{\numberline {4.23}{\ignorespaces GUI Design: Superadmin Global Compliance Dashboard (Dark Mode).}}{45}{figure.4.23}%
+\contentsline {figure}{\numberline {4.24}{\ignorespaces GUI Design: Superadmin Global Compliance Dashboard (Light Mode).}}{45}{figure.4.24}%
+\contentsline {figure}{\numberline {4.25}{\ignorespaces GUI Design: RBAC User and System Administrator Management Interface.}}{45}{figure.4.25}%
+\contentsline {figure}{\numberline {4.26}{\ignorespaces GUI Design: Security Auditor Read-Only Compliance View.}}{46}{figure.4.26}%
+\contentsline {figure}{\numberline {4.27}{\ignorespaces System Output: Automated PDF Audit Dossier Generation.}}{47}{figure.4.27}%
+\contentsline {figure}{\numberline {4.28}{\ignorespaces System Output: SMTP Alert for Rule Violation.}}{48}{figure.4.28}%
 \addvspace {10\p@ }
-\contentsline {figure}{\numberline {5.1}{\ignorespaces Implemented N-Tier System Architecture}}{55}{figure.5.1}%
-\contentsline {figure}{\numberline {5.2}{\ignorespaces Implemented Service Topology and Container Networking}}{55}{figure.5.2}%
+\contentsline {figure}{\numberline {5.1}{\ignorespaces Implemented N-Tier System Architecture}}{51}{figure.5.1}%
+\contentsline {figure}{\numberline {5.2}{\ignorespaces Implemented Service Topology and Container Networking}}{51}{figure.5.2}%
 \addvspace {10\p@ }
 \addvspace {10\p@ }
 \addvspace {10\p@ }
-\contentsline {figure}{\numberline {A.1}{\ignorespaces ICMS authentication portal.}}{86}{figure.A.1}%
-\contentsline {figure}{\numberline {A.2}{\ignorespaces Two-factor authentication (2FA) verification interface.}}{87}{figure.A.2}%
-\contentsline {figure}{\numberline {A.3}{\ignorespaces Password recovery interface for credential resets.}}{87}{figure.A.3}%
-\contentsline {figure}{\numberline {A.4}{\ignorespaces The Regulatory Frameworks and Policy configuration interface.}}{88}{figure.A.4}%
-\contentsline {figure}{\numberline {A.5}{\ignorespaces Detailed view of the regulatory framework requirements mapping interface.}}{88}{figure.A.5}%
-\contentsline {figure}{\numberline {A.6}{\ignorespaces Interface for raw scan results and endpoint telemetry mapping.}}{89}{figure.A.6}%
-\contentsline {figure}{\numberline {A.7}{\ignorespaces Audit Report Generation interface for compliance dossiers.}}{90}{figure.A.7}%
-\contentsline {figure}{\numberline {A.8}{\ignorespaces Audit Trail PDF for log tracking.}}{90}{figure.A.8}%
-\contentsline {figure}{\numberline {A.9}{\ignorespaces System Settings interface for managing global configurations and thresholds.}}{91}{figure.A.9}%
-\contentsline {figure}{\numberline {A.10}{\ignorespaces Expanded user management interface for configuring strict RBAC hierarchies.}}{91}{figure.A.10}%
+\contentsline {figure}{\numberline {A.1}{\ignorespaces ISCMS authentication portal.}}{78}{figure.A.1}%
+\contentsline {figure}{\numberline {A.2}{\ignorespaces Two-factor authentication (2FA) verification interface.}}{78}{figure.A.2}%
+\contentsline {figure}{\numberline {A.3}{\ignorespaces Password recovery interface for credential resets.}}{79}{figure.A.3}%
+\contentsline {figure}{\numberline {A.4}{\ignorespaces The Regulatory Frameworks and Policy configuration interface.}}{79}{figure.A.4}%
+\contentsline {figure}{\numberline {A.5}{\ignorespaces Detailed view of the regulatory framework requirements mapping interface.}}{80}{figure.A.5}%
+\contentsline {figure}{\numberline {A.6}{\ignorespaces Interface for raw scan results and endpoint telemetry mapping.}}{81}{figure.A.6}%
+\contentsline {figure}{\numberline {A.7}{\ignorespaces Audit Report Generation interface for compliance dossiers.}}{81}{figure.A.7}%
+\contentsline {figure}{\numberline {A.8}{\ignorespaces Audit Trail PDF for log tracking.}}{82}{figure.A.8}%
+\contentsline {figure}{\numberline {A.9}{\ignorespaces System Settings interface for managing global configurations and thresholds.}}{83}{figure.A.9}%
+\contentsline {figure}{\numberline {A.10}{\ignorespaces Expanded user management interface for configuring strict RBAC hierarchies.}}{83}{figure.A.10}%

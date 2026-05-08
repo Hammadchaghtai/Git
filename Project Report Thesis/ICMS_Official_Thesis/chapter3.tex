@@ -1,12 +1,12 @@
 \chapter{Requirement Specification}
 
 \section{Existing System}
-Traditional compliance management systems use manual spreadsheets and fragmented Software-as-a-Service (SaaS) platforms. Governance teams often map regulatory standards, such as ISO/IEC 27001:2022, to technical controls using decentralized documents. This approach is prone to human error, lacks version control, and often fails to maintain consistency across different frameworks. Manual tracking of configuration states increases operational labor and administrative overhead.
+Traditional compliance management systems use manual spreadsheets and fragmented Software-as-a-Service (SaaS) platforms. Governance teams often map regulatory standards, such as ISO/IEC 27001:2022, to technical controls using decentralized documents. This approach is prone to human error, lacks version control, and often fails to keep consistency across different frameworks. Manual tracking of configuration states increases operational labor and administrative overhead.
 
 Existing auditing solutions perform delayed security assessments, which means data from internal systems is often out of date by the time it is reviewed. Legacy platforms lack specialized relational constraints, which causes latency when processing telemetry and makes it difficult to resolve vulnerabilities consistently. The reliance on proprietary SaaS architectures also introduces data sovereignty risks, as compliance metrics and configurations are transmitted to public cloud environments.
 
 \section{Proposed System}
-The ICMS platform provides a centralized system to address the limitations of manual mapping and asynchronous SIEM aggregation. The system uses a multi-tier architecture to maintain a separation of concerns while keeping compliance tracking within an isolated environment.
+The ISCMS platform is a centralized system that addresses the limitations of manual mapping and asynchronous SIEM aggregation. The system uses a multi-tier architecture to separate concerns while keeping compliance tracking within an isolated environment.
 
 \subsection{Technology Stack Selection}
 The Django framework provides a backend environment with an integrated Object-Relational Mapper (ORM) and built-in security middleware. The Django ORM allows for performance optimizations like $O(1)$ set-based database aggregations. By using query projections and conditional filtering, the system keeps high-volume telemetry manageable. The Django REST Framework (DRF) adds serialization pipelines and supports authentication methods like stateless JSON Web Token (JWT) rotation.
@@ -133,10 +133,10 @@ A Docker virtual bridge network isolates the database from external environments
 \end{figure}
 
 \section{Requirements Specification}
-Requirement engineering for the ICMS platform involves mapping regulatory mandates to technical specifications. Aligning the platform with ISO/IEC 27001:2022 and SOC 2 Type II standards requires translating governance objectives into functional capabilities. This ensures architectural components satisfy compliance and operational constraints. The analysis phase establishes the foundation for a system that maintains visibility by prioritizing automated telemetry ingestion and data aggregation.
+Requirement engineering for the ISCMS platform maps regulatory mandates to technical specifications. Translating ISO/IEC 27001:2022 and SOC 2 Type II governance objectives into functional capabilities ensures that the architecture satisfies both compliance and operational constraints. This analysis establishes the foundation for a system that automates telemetry ingestion and data aggregation.
 
 \section{Functional Requirements}
-The functional requirements define the capabilities the ICMS architecture must have to operate:
+The functional requirements define the capabilities the ISCMS architecture must have to operate:
 
 \begin{itemize}
     \item The system must use a 3-tier Role-Based Access Control (RBAC) model with Time-Based One-Time Password (TOTP) authentication.
@@ -160,7 +160,7 @@ The non-functional requirements set the operational constraints and performance 
 \end{itemize}
 
 \section{User Requirements}
-The efficiency of the ICMS platform relies on a user experience tailored to its primary actors: the System Administrator and the Security Auditor. The System Administrator needs a control plane to manage infrastructure settings without directly accessing the database. They must be able to configure synchronization, manage RBAC privileges, and override automated telemetry when necessary. The interface must present these controls clearly, using visual feedback to confirm operations within the Django ORM.
+The efficiency of the ISCMS platform relies on a user experience tailored to its primary actors: the System Administrator and the Security Auditor. The System Administrator needs a control plane to manage infrastructure settings without directly accessing the database. They must be able to configure synchronization, manage RBAC privileges, and override automated telemetry when necessary. The interface must present these controls clearly, using visual feedback to confirm operations within the Django ORM.
 
 The Security Auditor uses the platform to assess regulatory adherence. Their primary requirement is viewing compliance data without unnecessary clutter. The auditor needs an RBAC boundary that prevents them from modifying infrastructure mapping while providing access to historical logs and PDF exports. The React SPA architecture must ensure the dashboard remains responsive during telemetry ingestion by using techniques like memoization to prevent rendering delays.
 
@@ -168,7 +168,7 @@ The Security Auditor uses the platform to assess regulatory adherence. Their pri
 This section outlines the data exchange and flow used by the platform to synchronize SIEM telemetry with the internal compliance engine.
 
 \subsection{Context Diagram}
-The Context Diagram defines the interaction between the ICMS and external entities, showing the boundaries of the application and the data streams required. Figure \ref{fig:context_diagram} shows the flow from human operators to infrastructure components.
+The Context Diagram defines the interaction between the ISCMS and external entities, showing the boundaries of the application and the data streams required. Figure \ref{fig:context_diagram} shows the flow from human operators to infrastructure components.
 
 \begin{figure}[H]
     \centering
@@ -181,22 +181,22 @@ The Context Diagram defines the interaction between the ICMS and external entiti
         flowlabel/.style={font=\scriptsize, align=center, text=black!90}
     ]
         % Main Process (Center)
-        \node[process] (icms) at (0,0) {0.0\\ICMS\\Platform};
+        \node[process] (icms) at (0,0) {0.0\\ISCMS\\Platform};
         
         % External Entities (Left, Right, Top)
         \node[entity] (wazuh) at (-7,0) {Wazuh SIEM\\Manager};
         \node[entity] (auditor) at (7,0) {Security\\Auditor};
         \node[entity] (admin) at (0, 4.5) {System\\Administrator};
         
-        % Data Flows: Wazuh <-> ICMS
+        % Data Flows: Wazuh <-> ISCMS
         \draw[flow] ([yshift=3mm]wazuh.east) -- ([yshift=3mm]icms.west) node[midway, above, flowlabel] {Raw Security Telemetry};
         \draw[flow] ([yshift=-3mm]icms.west) -- ([yshift=-3mm]wazuh.east) node[midway, below, flowlabel] {SCA Telemetry Request};
         
-        % Data Flows: Auditor <-> ICMS
+        % Data Flows: Auditor <-> ISCMS
         \draw[flow] ([yshift=-3mm]auditor.west) -- ([yshift=-3mm]icms.east) node[midway, below, flowlabel] {Report Query};
         \draw[flow] ([yshift=3mm]icms.east) -- ([yshift=3mm]auditor.west) node[midway, above, flowlabel] {Compliance Dashboards\\\& PDF Reports};
         
-        % Data Flows: Admin <-> ICMS
+        % Data Flows: Admin <-> ISCMS
         \draw[flow] ([xshift=-3mm]admin.south) -- ([xshift=-3mm]icms.north) node[midway, left, flowlabel, align=right] {Configuration Parameters\\\& Sync Commands};
         \draw[flow] ([xshift=3mm]icms.north) -- ([xshift=3mm]admin.south) node[midway, right, flowlabel, align=left] {Audit Logs\\\& System Alerts};
         
@@ -212,7 +212,7 @@ The Context Diagram defines the interaction between the ICMS and external entiti
 \end{figure}
 
 \subsection{Data Flow Diagram}
-The Level-1 Data Flow Diagram (DFD) shows how data payloads move through the platform's architecture and how raw SIEM logs become compliance metrics. Figure \ref{fig:dfd_level_1} outlines the pipeline used by the ICMS.
+The Level-1 Data Flow Diagram (DFD) shows how data payloads move through the platform's architecture and how raw SIEM logs become compliance metrics. Figure \ref{fig:dfd_level_1} outlines the pipeline used by the ISCMS.
 
 \begin{figure}[H]
     \centering
@@ -270,7 +270,7 @@ The Level-1 Data Flow Diagram (DFD) shows how data payloads move through the pla
 
 \section{Use Cases}
 
-The use cases define the interaction sequences available to authenticated actors, providing deterministic state definitions for platform operations.
+The use cases define the interaction sequences available to authenticated actors and provide deterministic state definitions for platform operations.
 
 \subsection{Use Case Diagram}
 Figure \ref{fig:use_case_diagram} shows the workflows for the System Administrator and the Security Auditor, establishing boundaries based on the platform's RBAC implementation.
@@ -303,7 +303,7 @@ Figure \ref{fig:use_case_diagram} shows the workflows for the System Administrat
 
     % System Boundary (Expanded for breathing room)
     \node[systembox, minimum width=14.5cm, minimum height=22cm] (system) at (5, -4.5) {};
-    \node[anchor=north, font=\large\bfseries, text=blue!30!black, align=center] at (5, 6) {Intelligent Compliance Management System\\(ICMS)};
+    \node[anchor=north, font=\large\bfseries, text=blue!30!black, align=center] at (5, 6) {Intelligent Security Compliance Management System\\(ISCMS)};
 
     % Primary Actors (Left Side - Spaced out significantly)
     \actor{sa}{-5.5}{3}{Superadmin}
@@ -370,13 +370,13 @@ Figure \ref{fig:use_case_diagram} shows the workflows for the System Administrat
     \label{fig:use_case_diagram}
 \end{figure}
 
-\subsection{Descriptive Use Cases}
-The following tables define the flows, authentication requirements, and persistence states for each operation.
-
 \renewcommand{\arraystretch}{1.5}
+
+\subsection{UC-01: User Authentication}
+This use case outlines the authentication process for all users accessing the system.
 \begin{table}[H]
     \centering
-    \caption{Use Case - Authentication}\label{tab:uc_01}
+    \caption{UC-01: User Authentication}\label{tab:uc_01}
     \begin{tabular}{|>{\raggedright\arraybackslash}p{3cm}|p{11.5cm}|}
         \hline
         \textbf{Attribute} & \textbf{Description}\\
@@ -404,9 +404,11 @@ The following tables define the flows, authentication requirements, and persiste
     \end{tabular}
 \end{table}
 
+\subsection{UC-02: Manage Wazuh Telemetry Synchronization}
+This use case describes how telemetry synchronization is managed within the system.
 \begin{table}[H]
     \centering
-    \caption{Use Case - Manage Frameworks}\label{tab:uc_02}
+    \caption{UC-02: Manage Wazuh Telemetry Synchronization}\label{tab:uc_02}
     \begin{tabular}{|>{\raggedright\arraybackslash}p{3cm}|p{11.5cm}|}
         \hline
         \textbf{Attribute} & \textbf{Description}\\
@@ -434,9 +436,11 @@ The following tables define the flows, authentication requirements, and persiste
     \end{tabular}
 \end{table}
 
+\subsection{UC-03: Map Framework Controls to Wazuh Rules}
+This use case details the process of mapping regulatory framework controls to technical Wazuh rules.
 \begin{table}[H]
     \centering
-    \caption{Use Case - Map Controls}\label{tab:uc_03}
+    \caption{UC-03: Map Framework Controls to Wazuh Rules}\label{tab:uc_03}
     \begin{tabular}{|>{\raggedright\arraybackslash}p{3cm}|p{11.5cm}|}
         \hline
         \textbf{Attribute} & \textbf{Description}\\
@@ -464,9 +468,11 @@ The following tables define the flows, authentication requirements, and persiste
     \end{tabular}
 \end{table}
 
+\subsection{UC-04: Monitor Endpoint Compliance Status}
+This use case explains how administrators monitor the compliance status of connected endpoints.
 \begin{table}[H]
     \centering
-    \caption{Use Case - Sync Telemetry}\label{tab:uc_04}
+    \caption{UC-04: Monitor Endpoint Compliance Status}\label{tab:uc_04}
     \begin{tabular}{|>{\raggedright\arraybackslash}p{3cm}|p{11.5cm}|}
         \hline
         \textbf{Attribute} & \textbf{Description}\\
@@ -494,9 +500,11 @@ The following tables define the flows, authentication requirements, and persiste
     \end{tabular}
 \end{table}
 
+\subsection{UC-05: Resolve Compliance Anomalies}
+This use case outlines the workflow for resolving identified compliance anomalies.
 \begin{table}[H]
     \centering
-    \caption{Use Case - View Dashboard}\label{tab:uc_05}
+    \caption{UC-05: Resolve Compliance Anomalies}\label{tab:uc_05}
     \begin{tabular}{|>{\raggedright\arraybackslash}p{3cm}|p{11.5cm}|}
         \hline
         \textbf{Attribute} & \textbf{Description}\\
@@ -524,9 +532,11 @@ The following tables define the flows, authentication requirements, and persiste
     \end{tabular}
 \end{table}
 
+\subsection{UC-06: Export Audit Reports}
+This use case describes the generation and export of formal compliance audit reports.
 \begin{table}[H]
     \centering
-    \caption{Use Case - Export Audit Reports}\label{tab:uc_06}
+    \caption{UC-06: Export Audit Reports}\label{tab:uc_06}
     \begin{tabular}{|>{\raggedright\arraybackslash}p{3cm}|p{11.5cm}|}
         \hline
         \textbf{Attribute} & \textbf{Description}\\

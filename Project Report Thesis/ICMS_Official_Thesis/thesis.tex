@@ -1,7 +1,9 @@
-\documentclass[12pt, a4paper]{report}
+\documentclass[11pt,a4paper,oneside,openright]{report}
 
 % --- Packages ---
-\usepackage[margin=1in]{geometry}
+\usepackage{mathptmx}
+% --- Page Margins & Header Positioning ---
+\usepackage[left=1.5in, right=1in, top=1in, bottom=1in, headheight=15pt, headsep=0.25in]{geometry}
 \usepackage{graphicx}
 \usepackage[T1]{fontenc}
 \usepackage{float}
@@ -9,9 +11,7 @@
 \usepackage{tikz}
 \usetikzlibrary{shapes, arrows.meta, positioning, calc, fit, backgrounds}
 \usepackage{setspace}
-\usepackage{titlesec}
 \usepackage[numbers, sort&compress]{natbib}
-\usepackage{fancyhdr}
 \usepackage{etoolbox}
 \usepackage{array}
 \usepackage{longtable}
@@ -20,17 +20,27 @@
 
 % --- Document Settings ---
 \onehalfspacing
+\raggedbottom
 \setlength{\parskip}{1em}
 \setlength{\parindent}{0pt}
 
-% --- Chapter Formatting ---
+% --- Chapter Title Spacing (titlesec) ---
+\usepackage{titlesec}
 \titleformat{\chapter}[display]
   {\normalfont\huge\bfseries}{\chaptertitlename\ \thechapter}{20pt}{\Huge}
-\titlespacing*{\chapter}{0pt}{-20pt}{20pt}
+\titlespacing*{\chapter}{0pt}{0pt}{40pt} % 0pt above, 40pt below
+
+% --- Header and Footer Settings ---
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{} 
+\renewcommand{\headrulewidth}{0pt}
+\fancyhead[R]{\nouppercase{\leftmark}}
+\fancyfoot[C]{\thepage}
 
 % --- PDF Metadata ---
 \hypersetup{
-    pdftitle={Intelligent Compliance Management System (ICMS)},
+    pdftitle={Intelligent Security Compliance Management System (ISCMS)},
     pdfauthor={Muhammad Ali Bukhari, Hammad Chaghtai},
     pdfsubject={Final Year Project Thesis},
     pdfkeywords={GRC, SIEM, Wazuh, Compliance, Automation},
@@ -54,6 +64,10 @@
     \fi
 }
 
+% --- Enable Sub-Sub-Section Numbering ---
+\setcounter{secnumdepth}{3}
+\setcounter{tocdepth}{3}
+
 \begin{document}
 \pagenumbering{roman}
 
@@ -62,31 +76,33 @@
 % =========================================================
 \begin{titlepage}
     \centering
-    \vspace*{0.8cm}
+    \vspace*{5mm}
     
-    {\Huge \textbf{Intelligent Compliance Management System (ICMS)}}\\[1.2cm]
+    % 1. Title (Largest, 2 Lines)
+    {\huge \bfseries Intelligent Security Compliance \\ Management System (ISCMS) \par} \vspace{10mm} 
     
-    \includegraphics[width=0.28\textwidth]{bui_logo.jpg}\\[0.8cm]
+    % 2. Logo
+    \includegraphics[width=0.22\textwidth]{bui_logo} \vspace{8mm} 
     
-    {\large \textbf{Project ID: IT-F25-26}}\\[0.6cm]
+    % 3. Project Id
+    {\Large \bfseries Project Id: IT-F25-26} \vspace{10mm}
     
-    \vfill
+    % 4. Authors
+    {\Large \bfseries MUHAMMAD ALI BUKHARI} \\
+    {\large \bfseries 01-135222-096} \vspace{8mm}
     
-    {\Large \textsc{Muhammad Ali Bukhari}}\\[0.1cm]
-    {\Large \textbf{01-135222-096}}\\[0.8cm]
-    
-    {\Large \textsc{Muhammad Hammad Chaghtai}}\\[0.1cm]
-    {\Large \textbf{01-135222-014}}\\[1.2cm]
-    
-    {\large Supervisor: Dr. Faisal Bashir}\\[1.5cm]
-    
-    {\large \textbf{Bachelor of Science in Information Technology}}\\[1.2cm]
-    
-    {\large Department of Computer Science}\\[0.1cm]
-    {\large Bahria University, Islamabad}\\[1.0cm]
+    {\Large \bfseries MUHAMMAD HAMMAD CHAGHTAI} \\
+    {\large \bfseries 01-135222-014} 
     
     \vfill
-    {\large April 2026}
+    
+    % 5. Supervisor
+    {\Large Supervisor: Dr Faisal Bashir} \\[15mm]
+    
+    % 6. Degree & Dept
+    {\Large \bfseries Bachelor of Science in Information Technology} \\[8mm]
+    {\large Department of Computer Science \\ Bahria University, Islamabad} \\[8mm]
+    {\large May 2026}
 \end{titlepage}
 
 % =========================================================
@@ -102,7 +118,7 @@
 \vspace{10mm}
 
 \begin{singlespace}
-We acknowledge the work done in the report titled \textbf{``Intelligent Compliance Management System (ICMS)''} by authors \textbf{Mr. Muhammad Ali Bukhari} and \textbf{Mr. Muhammad Hammad Chaghtai} as an affirm to the standard of completion for the partial fulfillment of the degree of Bachelor of Science in Information Technology.
+We acknowledge the work done in the report titled ``Intelligent Security Compliance Management System (ISCMS)'' by authors Mr. Muhammad Ali Bukhari and Mr. Muhammad Hammad Chaghtai as an affirm to the standard of completion for the partial fulfillment of the degree of Bachelor of Science in Information Technology.
 
 \vspace{8mm}
 
@@ -140,7 +156,7 @@ We acknowledge the work done in the report titled \textbf{``Intelligent Complian
 
 \vspace{10mm}
 
-\noindent April , 2026
+\noindent May, 2026
 \end{singlespace}
 
 
@@ -151,7 +167,7 @@ We acknowledge the work done in the report titled \textbf{``Intelligent Complian
 \phantomsection
 \addcontentsline{toc}{chapter}{Abstract}
 \chapter*{Abstract}
-Manual security auditing and static compliance mapping create blind spots that leave enterprise infrastructure vulnerable to configuration drift. Existing Governance, Risk and Compliance (GRC) policies do not consider endpoint telemetry, resulting in high administrative costs and unreliable security observations. This project combines an Intelligent Compliance Management System (ICMS) that centrally automates continuous controls monitoring. Developed as an industrial collaboration, the platform integrates with the Wazuh Security Information and Event Management (SIEM) system to ingest Security Configuration Assessment (SCA) logs. A deterministic mapping algorithm translates raw technical events into verifiable regulatory controls, which allows for continuous compliance tracking against standards like ISO/IEC 27001. The system uses an N-tier architecture. A React Single Page Application (SPA) handles the presentation layer and communicates with a Django REST Framework API. To prevent main-thread blocking during SIEM polling and PDF report generation, the system offloads intensive I/O operations to an asynchronous Celery and Redis worker tier. Data persistence is managed via PostgreSQL, using a hybrid schema that combines relational constraints for Role-Based Access Control (RBAC) with JSON fields for telemetry storage. Platform security relies on stateless JSON Web Tokens (JWT) and Time-based One-Time Password (TOTP) two-factor authentication. Testing confirmed the platform works as intended. The asynchronous tier processed high-density endpoint synchronizations with an average API latency under 150ms. The mapping engine maintained data integrity even during collision attempts. The ICMS shows that replacing manual audits with continuous SIEM integration establishes a verifiable compliance posture and reduces the burden of organizational audits.
+Manual security auditing and static compliance mapping leave gaps that expose enterprise infrastructure to configuration drift. Existing Governance, Risk and Compliance (GRC) tools ignore endpoint telemetry, which raises administrative costs and produces unreliable security assessments. This project presents the Intelligent Security Compliance Management System (ISCMS), a platform that automates continuous controls monitoring. The system integrates with the Wazuh Security Information and Event Management (SIEM) engine to ingest Security Configuration Assessment (SCA) logs. A deterministic mapping algorithm translates raw technical events into verifiable regulatory controls, enabling continuous compliance tracking against standards such as ISO/IEC 27001. The system follows an N-tier architecture. A React Single Page Application (SPA) serves the presentation layer and communicates with a Django REST Framework API. To avoid blocking the main thread during SIEM polling and PDF report generation, the system offloads I/O operations to a Celery and Redis worker tier. PostgreSQL stores all data using a hybrid schema that pairs relational constraints for Role-Based Access Control (RBAC) with JSON fields for raw telemetry. Authentication combines stateless JSON Web Tokens (JWT) with Time-based One-Time Password (TOTP) two-factor verification. Testing confirmed the platform operates correctly. The asynchronous tier processed concurrent endpoint synchronizations with an average API latency under 150ms, and the mapping engine preserved data integrity during collision attempts. These results show that replacing periodic manual audits with continuous SIEM integration produces a verifiable compliance posture and cuts the overhead of organizational audits.
 
 % =========================================================
 % ACKNOWLEDGMENTS
@@ -163,9 +179,9 @@ Manual security auditing and static compliance mapping create blind spots that l
 
 In the name of Allah, the Most Gracious, the Most Merciful. All praise is due to Allah for the strength and guidance to complete this work.
 
-We thank our supervisor, Dr. Faisal Bashir, for his mentorship and technical guidance. His insights into systems architecture and cybersecurity were essential to this project. We also appreciate the lab staff who assisted us and the faculty members who taught us over the last four years. We are thankful to the Department of Computer Science and Bahria University for providing the resources and environment needed to complete our degree.
+We thank our supervisor, Dr. Faisal Bashir, for his mentorship and technical direction throughout the project. We also appreciate the lab staff who assisted us and the faculty members who taught us over the last four years. We are thankful to the Department of Computer Science and Bahria University for providing the resources needed to complete our degree.
 
-We are grateful to our parents, families, and friends for their support and patience. We also thank each other for the teamwork required to handle the technical challenges of this project from start to finish.
+We are grateful to our parents, families, and friends for their support and patience. We also thank each other for the collaboration that carried this project through to completion.
 
 Finally, on a personal note, I (Muhammad Ali Bukhari) dedicate this to my pet bird, Kiroo. Though he is no longer with me, his memory brought me comfort and joy throughout this journey.
 
@@ -218,7 +234,7 @@ Finally, on a personal note, I (Muhammad Ali Bukhari) dedicate this to my pet bi
 \textbf{HTTP} & HyperText Transfer Protocol \\
 \textbf{HTTPS} & HyperText Transfer Protocol Secure \\
 \textbf{I/O} & Input / Output \\
-\textbf{ICMS} & Intelligent Compliance Management System \\
+\textbf{ISCMS} & Intelligent Security Compliance Management System \\
 \textbf{IDE} & Integrated Development Environment \\
 \textbf{IEC} & International Electrotechnical Commission \\
 \textbf{ISMS} & Information Security Management System \\

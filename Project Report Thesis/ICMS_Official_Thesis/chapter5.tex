@@ -1,12 +1,12 @@
 \chapter{Implementation}
 
-The design phase established the requirements for the ICMS platform and the relationships between its components. This chapter documents the implementation process. Translating the architectural diagrams from Chapter~4 into code involved addressing hardware constraints, Docker networking, and the integration of a Python backend, a JavaScript frontend, and an external SIEM on a separate machine. The following sections describe each layer of the implementation.
+The design phase established the requirements for the ISCMS platform and the relationships between its components. This chapter documents the implementation. Translating the architectural diagrams from Chapter~4 into code required addressing hardware constraints, Docker networking, and the integration of a Python backend, a JavaScript frontend, and an external SIEM on a separate machine. The following sections describe each layer.
 
 Development used consumer-grade hardware in a distributed home-lab setup. The Wazuh SIEM manager operated on a dedicated laptop at a fixed IP address (\url{192.168.100.100}). The backend, frontend, and database stack was containerized on a second machine using Docker Compose. Every service configuration, environment variable, and migration step described here corresponds to the project repository.
 
 \section{System Architecture}
 
-As established in the design phase (as shown below in Figure \ref{fig:tier_architecture_impl}), the ICMS platform follows an N-tier client-server architecture.
+As established in the design phase (as shown below in Figure \ref{fig:tier_architecture_impl}), the ISCMS platform follows an N-tier client-server architecture.
 
 \begin{figure}[H]
     \centering
@@ -127,7 +127,7 @@ When the stack boots, Docker brings up the database and Redis first, waits for t
 \subsection{Presentation Layer Implementation (Frontend)}
 The frontend is a React 19 Single Page Application built with Vite 8. Vite was chosen over older toolchains because it uses native ES modules during development, which reduces cold-start times to under 200ms. Routing is handled by React Router v7, which uses a declarative \texttt{<Route>} structure to enforce authentication at the component level.
 
-Every HTTP request to the Django backend uses an Axios instance configured with interceptors. The request interceptor reads the JWT access token from \texttt{localStorage} and appends it as a \texttt{Bearer} header. The response interceptor monitors for \texttt{401 Unauthorized} responses; when one occurs, it triggers a token refresh. If the refresh fails, the system clears the session and redirects to the login page. This centralization removes the need for token-refresh logic in individual components.
+Every HTTP request to the Django backend uses an Axios instance configured with interceptors. The request interceptor reads the JWT access token from \texttt{localStorage} and appends it as a \texttt{Bearer} header. The response interceptor watches for \texttt{401 Unauthorized} responses; when one occurs, it triggers a token refresh. If the refresh fails, the system clears the session and redirects to the login page. This keeps all token-refresh logic out of individual components.
 
 The UI is styled with Tailwind CSS v4 using a custom \texttt{@theme} token set. Recharts is used for data visualization, including the compliance score gauge and per-framework bar charts. Icon assets are provided by Lucide React. The routing table also enforces RBAC at the frontend level: the \texttt{/manage-admins} route requires the \texttt{super\_admin} role, ensuring the UI access matches the API permissions.
 
@@ -182,17 +182,17 @@ Table~\ref{tab:tech_stack} summarises the full technology stack across all four 
 \end{table}
 
 \section{System Internal Components}
-The internal architecture of the ICMS platform consists of specialized modules that manage the compliance lifecycle. This modularity ensures a separation of concerns, with identity management, data governance, telemetry ingestion, and reporting handled by independent units. Partitioning the system into these functional modules creates a framework that is resilient to external API failures. The following subsections detail the implementation logic of each system component.
+The internal architecture of the ISCMS platform consists of specialized modules that handle the compliance lifecycle. Identity management, data governance, telemetry ingestion, and reporting are handled by independent units. Partitioning the system this way makes it resilient to external API failures. The following subsections detail each component.
 
 \subsection{Identity and Access Management (IAM) Module}
-The \texttt{IAM} module is the security foundation of the ICMS and enforces authentication and authorization policies. A custom identity model extends the core Django user system through a \texttt{UserProfile} entity to provide Role-Based Access Control (RBAC). The module recognizes three roles: Superadmins, who have full system access; Admins, who manage frameworks; and Auditors, who have read-only access to scan results and reports.
+The \texttt{IAM} module handles authentication and authorization for the ISCMS. A custom identity model extends the core Django user system through a \texttt{UserProfile} entity to provide Role-Based Access Control (RBAC). The module recognizes three roles: Superadmins, who have full system access; Admins, who manage frameworks; and Auditors, who have read-only access to scan results and reports.
 
-Authentication uses a stateless JSON Web Token (JWT) architecture to improve scalability. Upon credential verification, the system issues an access token and a rotating refresh token. For accounts requiring higher security, a two-factor authentication (2FA) layer is integrated using the Time-based One-Time Password (TOTP) algorithm. The IAM module uses a two-step login sequence where the user provide a 2FA code before the backend issues the JWT session. This policy is enforced at the API layer through Django REST Framework permissions and at the presentation layer using React route guards.
+Authentication uses a stateless JSON Web Token (JWT) architecture. Upon credential verification, the system issues an access token and a rotating refresh token. For accounts that need stronger security, a two-factor authentication (2FA) layer is integrated using the Time-based One-Time Password (TOTP) algorithm. The IAM module uses a two-step login sequence where the user provides a 2FA code before the backend issues the JWT session. This policy is enforced at the API layer through Django REST Framework permissions and at the presentation layer through React route guards.
 
 \subsection{Governance and Compliance Data Engine}
 The \texttt{Governance and Compliance Data Engine} manages the relational mappings needed to translate regulatory requirements into technical controls. The engine stores compliance standards as \texttt{Framework} records. Each framework is divided into \texttt{Control} entities that represent specific security requirements. The engine links these controls to organizational \texttt{Policy} documents through a many-to-many relationship to document how each technical requirement is satisfied.
 
-The engine includes mapping logic that connects security telemetry to regulatory clauses. A \texttt{WazuhMapping} system stores identifiers for Security Configuration Assessment (SCA) rules and ties them to governance controls. This allows the system to categorize security events into the appropriate compliance category. The engine also implements a risk-scoring algorithm that uses weights and thresholds to calculate compliance percentages. This structure ensures that changes in the security state of a remote endpoint are reflected in the organizational compliance posture.
+The engine includes mapping logic that connects security telemetry to regulatory clauses. A \texttt{WazuhMapping} system stores identifiers for Security Configuration Assessment (SCA) rules and ties them to governance controls, so the system can categorize security events into the appropriate compliance category. The engine also implements a risk-scoring algorithm that uses weights and thresholds to calculate compliance percentages. When the security state of a remote endpoint changes, the organizational compliance posture updates accordingly.
 
 \subsection{SIEM Telemetry and Synchronization Module}
 The \texttt{SIEM Telemetry and Synchronization Module} is responsible for the ingestion of security data from the Wazuh SIEM manager. Given the volume of security logs and the latency of external API communication, this module is implemented as an asynchronous system. A Celery worker tier handles the execution of synchronization tasks, using Redis as a message broker to queue requests.
@@ -202,15 +202,15 @@ The synchronization lifecycle begins with a scheduled polling event managed by t
 \subsection{Automated Audit and Reporting Module}
 The \texttt{Automated Audit and Reporting Module} transforms scan results into audit artifacts. When a report is requested, the module performs an aggregation query across historical scan data, calculates compliance percentages, and identifies gaps where controls have failed. This aggregation is optimized with database-level annotations.
 
-The module creates audit-ready evidence that meets regulatory requirements. The system uses a server-side rendering engine to convert HTML templates into PDF files. These documents include framework summaries, endpoint status lists, and gap analysis sections. Offloading PDF generation to the background worker tier ensures the user interface remains responsive. Files are served through a secure interface, removing the need for temporary storage of sensitive data on the local file system.
+The module creates audit-ready evidence that meets regulatory requirements. A server-side rendering engine converts HTML templates into PDF files. These documents include framework summaries, endpoint status lists, and gap analysis sections. PDF generation runs in the background worker tier so the user interface stays responsive. Files are served through a secure interface, removing the need for temporary storage of sensitive data on the local file system.
 
 \subsection{Frontend State and Visualization Layer}
-The \texttt{Frontend State and Visualization Layer} provides the interactive interface for managing the compliance lifecycle. Built as a React Single Page Application (SPA), this layer uses a component-based architecture. A global \texttt{AuthContext} provider manages the client-side session, JWT token persistence, and automatic token refresh logic through Axios interceptors. This ensures that outbound API requests are authenticated and that the user's session remains active.
+The \texttt{Frontend State and Visualization Layer} is the interactive interface for the compliance lifecycle. Built as a React Single Page Application (SPA), this layer uses a component-based architecture. A global \texttt{AuthContext} provider manages the client-side session, JWT token persistence, and automatic token refresh logic through Axios interceptors. Outbound API requests are always authenticated, and the user's session stays active without manual intervention.
 
-Data visualization is a focus of this layer, providing insights into security states. A specialized charting library is used to render compliance score gauges, trend lines, and status distributions. These visualizations are driven by data from the backend. The frontend implements component mounting based on the user's RBAC role. An auditor session initializes a different set of navigation and dashboard widgets than an administrator session, ensuring that users interact with relevant features.
+Data visualization is central to this layer. A specialized charting library renders compliance score gauges, trend lines, and status distributions. These visualizations are driven by data from the backend. The frontend mounts different components depending on the user's RBAC role. An auditor session loads a different set of navigation and dashboard widgets than an administrator session, so users only see the features relevant to them.
 
 \section{Tools and Technologies}
-The implementation of the ICMS platform required a technology stack spanning from core backend infrastructure to AI-assisted development environments. Table \ref{tab:tools_tech} summarizes the tools and frameworks used throughout the project lifecycle.
+The implementation of the ISCMS platform required a technology stack spanning from core backend infrastructure to AI-assisted development environments. Table \ref{tab:tools_tech} summarizes the tools and frameworks used throughout the project lifecycle.
 
 \begin{table}[H]
     \centering
@@ -234,10 +234,10 @@ The implementation of the ICMS platform required a technology stack spanning fro
     }
 \end{table}
 
-The selection of these technologies was driven by the requirements of a security governance platform. The Python/Django stack was chosen for the backend due to its handling of complex relational data and its support for authentication. On the presentation layer, the React library was used to build a responsive Single Page Application (SPA). This choice allowed the system to manage UI states, such as dashboard updates and compliance gauges, without requiring full page reloads.
+These technologies were selected based on the requirements of a security governance platform. The Python/Django stack was chosen for the backend because of its handling of complex relational data and its support for authentication. On the presentation layer, React was used to build a responsive Single Page Application (SPA) that can manage UI states, such as dashboard updates and compliance gauges, without requiring full page reloads.
 
-Prior to implementation, the system underwent an iterative UI/UX design process using Google Stitch. This platform was used for rapid prototyping, developing wireframes and mockups to validate user flows before writing frontend code. This phase established the aesthetic and ensured that navigation for security assessments was intuitive.
+Before implementation, the system went through an iterative UI/UX design process using Google Stitch. This platform was used for rapid prototyping, developing wireframes and mockups to validate user flows before writing frontend code. This phase set the visual direction and confirmed that navigation for security assessments was intuitive.
 
-The development workflow used an AI-driven approach centered around the Antigravity integrated development environment. Antigravity was the orchestration hub, coordinating codebase management with AI modeling. Throughout the project, models such as Claude and Gemini were used for pair-programming tasks, specifically for the Wazuh telemetry parser and the Celery task retry logic. This environment enabled the debugging of container networking issues and the generation of API documentation.
+The development workflow was AI-driven and centered around the Antigravity integrated development environment. Antigravity served as the orchestration hub, coordinating codebase management with AI modeling. Throughout the project, models such as Claude and Gemini were used for pair-programming tasks, specifically for the Wazuh telemetry parser and the Celery task retry logic. This environment helped debug container networking issues and generate API documentation.
 
 Finally, the academic documentation was managed through LaTeX, MiKTeX, and TikZ. These tools ensured that the report adhered to academic typesetting standards and that architectural diagrams were precise. The TikZ library allowed for the programmatic generation of system topology diagrams.

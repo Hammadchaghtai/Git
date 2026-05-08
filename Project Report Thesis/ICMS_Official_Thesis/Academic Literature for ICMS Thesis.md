@@ -1,18 +1,18 @@
-# **Deep Academic Literature Retrieval and Architectural Validation: Intelligent Compliance Management System (ICMS)**
+# **Deep Academic Literature Retrieval and Architectural Validation: Intelligent Security Compliance Management System (ISCMS)**
 
 ## **Comprehensive Architectural Analysis and Academic Synthesis**
 
-The transition from traditional, spreadsheet-driven Governance, Risk, and Compliance (GRC) methodologies to automated, continuous environments represents a critical paradigm shift in modern cybersecurity. The software engineering thesis under review, titled "Intelligent Compliance Management System (ICMS)," proposes a sophisticated N-tier architecture designed to bridge the semantic gap between raw security telemetry and high-level regulatory governance.1 By integrating the Wazuh Security Information and Event Management (SIEM) platform with a custom Django-React stack, the ICMS framework autonomously translates technical system states into verifiable compliance metrics against standards such as ISO/IEC 27001\.1
+The transition from traditional, spreadsheet-driven Governance, Risk, and Compliance (GRC) methodologies to automated, continuous environments represents a critical paradigm shift in modern cybersecurity. The software engineering thesis under review, titled "Intelligent Security Compliance Management System (ISCMS)," proposes a sophisticated N-tier architecture designed to bridge the semantic gap between raw security telemetry and high-level regulatory governance.1 By integrating the Wazuh Security Information and Event Management (SIEM) platform with a custom Django-React stack, the ISCMS framework autonomously translates technical system states into verifiable compliance metrics against standards such as ISO/IEC 27001\.1
 
-The architectural decisions embedded within the ICMS thesis demonstrate a profound understanding of enterprise-scale software engineering. By deliberately offloading input/output (I/O) intensive telemetry polling to an asynchronous Celery and Redis message broker, the system avoids the synchronous blocking inherent to Python's Web Server Gateway Interface (WSGI).1 Furthermore, the utilization of PostgreSQL's hybrid data modeling capabilities—specifically the integration of strict relational constraints for Role-Based Access Control (RBAC) alongside binary JSON fields for unstructured SIEM payloads—effectively neutralizes the algorithmic decay associated with the ![][image1] querying bottleneck.1
+The architectural decisions embedded within the ISCMS thesis demonstrate a profound understanding of enterprise-scale software engineering. By deliberately offloading input/output (I/O) intensive telemetry polling to an asynchronous Celery and Redis message broker, the system avoids the synchronous blocking inherent to Python's Web Server Gateway Interface (WSGI).1 Furthermore, the utilization of PostgreSQL's hybrid data modeling capabilities—specifically the integration of strict relational constraints for Role-Based Access Control (RBAC) alongside binary JSON fields for unstructured SIEM payloads—effectively neutralizes the algorithmic decay associated with the ![][image1] querying bottleneck.1
 
-This report provides an exhaustive academic validation of the theoretical and engineering methodologies utilized in the ICMS. Through a rigorous retrieval of peer-reviewed literature published between 2015 and 2026, the following analysis substantiates the efficacy of Continuous Controls Monitoring (CCM), stateless authentication protocols, containerized defense-in-depth topologies, and human-computer interaction (HCI) optimizations for Security Operations Center (SOC) dashboards.
+This report provides an exhaustive academic validation of the theoretical and engineering methodologies utilized in the ISCMS. Through a rigorous retrieval of peer-reviewed literature published between 2015 and 2026, the following analysis substantiates the efficacy of Continuous Controls Monitoring (CCM), stateless authentication protocols, containerized defense-in-depth topologies, and human-computer interaction (HCI) optimizations for Security Operations Center (SOC) dashboards.
 
 ## **Continuous Controls Monitoring (CCM) vs. Point-in-Time Security Auditing**
 
-The foundational premise of the ICMS thesis is that manual, point-in-time security assessments create dangerous temporal blind spots within enterprise infrastructure.1 Because modern digital environments are subject to constant configuration drift, a compliant state recorded on the day of an audit can degrade into a highly vulnerable state mere hours later.6 The academic consensus strongly supports the obsolescence of static auditing in favor of Continuous Controls Monitoring (CCM). CCM systems autonomously query the operational state of endpoints, network devices, and identity managers, subsequently mapping this telemetry against formal regulatory frameworks on a recurring schedule.8
+The foundational premise of the ISCMS thesis is that manual, point-in-time security assessments create dangerous temporal blind spots within enterprise infrastructure.1 Because modern digital environments are subject to constant configuration drift, a compliant state recorded on the day of an audit can degrade into a highly vulnerable state mere hours later.6 The academic consensus strongly supports the obsolescence of static auditing in favor of Continuous Controls Monitoring (CCM). CCM systems autonomously query the operational state of endpoints, network devices, and identity managers, subsequently mapping this telemetry against formal regulatory frameworks on a recurring schedule.8
 
-By triangulating analytical outputs with continuous system events, CCM reduces audit subjectivity, eliminates sample-based testing blind spots, and provides real-time organizational risk visibility. Regulatory bodies and standardization organizations have recognized this necessity, with modern frameworks such as the National Institute of Standards and Technology (NIST) Special Publication 800-53 Revision 5 explicitly mandating the transition toward continuous system monitoring to satisfy federal-grade compliance.10 This shift aligns with evolving regulatory expectations for dynamic controls that respond proactively to changing risk conditions rather than relying on reactive, retrospective investigations.7 The literature confirms that embedding automation into control assessment transforms compliance from a detached event into a dynamic, integral component of everyday business operations, thereby validating the core objective of the ICMS platform.
+By triangulating analytical outputs with continuous system events, CCM reduces audit subjectivity, eliminates sample-based testing blind spots, and provides real-time organizational risk visibility. Regulatory bodies and standardization organizations have recognized this necessity, with modern frameworks such as the National Institute of Standards and Technology (NIST) Special Publication 800-53 Revision 5 explicitly mandating the transition toward continuous system monitoring to satisfy federal-grade compliance.10 This shift aligns with evolving regulatory expectations for dynamic controls that respond proactively to changing risk conditions rather than relying on reactive, retrospective investigations.7 The literature confirms that embedding automation into control assessment transforms compliance from a detached event into a dynamic, integral component of everyday business operations, thereby validating the core objective of the ISCMS platform.
 
 * ---
 
@@ -40,7 +40,7 @@ Code snippet
   **Title:** Security and Privacy Controls for Information Systems and Organizations (NIST SP 800-53, Revision 5\)  
 * **Authors & Year:** Joint Task Force, National Institute of Standards and Technology, 2020  
 * **Journal/Conference:** NIST Special Publication  
-* **Thesis Integration:** This foundational standard must be cited in Chapter 1 (Section 1.1.2) to scientifically justify the mandate for continuous system monitoring over static assessments. Additionally, it should be referenced in Chapter 3 (Requirement Specification) to map the functional requirements of the ICMS directly to federal-grade compliance mandates.  
+* **Thesis Integration:** This foundational standard must be cited in Chapter 1 (Section 1.1.2) to scientifically justify the mandate for continuous system monitoring over static assessments. Additionally, it should be referenced in Chapter 3 (Requirement Specification) to map the functional requirements of the ISCMS directly to federal-grade compliance mandates.  
 * **BibTeX:**
 
 Code snippet
@@ -80,7 +80,7 @@ Code snippet
   **Title:** Enhancing Information Security in Technology Small and Medium-Sized Enterprises: A Metrics-Driven Model Based on ISO/IEC 27001:2022  
 * **Authors & Year:** Gabriel Quispe-Kobashikawa, Cesar Zuloaga-Estrada, Pedro Segundo Castañeda Vargas, Alberto Daniel García-Núñez, 2026  
 * **Journal/Conference:** IEEE Access / ResearchGate Preprint  
-* **Thesis Integration:** This article should be cited in Chapter 1 (Section 1.5.1) to validate the boundaries of the ISO/IEC 27001:2022 compliance framework implemented within the ICMS. Furthermore, it serves as excellent backing in Chapter 2 to demonstrate how metrics-driven, continuous evaluations actively counteract information leaks.  
+* **Thesis Integration:** This article should be cited in Chapter 1 (Section 1.5.1) to validate the boundaries of the ISO/IEC 27001:2022 compliance framework implemented within the ISCMS. Furthermore, it serves as excellent backing in Chapter 2 to demonstrate how metrics-driven, continuous evaluations actively counteract information leaks.  
 * **BibTeX:**
 
 Code snippet
@@ -95,16 +95,16 @@ Code snippet
 
 ## **Integrating SIEM into GRC Workflows for Automated Compliance**
 
-A fundamental obstacle in modern cybersecurity orchestration is bridging the vast semantic gap between highly granular technical telemetry—such as file integrity monitoring alerts or failed authentication handshakes—and high-level, policy-oriented governance controls.12 The ICMS architecture proposes a deterministic mapping algorithm interfacing directly with the Wazuh SIEM's Security Configuration Assessment (SCA) module.1 Wazuh's decentralized architecture allows for localized endpoint agent log aggregation, which is normalized via an indexing layer to evaluate specific machine states against established baselines.14
+A fundamental obstacle in modern cybersecurity orchestration is bridging the vast semantic gap between highly granular technical telemetry—such as file integrity monitoring alerts or failed authentication handshakes—and high-level, policy-oriented governance controls.12 The ISCMS architecture proposes a deterministic mapping algorithm interfacing directly with the Wazuh SIEM's Security Configuration Assessment (SCA) module.1 Wazuh's decentralized architecture allows for localized endpoint agent log aggregation, which is normalized via an indexing layer to evaluate specific machine states against established baselines.14
 
-The academic literature vigorously corroborates the necessity of unifying SIEM platforms with automated response and compliance matrices to achieve functional governance.16 Standalone SIEM deployments generate immense data noise and frequently exhibit high false-positive rates that overwhelm security operations teams.17 By applying a "Worst-Case Priority" algorithmic model—as delineated in the ICMS thesis—conflicting endpoint states are systematically resolved to reflect the most conservative risk posture.1 Integrating machine-driven data feeds directly into a centralized GRC database minimizes human interpretive error, guaranteeing that a reported regulatory control failure is cryptographically tied to an immutable piece of SIEM evidence. This integration transforms compliance from a reactive, detective measure into a preventative, data-driven assurance protocol capable of operating within resource-constrained environments.18
+The academic literature vigorously corroborates the necessity of unifying SIEM platforms with automated response and compliance matrices to achieve functional governance.16 Standalone SIEM deployments generate immense data noise and frequently exhibit high false-positive rates that overwhelm security operations teams.17 By applying a "Worst-Case Priority" algorithmic model—as delineated in the ISCMS thesis—conflicting endpoint states are systematically resolved to reflect the most conservative risk posture.1 Integrating machine-driven data feeds directly into a centralized GRC database minimizes human interpretive error, guaranteeing that a reported regulatory control failure is cryptographically tied to an immutable piece of SIEM evidence. This integration transforms compliance from a reactive, detective measure into a preventative, data-driven assurance protocol capable of operating within resource-constrained environments.18
 
 * ---
 
   **Title:** Cybersecurity on a budget: Evaluating security and performance of open-source SIEM solutions for SMEs  
 * **Authors & Year:** Muhammad Ali Jamali, A. Masood, 2024  
 * **Journal/Conference:** PLOS ONE  
-* **Thesis Integration:** This paper is essential for Chapter 3 (Section 3.2.1) to rigorously defend the selection of the open-source Wazuh SIEM stack over costly commercial SaaS alternatives. It should also be cited in Chapter 6 (Testing Environment) to benchmark the ICMS's telemetry ingestion performance against established SIEM capability studies.  
+* **Thesis Integration:** This paper is essential for Chapter 3 (Section 3.2.1) to rigorously defend the selection of the open-source Wazuh SIEM stack over costly commercial SaaS alternatives. It should also be cited in Chapter 6 (Testing Environment) to benchmark the ISCMS's telemetry ingestion performance against established SIEM capability studies.  
 * **BibTeX:**
 
 Code snippet
@@ -146,7 +146,7 @@ Code snippet
   **Title:** Improving Threat Detection in Wazuh Using Machine Learning Techniques  
 * **Authors & Year:** S. A. Chamkar, M. Zaydi, Y. Maleh, N. Gherabi, 2025  
 * **Journal/Conference:** Journal of Cybersecurity and Privacy  
-* **Thesis Integration:** Cite this research in Chapter 2 (Section 2.1.2) to discuss the intrinsic limitations of rule-based SIEM detection, such as high false-positive rates, which the ICMS mitigates via its worst-case priority aggregation. It can also be referenced in Chapter 7 (Conclusions/Future Work) to suggest the future integration of machine learning algorithms for enhanced anomaly mapping.  
+* **Thesis Integration:** Cite this research in Chapter 2 (Section 2.1.2) to discuss the intrinsic limitations of rule-based SIEM detection, such as high false-positive rates, which the ISCMS mitigates via its worst-case priority aggregation. It can also be referenced in Chapter 7 (Conclusions/Future Work) to suggest the future integration of machine learning algorithms for enhanced anomaly mapping.  
 * **BibTeX:**
 
 Code snippet
@@ -167,7 +167,7 @@ Code snippet
   **Title:** Wazuh SIEM for Cyber Security and Threat Mitigation in Apparel Industries  
 * **Authors & Year:** Md Rafiqul Islam, R. Rafique, 2024  
 * **Journal/Conference:** International Journal of Engineering Materials and Manufacture  
-* **Thesis Integration:** This paper should be integrated into Chapter 1 (Section 1.7) to broaden the scope of ICMS application areas beyond FinTech and Healthcare to general manufacturing environments. It also supports the claims in Chapter 5 regarding the specific configuration of the Wazuh Manager, Agent, and Indexer components.  
+* **Thesis Integration:** This paper should be integrated into Chapter 1 (Section 1.7) to broaden the scope of ISCMS application areas beyond FinTech and Healthcare to general manufacturing environments. It also supports the claims in Chapter 5 regarding the specific configuration of the Wazuh Manager, Agent, and Indexer components.  
 * **BibTeX:**
 
 Code snippet
@@ -208,7 +208,7 @@ Code snippet
 
 In Python-based web applications utilizing the Web Server Gateway Interface (WSGI) standard, operations execute sequentially and are predominantly synchronous. Because the Python Global Interpreter Lock (GIL) fundamentally limits true multithreading, executing heavy input/output operations—such as querying an external SIEM REST API for high-density endpoint telemetry or rendering complex multi-page PDF audit reports—directly on the main application thread will inevitably exhaust server resources, trigger gateway timeouts, and severely degrade the user experience.1
 
-The ICMS rectifies this computational bottleneck by implementing a distributed, asynchronous task processing tier powered by Celery and Redis.1 Within this architecture, Celery functions as the master scheduling framework and worker execution environment, while Redis operates as an in-memory Pub/Sub message broker to efficiently queue task payloads and store temporary execution state.4 The academic evaluations of this architectural pattern highlight its superior efficiency in decoupling client-side producer requests from backend consumer execution.
+The ISCMS rectifies this computational bottleneck by implementing a distributed, asynchronous task processing tier powered by Celery and Redis.1 Within this architecture, Celery functions as the master scheduling framework and worker execution environment, while Redis operates as an in-memory Pub/Sub message broker to efficiently queue task payloads and store temporary execution state.4 The academic evaluations of this architectural pattern highlight its superior efficiency in decoupling client-side producer requests from backend consumer execution.
 
 Rather than halting the application runtime to wait for the Wazuh API to respond with megabytes of JSON data, the Django API instantly queues the request in Redis and returns an HTTP 202 Accepted status to the React frontend.1 Autonomous background worker nodes then independently execute the data fetch, parse the payload, apply the deterministic compliance mapping logic, and commit the resolved state to the PostgreSQL persistence layer in bulk transactions.23 This guarantees that the presentation tier remains highly responsive even during massive fleet-wide synchronizations, providing the high availability and horizontal scaling required by enterprise governance platforms.
 
@@ -238,7 +238,7 @@ Code snippet
   **Title:** FlaPLeT: A full-stack web platform for end-to-end time series data processing and machine learning in solar flare prediction  
 * **Authors & Year:** MohammadReza EskandariNasab, Shah Muhammad Hamdi, Soukaina Filali Boubrahimi, 2026  
 * **Journal/Conference:** SoftwareX  
-* **Thesis Integration:** Cite this paper in Chapter 3 (Section 3.2.1) as a direct academic parallel to the ICMS technology stack, confirming that the combination of Django, React, Celery, Redis, and PostgreSQL is an industry-standard blueprint for scalable, N-tier web systems. It is also highly applicable to Chapter 5 to back the implementation of Celery workers for processing structured JSON reports asynchronously.  
+* **Thesis Integration:** Cite this paper in Chapter 3 (Section 3.2.1) as a direct academic parallel to the ISCMS technology stack, confirming that the combination of Django, React, Celery, Redis, and PostgreSQL is an industry-standard blueprint for scalable, N-tier web systems. It is also highly applicable to Chapter 5 to back the implementation of Celery workers for processing structured JSON reports asynchronously.  
 * **BibTeX:**
 
 Code snippet
@@ -295,7 +295,7 @@ Code snippet
 
 Legacy GRC platforms frequently suffer from severe structural limitations imposed by purely relational models when attempting to ingest large volumes of unstructured security telemetry. Traditional Object-Relational Mapping (ORM) implementations fall victim to the ![][image1] query problem: the application logic fetches a parent record (e.g., a monitored endpoint) and then iterates through sequential database queries to fetch related child records (e.g., individual SCA log results).1 This design enforces a linear ![][image3] algorithmic time complexity that rapidly exhausts memory bandwidth and degrades dashboard performance as the organizational asset inventory scales.
 
-The ICMS resolves this performance bottleneck via dual engineering optimizations. First, it pushes the computational workload directly to the database engine utilizing set-based aggregations (e.g., .annotate(), Count(), and conditional filtering) executed within the PostgreSQL layer, thereby establishing a deterministic ![][image2] retrieval latency.1 Second, the system employs a Hybrid Data Model. PostgreSQL’s JSONB binary data type is utilized to persist the variable-length, unstructured telemetry payloads retrieved from Wazuh. Unlike standard text fields that require parsing at runtime, JSONB parses the payload upon insertion into a highly optimized binary format, allowing for efficient Generalized Inverted Index (GIN) queries against deeply nested attributes.26
+The ISCMS resolves this performance bottleneck via dual engineering optimizations. First, it pushes the computational workload directly to the database engine utilizing set-based aggregations (e.g., .annotate(), Count(), and conditional filtering) executed within the PostgreSQL layer, thereby establishing a deterministic ![][image2] retrieval latency.1 Second, the system employs a Hybrid Data Model. PostgreSQL’s JSONB binary data type is utilized to persist the variable-length, unstructured telemetry payloads retrieved from Wazuh. Unlike standard text fields that require parsing at runtime, JSONB parses the payload upon insertion into a highly optimized binary format, allowing for efficient Generalized Inverted Index (GIN) queries against deeply nested attributes.26
 
 As demonstrated by Aji and Utami (2026), testing across extensive library metadata systems validates the superiority of JSONB for flexible data structures.
 
@@ -307,7 +307,7 @@ As demonstrated by Aji and Utami (2026), testing across extensive library metada
 
 Table 1: Comparative query latency between rigid relational column schemas and flexible JSONB implementations (Derived from Aji & Utami, 2026).5
 
-This empirical evidence proves that JSONB reduces structural overhead and data transformation latency.5 By utilizing this hybrid approach, the ICMS securely combines the schema-less flexibility required for raw security logs with the normalized, ACID-compliant 3NF (Third Normal Form) relational tables necessary to enforce strict Role-Based Access Control (RBAC) and regulatory policy mappings.1
+This empirical evidence proves that JSONB reduces structural overhead and data transformation latency.5 By utilizing this hybrid approach, the ISCMS securely combines the schema-less flexibility required for raw security logs with the normalized, ACID-compliant 3NF (Third Normal Form) relational tables necessary to enforce strict Role-Based Access Control (RBAC) and regulatory policy mappings.1
 
 * ---
 
@@ -354,7 +354,7 @@ Code snippet
   **Title:** A Comprehensive Framework for PostgreSQL Performance and Security Optimization  
 * **Authors & Year:** Sangeetha Mandapaka, 2024  
 * **Journal/Conference:** ResearchGate Preprints  
-* **Thesis Integration:** Utilize this paper in Chapter 4 (Database Design) to substantiate the paradigm shift from static rule-based query generation to dynamic, data-driven index optimization within PostgreSQL. It validates the ICMS's architectural reliance on advanced database management layers to handle hybrid transactional and analytical workloads.  
+* **Thesis Integration:** Utilize this paper in Chapter 4 (Database Design) to substantiate the paradigm shift from static rule-based query generation to dynamic, data-driven index optimization within PostgreSQL. It validates the ISCMS's architectural reliance on advanced database management layers to handle hybrid transactional and analytical workloads.  
 * **BibTeX:**
 
 Code snippet
@@ -385,11 +385,11 @@ Code snippet
 
 ## **Enterprise SPA Security: Stateless Authentication (JWT & TOTP)**
 
-In an N-tier architecture featuring a decoupled Single Page Application (SPA), traditional server-side session management—which typically relies on synchronized database lookups for stateful cookie validation—creates severe scalability bottlenecks and restricts the agility of distributed microservices.29 To ensure a highly performant and secure perimeter, the ICMS application employs a zero-trust enforcement layer utilizing stateless JSON Web Tokens (JWT) intricately bound to the organizational Role-Based Access Control (RBAC) model.1
+In an N-tier architecture featuring a decoupled Single Page Application (SPA), traditional server-side session management—which typically relies on synchronized database lookups for stateful cookie validation—creates severe scalability bottlenecks and restricts the agility of distributed microservices.29 To ensure a highly performant and secure perimeter, the ISCMS application employs a zero-trust enforcement layer utilizing stateless JSON Web Tokens (JWT) intricately bound to the organizational Role-Based Access Control (RBAC) model.1
 
 When a user successfully authenticates, the Django API issues a cryptographic, HMAC-SHA256 signed access token alongside a long-lived, rotating refresh token.1 Because the payload (including the user's explicit role assignments) is digitally signed by the server, the API gateway can authorize inbound HTTPS requests via local mathematical verification. This process entirely eliminates the need to execute costly relational database lookups for session validation.32
 
-To mitigate the catastrophic risk of token interception, replay attacks, or brute-force credential stuffing, the ICMS architecture mandates a Time-Based One-Time Password (TOTP) factor.29 By hashing the current Unix timestamp with a pre-shared cryptographic secret via the HMAC-SHA1 algorithm, the secondary authentication system ensures that credentials are continuously rotated every 30 seconds.1 The academic literature affirms that coupling TOTP mechanisms with a robust JWT rotation strategy significantly hardens the compliance data vault against lateral movement, rendering intercepted credentials practically worthless.35
+To mitigate the catastrophic risk of token interception, replay attacks, or brute-force credential stuffing, the ISCMS architecture mandates a Time-Based One-Time Password (TOTP) factor.29 By hashing the current Unix timestamp with a pre-shared cryptographic secret via the HMAC-SHA1 algorithm, the secondary authentication system ensures that credentials are continuously rotated every 30 seconds.1 The academic literature affirms that coupling TOTP mechanisms with a robust JWT rotation strategy significantly hardens the compliance data vault against lateral movement, rendering intercepted credentials practically worthless.35
 
 * ---
 
@@ -418,7 +418,7 @@ Code snippet
   **Title:** Security Analysis of Two-Factor Authentication Applications: Vulnerabilities in Data Storage and Management  
 * **Authors & Year:** Dzikri Izzatul Haq, Syafrial Fachri Pane, M. Amran Hakim Siregar, 2025  
 * **Journal/Conference:** Mobile and Forensics  
-* **Thesis Integration:** Reference this in Chapter 6 (Testing & Evaluation) to discuss the potential vulnerabilities in 2FA implementation and validate that the ICMS's backend handling of TOTP secrets prevents plaintext extraction. It is also applicable to Chapter 3's non-functional security requirements regarding the necessity of secondary authentication factors.  
+* **Thesis Integration:** Reference this in Chapter 6 (Testing & Evaluation) to discuss the potential vulnerabilities in 2FA implementation and validate that the ISCMS's backend handling of TOTP secrets prevents plaintext extraction. It is also applicable to Chapter 3's non-functional security requirements regarding the necessity of secondary authentication factors.  
 * **BibTeX:**
 
 Code snippet
@@ -461,7 +461,7 @@ Code snippet
   **Title:** 2F-Authsys: A hyperlocal two-factor authentication system using Near Sound Data Transfer  
 * **Authors & Year:** D. Patel, D. Trivedi, U. Raval, A. Dennisan, 2024  
 * **Journal/Conference:** Journal of Applied Research and Technology  
-* **Thesis Integration:** Cite this in Chapter 2 (Literature Review) to contrast emerging alternative authentication methods with the proven, mathematically sound TOTP models implemented in the ICMS. It can also be leveraged in Chapter 4 to justify the use of refresh tokens for long-term API access handling.  
+* **Thesis Integration:** Cite this in Chapter 2 (Literature Review) to contrast emerging alternative authentication methods with the proven, mathematically sound TOTP models implemented in the ISCMS. It can also be leveraged in Chapter 4 to justify the use of refresh tokens for long-term API access handling.  
 * **BibTeX:**
 
 Code snippet
@@ -478,9 +478,9 @@ Code snippet
 
 ## **Containerization & Orchestration: N-Tier Defense-in-Depth**
 
-The ICMS transcends outdated monolithic deployment models by utilizing a multi-container Docker and Docker Compose environment.1 This architectural decision fundamentally addresses the pillars of operational isolation, horizontal scalability, and systemic security.37 By abstracting the application binaries, dependencies, and runtimes from the underlying host operating system using Linux namespaces and control groups (cgroups), Docker prevents malicious code execution from traversing horizontally across the stack.39
+The ISCMS transcends outdated monolithic deployment models by utilizing a multi-container Docker and Docker Compose environment.1 This architectural decision fundamentally addresses the pillars of operational isolation, horizontal scalability, and systemic security.37 By abstracting the application binaries, dependencies, and runtimes from the underlying host operating system using Linux namespaces and control groups (cgroups), Docker prevents malicious code execution from traversing horizontally across the stack.39
 
-Crucially, the ICMS deploys the PostgreSQL database and the Redis message broker strictly within an internal, isolated Docker virtual bridge network.1 By deliberately omitting host-machine port bindings (e.g., exposing TCP 5432 or 6379 to the public internet) for the persistence tiers, the database remains completely opaque to external network scans and brute-force attacks. All external communication must pass exclusively through the secured, JWT-verified Django API Gateway container.1 This orchestrated topology satisfies strict defense-in-depth principles, guaranteeing high availability and robust data sovereignty—elements that are absolutely critical for platforms processing sensitive compliance matrices and organizational governance telemetry.38
+Crucially, the ISCMS deploys the PostgreSQL database and the Redis message broker strictly within an internal, isolated Docker virtual bridge network.1 By deliberately omitting host-machine port bindings (e.g., exposing TCP 5432 or 6379 to the public internet) for the persistence tiers, the database remains completely opaque to external network scans and brute-force attacks. All external communication must pass exclusively through the secured, JWT-verified Django API Gateway container.1 This orchestrated topology satisfies strict defense-in-depth principles, guaranteeing high availability and robust data sovereignty—elements that are absolutely critical for platforms processing sensitive compliance matrices and organizational governance telemetry.38
 
 **\[Containerization & Orchestration\]**
 
@@ -529,7 +529,7 @@ Code snippet
 * **Title:** Analysis of Docker Security  
 * **Authors & Year:** Thanh Bui, 2015  
 * **Journal/Conference:** Aalto University School of Science (Research Report)  
-* **Thesis Integration:** Include this research in Chapter 3 (Section 3.2.3) to provide a historical and technical context on how Docker interacts with Linux kernel security features to harden the host system. It directly validates the ICMS's architectural decision to leverage container boundaries to protect the GRC database from the application layer.  
+* **Thesis Integration:** Include this research in Chapter 3 (Section 3.2.3) to provide a historical and technical context on how Docker interacts with Linux kernel security features to harden the host system. It directly validates the ISCMS's architectural decision to leverage container boundaries to protect the GRC database from the application layer.  
 * **BibTeX:**
 
 Code snippet
@@ -543,9 +543,9 @@ Code snippet
 
 ## **Comprehensive Architectural Validation: UI/UX Performance, ORM Security, and SOC HCI**
 
-To ensure its viability as a daily-use operational tool in high-stress environments, the ICMS relies on high-performance frontend engineering and mathematically robust backend input sanitization.
+To ensure its viability as a daily-use operational tool in high-stress environments, the ISCMS relies on high-performance frontend engineering and mathematically robust backend input sanitization.
 
-**React SPA Performance & Virtualization:** Rendering thousands of discrete data points representing telemetry status across an enterprise fleet can severely lock the browser's main thread and degrade the user experience.42 The React architecture employed by the ICMS mitigates this through its Virtual DOM algorithm. Instead of executing expensive, direct manipulations of the actual Document Object Model, React computes changes in memory and batches updates via an efficient diffing algorithm.44
+**React SPA Performance & Virtualization:** Rendering thousands of discrete data points representing telemetry status across an enterprise fleet can severely lock the browser's main thread and degrade the user experience.42 The React architecture employed by the ISCMS mitigates this through its Virtual DOM algorithm. Instead of executing expensive, direct manipulations of the actual Document Object Model, React computes changes in memory and batches updates via an efficient diffing algorithm.44
 
 | Optimization Domain | Implementation Technique | Empirical Impact on Performance |
 | :---- | :---- | :---- |
@@ -557,7 +557,7 @@ Table 2: Quantitative impact of React performance optimization techniques utiliz
 
 As highlighted in the data above, the integration of list virtualization techniques—which programmatically render only the subset of data rows currently visible within the viewport—shrinks memory consumption drastically. This guarantees a fluid, highly responsive interface for auditors handling massive SIEM datasets.46
 
-**Django ORM & SQL Injection Prevention:** As an enterprise governance tool managing sensitive compliance metrics, the ICMS backend constitutes a prime target for adversarial manipulation.48 The Django Object-Relational Mapper (ORM) inherently neutralizes SQL Injection vulnerabilities by strictly separating the query logic from user-provided parameters.49 By compiling queries utilizing parameterized, prepared statements rather than string concatenation, the database driver safely escapes malicious payloads before execution. This built-in sanitization protocol drastically reduces the attack surface compared to legacy platforms that construct raw database queries manually.51
+**Django ORM & SQL Injection Prevention:** As an enterprise governance tool managing sensitive compliance metrics, the ISCMS backend constitutes a prime target for adversarial manipulation.48 The Django Object-Relational Mapper (ORM) inherently neutralizes SQL Injection vulnerabilities by strictly separating the query logic from user-provided parameters.49 By compiling queries utilizing parameterized, prepared statements rather than string concatenation, the database driver safely escapes malicious payloads before execution. This built-in sanitization protocol drastically reduces the attack surface compared to legacy platforms that construct raw database queries manually.51
 
 **SOC Dashboard Usability & Alert Fatigue:** Cybersecurity analysts operate in high-stakes environments and frequently suffer from cognitive overload—commonly referred to as "alert fatigue"—when bombarded by dense, unfiltered SIEM data grids.53
 
@@ -570,7 +570,7 @@ As highlighted in the data above, the integration of list virtualization techniq
 
 Table 3: Empirical measurement of network alerts, demonstrating the structural causes of alert fatigue in modern SOC environments (Derived from Yang et al., 2024 and Trovato et al., 2025).55
 
-The ICMS frontend proactively tackles this crisis via Human-Computer Interaction (HCI) methodologies.1 Using responsive flexbox layouts, strict color-coding for severity weighting, and clean visual hierarchies, the UI transforms raw telemetry data into a structured decision-support tool. This design philosophy dramatically improves the Mean Time to Detect (MTTD) anomalies and minimizes the likelihood of an analyst overlooking a critical infrastructural vulnerability due to sensory desensitization.56
+The ISCMS frontend proactively tackles this crisis via Human-Computer Interaction (HCI) methodologies.1 Using responsive flexbox layouts, strict color-coding for severity weighting, and clean visual hierarchies, the UI transforms raw telemetry data into a structured decision-support tool. This design philosophy dramatically improves the Mean Time to Detect (MTTD) anomalies and minimizes the likelihood of an analyst overlooking a critical infrastructural vulnerability due to sensory desensitization.56
 
 **\[Comprehensive Architectural Validation\]**
 
@@ -616,7 +616,7 @@ Code snippet
 * **Title:** True Attacks, Attack Attempts, or Benign Triggers? An Empirical Measurement of Network Alerts in a Security Operations Center  
 * **Authors & Year:** Limin Yang, Zhi Chen, Chenkai Wang, Zhenning Zhang, Sushruth Booma, Phuong Cao, Constantin Adam, Alexander Withers, Zbigniew Kalbarczyk, Ravishankar K. Iyer, Gang Wang, 2024  
 * **Journal/Conference:** Proceedings of the 33rd USENIX Security Symposium  
-* **Thesis Integration:** Cite this highly respected paper in Chapter 1 (Problem Description) and Chapter 2 (Section 2.1.6) to establish the quantitative reality of alert fatigue, where SOC analysts face up to 134,000 alerts daily with only 0.01% being true attacks. This statistically validates the fundamental need for the ICMS's automated triage and compliance mapping features.  
+* **Thesis Integration:** Cite this highly respected paper in Chapter 1 (Problem Description) and Chapter 2 (Section 2.1.6) to establish the quantitative reality of alert fatigue, where SOC analysts face up to 134,000 alerts daily with only 0.01% being true attacks. This statistically validates the fundamental need for the ISCMS's automated triage and compliance mapping features.  
 * **BibTeX:**
 
 Code snippet
