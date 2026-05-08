@@ -1,9 +1,9 @@
 \chapter{Requirement Specification}
 
 \section{Existing System}
-Traditional compliance management systems use manual spreadsheets and fragmented Software-as-a-Service (SaaS) platforms. Governance teams often map regulatory standards, such as ISO/IEC 27001:2022, to technical controls using decentralized documents. This approach is prone to human error, lacks version control, and often fails to keep consistency across different frameworks. Manual tracking of configuration states increases operational labor and administrative overhead.
+Traditional compliance management systems rely on manual spreadsheets and disconnected Software-as-a-Service (SaaS) platforms. Governance teams translate ISO/IEC 27001:2022 regulatory requirements into technical controls using documents distributed between governance and technical teams. This method is susceptible to human error, cannot manage versioning, and does not enforce consistency between frameworks. Manual configuration state management increases administrative and operational workloads.
 
-Existing auditing solutions perform delayed security assessments, which means data from internal systems is often out of date by the time it is reviewed. Legacy platforms lack specialized relational constraints, which causes latency when processing telemetry and makes it difficult to resolve vulnerabilities consistently. The reliance on proprietary SaaS architectures also introduces data sovereignty risks, as compliance metrics and configurations are transmitted to public cloud environments.
+Existing auditing systems conduct assessments at scheduled intervals, and by the time of review, data from internal systems may be stale. Legacy platforms lack specialized relational constraints, which causes latency when processing telemetry and makes it difficult to resolve vulnerabilities consistently. The reliance on proprietary SaaS architectures also introduces data sovereignty risks, as compliance metrics and configurations are transmitted to public cloud environments.
 
 \section{Proposed System}
 The ISCMS platform is a centralized system that addresses the limitations of manual mapping and asynchronous SIEM aggregation. The system uses a multi-tier architecture to separate concerns while keeping compliance tracking within an isolated environment.
@@ -11,9 +11,9 @@ The ISCMS platform is a centralized system that addresses the limitations of man
 \subsection{Technology Stack Selection}
 The Django framework provides a backend environment with an integrated Object-Relational Mapper (ORM) and built-in security middleware. The Django ORM allows for performance optimizations like $O(1)$ set-based database aggregations. By using query projections and conditional filtering, the system keeps high-volume telemetry manageable. The Django REST Framework (DRF) adds serialization pipelines and supports authentication methods like stateless JSON Web Token (JWT) rotation.
 
-React 18 and Vite are used to build a Single Page Application (SPA) for data visualization. React's Virtual DOM allows the interface to update compliance states without blocking the browser thread. This ensures the dashboard remains responsive when viewing large amounts of SIEM alerts. Vite improves the development process by using native ES modules, which reduces build times compared to older tools.
+React 18 and Vite are used to build a Single Page Application (SPA) for data visualization. React's Virtual DOM allows the interface to update compliance states without blocking the browser thread. This makes the dashboard responsive in the event of looking at a lot of SIEM alerts. By leveraging native ES modules, Vite enhances the development process by minimizing build times whilst also supporting older tools.
 
-PostgreSQL is the primary database and provides the ACID compliance needed for organizational records. The database handles concurrent read/write loads from SIEM telemetry and automated mapping. By using B-Tree indexing and relational constraints, PostgreSQL ensures compliance metrics remain accurate. This satisfies the requirements for ISO 27001 and SOC 2 audits, where the history of security controls must be verifiable.
+The key database is PostgreSQL, which is used to give ACID adherence to organizational records. Streaming data from SIEM and automated mapping are concurrently read/written to the database. PostgreSQL guarantees that metrics for compliance are kept right through the use of B-Tree indexing and relational constraints. This meets the criteria of ISO 27001 and SOC 2 audits in which the security controls timelines and history need to be verifiable.
 
 To keep the platform responsive during data-heavy operations, the architecture uses Celery and Redis as an asynchronous layer. This decouples tasks like telemetry synchronization from the main application thread to prevent timeouts. Redis is the message broker that moves task payloads between the web server and the background workers. This model allows the platform to scale its ingestion capacity without slowing down the primary API service.
 
@@ -153,19 +153,19 @@ The non-functional requirements set the operational constraints and performance 
 \begin{itemize}
     \item The system must isolate PostgreSQL and Redis within a private Docker virtual bridge network.
     \item The backend must use $O(1)$ set-based query aggregations to keep dashboard latency below 200 milliseconds.
-    \item The architecture must use asynchronous background tasks via Celery and Redis to keep the UI responsive.
-    \item The frontend must use a responsive architecture to reduce analyst alert fatigue.
-    \item The platform must ensure high availability through task retry logic and message queuing.
-    \item The system must maintain an audit log that records administrative actions and system events.
+    \item The system must offload Celery and Redis asynchronous background tasks to ensure UI responsiveness.
+    \item The frontend should use a responsive architecture to minimize analyst alert fatigue.
+    \item The platform must ensure high availability through task retry and message queuing mechanisms.
+    \item The system must keep an audit trail for administrative activity and events of the system.
 \end{itemize}
 
 \section{User Requirements}
-The efficiency of the ISCMS platform relies on a user experience tailored to its primary actors: the System Administrator and the Security Auditor. The System Administrator needs a control plane to manage infrastructure settings without directly accessing the database. They must be able to configure synchronization, manage RBAC privileges, and override automated telemetry when necessary. The interface must present these controls clearly, using visual feedback to confirm operations within the Django ORM.
+An effective ISCMS user experience centers on its principal users: the System Administrator and the Security Auditor. The System Administrator requires a control plane to configure the infrastructure without direct database access. They should be able to set synchronization schedules, manage RBAC privileges, and override automated telemetry when needed. These controls need clear visual feedback to indicate what is happening inside the Django ORM.
 
-The Security Auditor uses the platform to assess regulatory adherence. Their primary requirement is viewing compliance data without unnecessary clutter. The auditor needs an RBAC boundary that prevents them from modifying infrastructure mapping while providing access to historical logs and PDF exports. The React SPA architecture must ensure the dashboard remains responsive during telemetry ingestion by using techniques like memoization to prevent rendering delays.
+The Security Auditor uses the platform to assess regulatory compliance. They need a clean view of compliance data without visual clutter. The auditors require an RBAC boundary that grants access to historical logs and PDFs but restricts modification of infrastructure mappings. The dashboard must remain responsive during telemetry ingestion; the React SPA architecture uses techniques like memoization to avoid rendering delays.
 
 \section{System Models and Components}
-This section outlines the data exchange and flow used by the platform to synchronize SIEM telemetry with the internal compliance engine.
+This section describes how the platform exchanges and flows data to synchronize SIEM telemetry with the internal compliance engine.
 
 \subsection{Context Diagram}
 The Context Diagram defines the interaction between the ISCMS and external entities, showing the boundaries of the application and the data streams required. Figure \ref{fig:context_diagram} shows the flow from human operators to infrastructure components.

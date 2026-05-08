@@ -30,7 +30,7 @@
 \contentsline {subsection}{\numberline {2.1.1}Evolution of Governance, Risk, and Compliance (GRC) Platforms}{7}{subsection.2.1.1}%
 \contentsline {subsection}{\numberline {2.1.2}Security Information and Event Management (SIEM) Integrations}{7}{subsection.2.1.2}%
 \contentsline {subsection}{\numberline {2.1.3}Performance Bottlenecks in Telemetry Aggregation}{8}{subsection.2.1.3}%
-\contentsline {subsection}{\numberline {2.1.4}Modern Access Control Paradigms}{8}{subsection.2.1.4}%
+\contentsline {subsection}{\numberline {2.1.4}Modern Access Control Paradigms}{9}{subsection.2.1.4}%
 \contentsline {subsection}{\numberline {2.1.5}Containerization and Defense-in-Depth Topology}{9}{subsection.2.1.5}%
 \contentsline {subsection}{\numberline {2.1.6}Cognitive Load and HCI in Security Dashboards}{10}{subsection.2.1.6}%
 \contentsline {section}{\numberline {2.2}Analysis of Existing Systems}{10}{section.2.2}%
@@ -66,79 +66,79 @@
 \contentsline {subsection}{\numberline {4.1.1}Client and Presentation Tier}{27}{subsection.4.1.1}%
 \contentsline {subsection}{\numberline {4.1.2}Application and Middleware Tier}{27}{subsection.4.1.2}%
 \contentsline {subsection}{\numberline {4.1.3}Asynchronous Processing Tier}{27}{subsection.4.1.3}%
-\contentsline {subsection}{\numberline {4.1.4}Data Persistence Tier}{27}{subsection.4.1.4}%
+\contentsline {subsection}{\numberline {4.1.4}Data Persistence Tier}{28}{subsection.4.1.4}%
 \contentsline {section}{\numberline {4.2}Design Constraints}{28}{section.4.2}%
 \contentsline {subsection}{\numberline {4.2.1}Technical Constraints}{28}{subsection.4.2.1}%
 \contentsline {subsection}{\numberline {4.2.2}Infrastructure and Operational Constraints}{29}{subsection.4.2.2}%
 \contentsline {section}{\numberline {4.3}Design Methodology}{29}{section.4.3}%
-\contentsline {section}{\numberline {4.4}High Level Design}{29}{section.4.4}%
+\contentsline {section}{\numberline {4.4}High Level Design}{30}{section.4.4}%
 \contentsline {subsection}{\numberline {4.4.1}Component Diagram}{30}{subsection.4.4.1}%
 \contentsline {subsection}{\numberline {4.4.2}Deployment Diagram}{30}{subsection.4.4.2}%
 \contentsline {subsection}{\numberline {4.4.3}System Activity Diagrams}{31}{subsection.4.4.3}%
 \contentsline {subsubsection}{\numberline {4.4.3.1}Authentication and IAM Routing}{31}{subsubsection.4.4.3.1}%
 \contentsline {subsubsection}{\numberline {4.4.3.2}Asynchronous Telemetry Ingestion}{32}{subsubsection.4.4.3.2}%
-\contentsline {subsubsection}{\numberline {4.4.3.3}Compliance State Evaluation}{32}{subsubsection.4.4.3.3}%
-\contentsline {subsubsection}{\numberline {4.4.3.4}Audit Report Generation}{33}{subsubsection.4.4.3.4}%
-\contentsline {subsubsection}{\numberline {4.4.3.5}Framework Rule Mapping and Validation}{34}{subsubsection.4.4.3.5}%
-\contentsline {subsubsection}{\numberline {4.4.3.6}Real-Time Alerting and Notification}{35}{subsubsection.4.4.3.6}%
-\contentsline {subsection}{\numberline {4.4.4}System Sequence Diagrams}{36}{subsection.4.4.4}%
-\contentsline {subsubsection}{\numberline {4.4.4.1}SD-01: User Authentication}{36}{subsubsection.4.4.4.1}%
-\contentsline {subsubsection}{\numberline {4.4.4.2}SD-02: Manage Wazuh Telemetry Synchronization}{37}{subsubsection.4.4.4.2}%
-\contentsline {subsubsection}{\numberline {4.4.4.3}SD-03: Map Framework Controls to Wazuh Rules}{38}{subsubsection.4.4.4.3}%
-\contentsline {subsubsection}{\numberline {4.4.4.4}SD-04: Monitor Endpoint Compliance Status}{39}{subsubsection.4.4.4.4}%
-\contentsline {subsubsection}{\numberline {4.4.4.5}SD-05: Resolve Compliance Anomalies}{40}{subsubsection.4.4.4.5}%
-\contentsline {subsubsection}{\numberline {4.4.4.6}SD-06: Export Audit Reports}{40}{subsubsection.4.4.4.6}%
-\contentsline {section}{\numberline {4.5}Low Level Design}{41}{section.4.5}%
-\contentsline {subsection}{\numberline {4.5.1}UML Class Diagram}{41}{subsection.4.5.1}%
-\contentsline {section}{\numberline {4.6}Database Design}{42}{section.4.6}%
-\contentsline {subsection}{\numberline {4.6.1}Physical Data Model (Core ERD)}{42}{subsection.4.6.1}%
-\contentsline {subsection}{\numberline {4.6.2}Extended Entity Relationship Diagram (EERD)}{43}{subsection.4.6.2}%
-\contentsline {section}{\numberline {4.7}Graphical User Interface (GUI) Design}{43}{section.4.7}%
-\contentsline {subsection}{\numberline {4.7.1}Authentication and Identity Management}{43}{subsection.4.7.1}%
-\contentsline {subsection}{\numberline {4.7.2}Superadmin Configuration Portal}{44}{subsection.4.7.2}%
-\contentsline {subsection}{\numberline {4.7.3}Auditor Workspace (RBAC Enforcement)}{46}{subsection.4.7.3}%
-\contentsline {subsection}{\numberline {4.7.4}Automated Audit Artifacts and Notifications}{46}{subsection.4.7.4}%
-\contentsline {section}{\numberline {4.8}External Interfaces}{48}{section.4.8}%
-\contentsline {subsection}{\numberline {4.8.1}Wazuh SIEM REST API}{49}{subsection.4.8.1}%
-\contentsline {subsection}{\numberline {4.8.2}SMTP Notification Gateway}{49}{subsection.4.8.2}%
-\contentsline {subsection}{\numberline {4.8.3}Outbound Webhook Integration}{49}{subsection.4.8.3}%
-\contentsline {subsection}{\numberline {4.8.4}Interface Specification Matrix}{49}{subsection.4.8.4}%
-\contentsline {chapter}{\numberline {5}Implementation}{50}{chapter.5}%
-\contentsline {section}{\numberline {5.1}System Architecture}{50}{section.5.1}%
-\contentsline {subsection}{\numberline {5.1.1}Presentation Layer Implementation (Frontend)}{52}{subsection.5.1.1}%
-\contentsline {subsection}{\numberline {5.1.2}Middleware and API Gateway (Backend)}{52}{subsection.5.1.2}%
-\contentsline {subsection}{\numberline {5.1.3}Asynchronous Processing Engine}{53}{subsection.5.1.3}%
-\contentsline {subsection}{\numberline {5.1.4}Data Persistence Layer}{53}{subsection.5.1.4}%
-\contentsline {subsection}{\numberline {5.1.5}Architectural Technology Stack}{53}{subsection.5.1.5}%
-\contentsline {section}{\numberline {5.2}System Internal Components}{54}{section.5.2}%
-\contentsline {subsection}{\numberline {5.2.1}Identity and Access Management (IAM) Module}{55}{subsection.5.2.1}%
-\contentsline {subsection}{\numberline {5.2.2}Governance and Compliance Data Engine}{55}{subsection.5.2.2}%
-\contentsline {subsection}{\numberline {5.2.3}SIEM Telemetry and Synchronization Module}{55}{subsection.5.2.3}%
-\contentsline {subsection}{\numberline {5.2.4}Automated Audit and Reporting Module}{56}{subsection.5.2.4}%
-\contentsline {subsection}{\numberline {5.2.5}Frontend State and Visualization Layer}{56}{subsection.5.2.5}%
-\contentsline {section}{\numberline {5.3}Tools and Technologies}{56}{section.5.3}%
-\contentsline {chapter}{\numberline {6}System Testing and Evaluation}{58}{chapter.6}%
-\contentsline {section}{\numberline {6.1}Critical Appraisal and Limitations}{58}{section.6.1}%
-\contentsline {section}{\numberline {6.2}Testing Environment and Methodology}{58}{section.6.2}%
-\contentsline {section}{\numberline {6.3}Functional System Test Cases}{59}{section.6.3}%
-\contentsline {subsection}{\numberline {6.3.1}TC-01: User Authentication}{59}{subsection.6.3.1}%
-\contentsline {subsection}{\numberline {6.3.2}TC-02: Manage Wazuh Telemetry Synchronization}{62}{subsection.6.3.2}%
-\contentsline {subsection}{\numberline {6.3.3}TC-03: Map Framework Controls to Wazuh Rules}{66}{subsection.6.3.3}%
-\contentsline {subsection}{\numberline {6.3.4}TC-04: Monitor Endpoint Compliance Status}{68}{subsection.6.3.4}%
-\contentsline {subsection}{\numberline {6.3.5}TC-05: Resolve Compliance Anomalies}{70}{subsection.6.3.5}%
-\contentsline {subsection}{\numberline {6.3.6}TC-06: Export Audit Reports}{71}{subsection.6.3.6}%
-\contentsline {section}{\numberline {6.4}Non-Functional System Testing}{72}{section.6.4}%
-\contentsline {subsection}{\numberline {6.4.1}Performance and Load Testing}{72}{subsection.6.4.1}%
-\contentsline {subsection}{\numberline {6.4.2}Security and Penetration Testing}{73}{subsection.6.4.2}%
-\contentsline {subsection}{\numberline {6.4.3}Usability and Accessibility Testing}{74}{subsection.6.4.3}%
-\contentsline {subsection}{\numberline {6.4.4}Compatibility and Deployment Testing}{74}{subsection.6.4.4}%
-\contentsline {chapter}{\numberline {7}Conclusions}{76}{chapter.7}%
-\contentsline {chapter}{\numberline {A}User Manual}{77}{appendix.A}%
-\contentsline {section}{\numberline {A.1}Purpose}{77}{section.A.1}%
-\contentsline {section}{\numberline {A.2}System Requirements}{77}{section.A.2}%
-\contentsline {section}{\numberline {A.3}System Access}{77}{section.A.3}%
-\contentsline {section}{\numberline {A.4}Main User Steps}{78}{section.A.4}%
-\contentsline {section}{\numberline {A.5}Logout}{83}{section.A.5}%
-\contentsline {section}{\numberline {A.6}Support}{83}{section.A.6}%
-\contentsline {section}{\numberline {A.7}Note}{84}{section.A.7}%
-\contentsline {chapter}{References}{85}{section*.13}%
+\contentsline {subsubsection}{\numberline {4.4.3.3}Compliance State Evaluation}{33}{subsubsection.4.4.3.3}%
+\contentsline {subsubsection}{\numberline {4.4.3.4}Audit Report Generation}{34}{subsubsection.4.4.3.4}%
+\contentsline {subsubsection}{\numberline {4.4.3.5}Framework Rule Mapping and Validation}{35}{subsubsection.4.4.3.5}%
+\contentsline {subsubsection}{\numberline {4.4.3.6}Real-Time Alerting and Notification}{36}{subsubsection.4.4.3.6}%
+\contentsline {subsection}{\numberline {4.4.4}System Sequence Diagrams}{37}{subsection.4.4.4}%
+\contentsline {subsubsection}{\numberline {4.4.4.1}SD-01: User Authentication}{37}{subsubsection.4.4.4.1}%
+\contentsline {subsubsection}{\numberline {4.4.4.2}SD-02: Manage Wazuh Telemetry Synchronization}{38}{subsubsection.4.4.4.2}%
+\contentsline {subsubsection}{\numberline {4.4.4.3}SD-03: Map Framework Controls to Wazuh Rules}{39}{subsubsection.4.4.4.3}%
+\contentsline {subsubsection}{\numberline {4.4.4.4}SD-04: Monitor Endpoint Compliance Status}{40}{subsubsection.4.4.4.4}%
+\contentsline {subsubsection}{\numberline {4.4.4.5}SD-05: Resolve Compliance Anomalies}{41}{subsubsection.4.4.4.5}%
+\contentsline {subsubsection}{\numberline {4.4.4.6}SD-06: Export Audit Reports}{41}{subsubsection.4.4.4.6}%
+\contentsline {section}{\numberline {4.5}Low Level Design}{42}{section.4.5}%
+\contentsline {subsection}{\numberline {4.5.1}UML Class Diagram}{42}{subsection.4.5.1}%
+\contentsline {section}{\numberline {4.6}Database Design}{43}{section.4.6}%
+\contentsline {subsection}{\numberline {4.6.1}Physical Data Model (Core ERD)}{43}{subsection.4.6.1}%
+\contentsline {subsection}{\numberline {4.6.2}Extended Entity Relationship Diagram (EERD)}{44}{subsection.4.6.2}%
+\contentsline {section}{\numberline {4.7}Graphical User Interface (GUI) Design}{44}{section.4.7}%
+\contentsline {subsection}{\numberline {4.7.1}Authentication and Identity Management}{44}{subsection.4.7.1}%
+\contentsline {subsection}{\numberline {4.7.2}Superadmin Configuration Portal}{45}{subsection.4.7.2}%
+\contentsline {subsection}{\numberline {4.7.3}Auditor Workspace (RBAC Enforcement)}{47}{subsection.4.7.3}%
+\contentsline {subsection}{\numberline {4.7.4}Automated Audit Artifacts and Notifications}{47}{subsection.4.7.4}%
+\contentsline {section}{\numberline {4.8}External Interfaces}{49}{section.4.8}%
+\contentsline {subsection}{\numberline {4.8.1}Wazuh SIEM REST API}{50}{subsection.4.8.1}%
+\contentsline {subsection}{\numberline {4.8.2}SMTP Notification Gateway}{50}{subsection.4.8.2}%
+\contentsline {subsection}{\numberline {4.8.3}Outbound Webhook Integration}{50}{subsection.4.8.3}%
+\contentsline {subsection}{\numberline {4.8.4}Interface Specification Matrix}{50}{subsection.4.8.4}%
+\contentsline {chapter}{\numberline {5}Implementation}{51}{chapter.5}%
+\contentsline {section}{\numberline {5.1}System Architecture}{51}{section.5.1}%
+\contentsline {subsection}{\numberline {5.1.1}Presentation Layer Implementation (Frontend)}{53}{subsection.5.1.1}%
+\contentsline {subsection}{\numberline {5.1.2}Middleware and API Gateway (Backend)}{53}{subsection.5.1.2}%
+\contentsline {subsection}{\numberline {5.1.3}Asynchronous Processing Engine}{54}{subsection.5.1.3}%
+\contentsline {subsection}{\numberline {5.1.4}Data Persistence Layer}{54}{subsection.5.1.4}%
+\contentsline {subsection}{\numberline {5.1.5}Architectural Technology Stack}{54}{subsection.5.1.5}%
+\contentsline {section}{\numberline {5.2}System Internal Components}{55}{section.5.2}%
+\contentsline {subsection}{\numberline {5.2.1}Identity and Access Management (IAM) Module}{56}{subsection.5.2.1}%
+\contentsline {subsection}{\numberline {5.2.2}Governance and Compliance Data Engine}{56}{subsection.5.2.2}%
+\contentsline {subsection}{\numberline {5.2.3}SIEM Telemetry and Synchronization Module}{56}{subsection.5.2.3}%
+\contentsline {subsection}{\numberline {5.2.4}Automated Audit and Reporting Module}{57}{subsection.5.2.4}%
+\contentsline {subsection}{\numberline {5.2.5}Frontend State and Visualization Layer}{57}{subsection.5.2.5}%
+\contentsline {section}{\numberline {5.3}Tools and Technologies}{57}{section.5.3}%
+\contentsline {chapter}{\numberline {6}System Testing and Evaluation}{59}{chapter.6}%
+\contentsline {section}{\numberline {6.1}Critical Appraisal and Limitations}{59}{section.6.1}%
+\contentsline {section}{\numberline {6.2}Testing Environment and Methodology}{59}{section.6.2}%
+\contentsline {section}{\numberline {6.3}Functional System Test Cases}{60}{section.6.3}%
+\contentsline {subsection}{\numberline {6.3.1}TC-01: User Authentication}{60}{subsection.6.3.1}%
+\contentsline {subsection}{\numberline {6.3.2}TC-02: Manage Wazuh Telemetry Synchronization}{63}{subsection.6.3.2}%
+\contentsline {subsection}{\numberline {6.3.3}TC-03: Map Framework Controls to Wazuh Rules}{67}{subsection.6.3.3}%
+\contentsline {subsection}{\numberline {6.3.4}TC-04: Monitor Endpoint Compliance Status}{69}{subsection.6.3.4}%
+\contentsline {subsection}{\numberline {6.3.5}TC-05: Resolve Compliance Anomalies}{71}{subsection.6.3.5}%
+\contentsline {subsection}{\numberline {6.3.6}TC-06: Export Audit Reports}{72}{subsection.6.3.6}%
+\contentsline {section}{\numberline {6.4}Non-Functional System Testing}{73}{section.6.4}%
+\contentsline {subsection}{\numberline {6.4.1}Performance and Load Testing}{73}{subsection.6.4.1}%
+\contentsline {subsection}{\numberline {6.4.2}Security and Penetration Testing}{74}{subsection.6.4.2}%
+\contentsline {subsection}{\numberline {6.4.3}Usability and Accessibility Testing}{75}{subsection.6.4.3}%
+\contentsline {subsection}{\numberline {6.4.4}Compatibility and Deployment Testing}{75}{subsection.6.4.4}%
+\contentsline {chapter}{\numberline {7}Conclusions}{77}{chapter.7}%
+\contentsline {chapter}{\numberline {A}User Manual}{78}{appendix.A}%
+\contentsline {section}{\numberline {A.1}Purpose}{78}{section.A.1}%
+\contentsline {section}{\numberline {A.2}System Requirements}{78}{section.A.2}%
+\contentsline {section}{\numberline {A.3}System Access}{78}{section.A.3}%
+\contentsline {section}{\numberline {A.4}Main User Steps}{79}{section.A.4}%
+\contentsline {section}{\numberline {A.5}Logout}{84}{section.A.5}%
+\contentsline {section}{\numberline {A.6}Support}{84}{section.A.6}%
+\contentsline {section}{\numberline {A.7}Note}{85}{section.A.7}%
+\contentsline {chapter}{References}{86}{section*.13}%

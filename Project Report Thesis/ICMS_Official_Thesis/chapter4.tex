@@ -4,10 +4,10 @@
 The Intelligent Security Compliance Management System (ISCMS) uses an N-tier architecture. Separating the frontend, API, background workers, and database allows for scaling and debugging of individual components without affecting the entire system. Figure \ref{fig:tier_architecture} shows the four main layers.
 
 \subsection{Client and Presentation Tier}
-The frontend is a React 18 Single Page Application (SPA). Moving the rendering logic to the browser reduces server load and lets analysts review compliance alerts without full page reloads.
+The frontend is a React 18 Single Page Application (SPA). Offloading the rendering logic to the browser reduces server load and allows analysts to navigate between compliance views without full page reloads.
 
 \subsection{Application and Middleware Tier}
-The backend uses the Django REST Framework. It is the primary gateway, verifying JWTs and enforcing role-based access before processing queries. Database traffic is routed through Django to maintain a consistent security boundary.
+The backend uses the Django REST Framework as its middleware layer. It serves as the primary entity that verifies JWTs and enforces role-based access before processing queries. All database interactions are routed through Django to maintain a consistent security boundary at the data layer.
 
 \subsection{Asynchronous Processing Tier}
 Retrieving telemetry from the Wazuh SIEM is an I/O-intensive process. Executing these tasks on the main Django thread would cause API latency and timeouts. To prevent this, the system offloads I/O tasks to background Celery workers using Redis as the message broker.
@@ -70,15 +70,15 @@ On the frontend, rendering large compliance grids can impact browser performance
 \subsection{Infrastructure and Operational Constraints}
 External factors, such as restricted access to university facilities, required the transition to developing and testing the architecture in a home-lab environment.
 
-Running a full Wazuh SIEM manager locally is resource-intensive and can impact system stability. To manage this, a distributed configuration was used. One system was dedicated to running Wazuh, while another was used for development and as a monitored endpoint. Git was used to maintain consistency across different development environments while the primary infrastructure remained on a dedicated server.
+Running a full Wazuh SIEM manager locally is resource-intensive and can impact system stability. To manage this, a distributed configuration was used. One system was dedicated to running Wazuh, while another was used for development and as a monitored endpoint. The primary infrastructure was on a separate server, and Git was used to keep things consistent among the various development environments.
 
 \section{Design Methodology}
-The platform was built using an iterative prototyping approach. The system was divided into distinct modules to allow for independent testing before integration.
+The platform has been developed in an iterative fashion through prototyping. The system was broken down into separate modules to be tested before being integrated.
 
-The project was divided into four main phases:
+The four key stages of this project involved:
 
 \begin{itemize}
-    \item \textbf{Phase 1 (Prototyping):} The initial phase focused on verifying the core concept. This included setting up a basic Django backend and testing the Wazuh API to confirm successful retrieval of Security Configuration Assessment (SCA) telemetry.
+    \item \textbf{Phase 1 (Prototyping):} The first phase centered around the fundamental idea. This included setting up a basic Django backend and testing the Wazuh API to confirm successful retrieval of Security Configuration Assessment (SCA) telemetry.
     
     \item \textbf{Phase 2 (Core Architecture):} The second phase involved designing the PostgreSQL database schema to link frameworks to rules. JWT authentication and role-based routing were also implemented to secure the API.
     
@@ -91,7 +91,7 @@ The project was divided into four main phases:
 The system architecture is represented through several views that cover software components, physical deployment, and operational sequences.
 
 \subsection{Component Diagram}
-Figure \ref{fig:component_diagram} shows the interactions between system modules. The React frontend sends HTTPS requests to the Django API Gateway. The IAM module verifies the JWT, and the Compliance Engine then translates the request into a database query. A separate Wazuh Polling Service retrieves alerts and stores them in PostgreSQL.
+Figure \ref{fig:component_diagram} shows the interactions between system modules. The React frontend sends HTTPS requests to the Django API Gateway. The IAM module is used to check the JWT and the Compliance Engine then converts the request into a database query. A separate Wazuh Polling Service retrieves alerts and stores them in PostgreSQL.
 
 \begin{figure}[H]
     \centering
@@ -395,7 +395,7 @@ The audit report generation process is automated, as shown in Figure \ref{fig:ac
 
 
 \subsubsection{Framework Rule Mapping and Validation}
-Administrators map Wazuh rules to framework controls as shown in Figure \ref{fig:activity_mapping}. Before saving the mapping, the system queries the SIEM API to verify the rule ID. If valid, the system checks for existing mappings in the database. This validation prevents accidental overwriting of existing configurations.
+Administrators map Wazuh rules to framework controls as shown in Figure \ref{fig:activity_mapping}. Before saving the mapping, the system queries the SIEM API to verify the rule ID. If true the system looks for existing mappings in the database. This validation prevents accidental overwriting of existing configurations.
 
 \begin{figure}[H]
     \centering
@@ -782,10 +782,10 @@ Figure \ref{fig:sd_06_1} documents the report generation and delivery path.
 
 
 \section{Low Level Design}
-The Low-Level Design (LLD) translates the high-level system architecture into fundamental software building blocks. This section maps the specific object-oriented structures, persistence models, and relational bindings that dictate the execution of the ISCMS platform's core business logic.
+Low-Level Design (LLD) takes into account the high-level system design and converts it into basic software components. This section details the individual structures, persistence models and relational bindings that control the core enterprise business logic for the ISCMS platform.
 
 \subsection{UML Class Diagram}
-Figure \ref{fig:class_diagram} shows the Django ORM classes and their relationships. Relational constraints link regulatory frameworks to specific endpoint telemetry logs.
+Classes and their relationships that compose the Django ORM are depicted in Figure \ref{fig:class_diagram}. Relational constraints link regulatory frameworks to telemetry logs at each monitored endpoint.
 
 \begin{figure}[H]
     \centering
@@ -874,10 +874,10 @@ Figure \ref{fig:class_diagram} shows the Django ORM classes and their relationsh
 \end{figure}
 
 \section{Database Design}
-I built the database on PostgreSQL. The tables are normalized to the Third Normal Form (3NF) to prevent update anomalies. When you're pulling in thousands of SIEM alerts an hour, you need strict ACID compliance so the data doesn't corrupt.
+The system uses PostgreSQL for persistence. The tables are structured in Third Normal Form (3NF) to avoid data anomalies during update operations. Given the high volume of incoming SIEM alerts, ACID compliance prevents data corruption during concurrent transactions.
 
 \subsection{Physical Data Model (Core ERD)}
-Figure \ref{fig:core_erd} shows the actual physical schema. I mapped out the exact column types and foreign keys we used to build the PostgreSQL database.
+Figure \ref{fig:core_erd} details the physical database structure. It defines the specific column types and foreign key relationships required for the PostgreSQL deployment.
 
 \begin{figure}[H]
     \centering
@@ -964,9 +964,9 @@ Figure \ref{fig:core_erd} shows the actual physical schema. I mapped out the exa
 \end{figure}
 
 \subsection{Extended Entity Relationship Diagram (EERD)}
-Figure \ref{fig:eerd} is an Extended ERD (EERD) that visualizes the logical rules we put in place.
+Figure \ref{fig:eerd} presents the Extended Entity Relationship Diagram (EERD), which adds semantic constraints to the logical data model.
 
-Notice the disjoint (\textbf{d}) specialization: a generic User Account splits strictly into either a System Admin or a Security Auditor. That handles our RBAC at the database level. I also modeled the Compliance State as a weak entity, because an alert record is useless without its parent Monitored Endpoint.
+The disjoint (\textbf{d}) specialization indicates that a User Account is strictly partitioned into either a System Admin or a Security Auditor subtype. This enforces database-level RBAC. The Compliance State is modeled as a weak entity because an alert has no independent existence without a parent Monitored Endpoint.
 
 \begin{figure}[H]
     \centering
@@ -1133,16 +1133,16 @@ The system provides PDF audit reports for external reviewers and SMTP alerts for
 
 
 \section{External Interfaces}
-The ISCMS doesn't run in a vacuum. It talks to several external services. This section lists out the protocols and authentication methods I used to keep those connections secure.
+The ISCMS communicates with several external services. This section documents the protocols and authentication schemes used to secure those connections.
 
 \subsection{Wazuh SIEM REST API}
-The whole system relies on raw logs coming from the Wazuh Manager. My Celery workers hit the Wazuh REST API over HTTPS. I secured this with Bearer tokens generated by the Wazuh server. We pull down the JSON payloads and validate them against the Django ORM before saving them.
+The system depends on the collection of raw logs from the Wazuh Manager. Celery workers poll the Wazuh REST API over HTTPS. Authentication uses Bearer tokens issued by the Wazuh server. JSON payloads are retrieved and validated against the Django ORM schema before being persisted.
 
 \subsection{SMTP Notification Gateway}
-For real-time alerts, the backend constructs HTML emails and fires them off through an external SMTP server over port 587 using STARTTLS. I threw this logic into the async message broker so it wouldn't block the API Gateway.
+For real-time notifications, the backend generates HTML email and sends it via an external SMTP server on port 587 using STARTTLS. This logic is dispatched through the asynchronous message broker to prevent blocking the API Gateway.
 
 \subsection{Outbound Webhook Integration}
-I also added outbound webhooks so the system can talk to tools like Slack or Microsoft Teams. Whenever a compliance rule breaks, it shoots out an HTTP POST request with the JSON event data. To prevent spoofing, I added an HMAC-SHA256 signature to the headers.
+The platform also supports outbound webhooks for integration with tools such as Slack or Microsoft Teams. When a compliance rule is violated, the system dispatches an HTTP POST request containing the JSON event data. An HMAC-SHA256 signature is appended to the request headers to prevent payload spoofing.
 
 \subsection{Interface Specification Matrix}
 Table \ref{tab:external_interfaces} summarizes the technical parameters and boundary constraints of the platform's external interfaces.

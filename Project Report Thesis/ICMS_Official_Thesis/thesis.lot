@@ -9,29 +9,29 @@
 \contentsline {table}{\numberline {3.5}{\ignorespaces UC-05: Resolve Compliance Anomalies}}{25}{table.3.5}%
 \contentsline {table}{\numberline {3.6}{\ignorespaces UC-06: Export Audit Reports}}{26}{table.3.6}%
 \addvspace {10\p@ }
-\contentsline {table}{\numberline {4.1}{\ignorespaces External Interface Technical Specifications}}{49}{table.4.1}%
+\contentsline {table}{\numberline {4.1}{\ignorespaces External Interface Technical Specifications}}{50}{table.4.1}%
 \addvspace {10\p@ }
-\contentsline {table}{\numberline {5.1}{\ignorespaces Architectural Technology Stack and Implementation Roles}}{54}{table.5.1}%
-\contentsline {table}{\numberline {5.2}{\ignorespaces Summary of Tools, Technologies, and Development Stack}}{57}{table.5.2}%
+\contentsline {table}{\numberline {5.1}{\ignorespaces Architectural Technology Stack and Implementation Roles}}{55}{table.5.1}%
+\contentsline {table}{\numberline {5.2}{\ignorespaces Summary of Tools, Technologies, and Development Stack}}{58}{table.5.2}%
 \addvspace {10\p@ }
-\contentsline {table}{\numberline {6.1}{\ignorespaces TC-01-1: Valid Superadmin Authentication (Positive)}}{59}{table.6.1}%
-\contentsline {table}{\numberline {6.2}{\ignorespaces TC-01-2: Invalid Credential Rejection (Negative)}}{60}{table.6.2}%
-\contentsline {table}{\numberline {6.3}{\ignorespaces TC-01-3: UI RBAC View Segregation (Positive)}}{61}{table.6.3}%
-\contentsline {table}{\numberline {6.4}{\ignorespaces TC-01-4: Unauthorized API Write Attempt (Negative)}}{62}{table.6.4}%
-\contentsline {table}{\numberline {6.5}{\ignorespaces TC-02-1: Wazuh API Handshake and Token Retrieval (Positive)}}{63}{table.6.5}%
-\contentsline {table}{\numberline {6.6}{\ignorespaces TC-02-2: Wazuh Connection Timeout Exception (Negative)}}{64}{table.6.6}%
-\contentsline {table}{\numberline {6.7}{\ignorespaces TC-02-3: Asynchronous Telemetry Polling via Celery Beat (Positive)}}{65}{table.6.7}%
-\contentsline {table}{\numberline {6.8}{\ignorespaces TC-02-4: Unstructured JSON Log Ingestion (Positive)}}{66}{table.6.8}%
-\contentsline {table}{\numberline {6.9}{\ignorespaces TC-03-1: Deterministic Framework Mapping (Positive)}}{67}{table.6.9}%
-\contentsline {table}{\numberline {6.10}{\ignorespaces TC-03-2: Duplicate Mapping Collision (Negative)}}{68}{table.6.10}%
-\contentsline {table}{\numberline {6.11}{\ignorespaces TC-04-1: Global Theme Toggling — Light/Dark Mode (Positive)}}{69}{table.6.11}%
-\contentsline {table}{\numberline {6.12}{\ignorespaces TC-04-2: Dynamic Compliance Score Recalculation (Positive)}}{70}{table.6.12}%
-\contentsline {table}{\numberline {6.13}{\ignorespaces TC-05-1: Asynchronous SMTP Alert Dispatch (Positive)}}{71}{table.6.13}%
-\contentsline {table}{\numberline {6.14}{\ignorespaces TC-06-1: Comprehensive PDF Audit Report Generation (Positive)}}{72}{table.6.14}%
-\contentsline {table}{\numberline {6.15}{\ignorespaces NFR-TC-01: System Load and Latency Benchmarking}}{73}{table.6.15}%
-\contentsline {table}{\numberline {6.16}{\ignorespaces NFR-TC-02: Asynchronous Processing \& High I/O Load}}{73}{table.6.16}%
-\contentsline {table}{\numberline {6.17}{\ignorespaces NFR-TC-03: Perimeter Defense and Vulnerability Prevention}}{74}{table.6.17}%
-\contentsline {table}{\numberline {6.18}{\ignorespaces NFR-TC-04: Cognitive Load and Interface Usability}}{74}{table.6.18}%
-\contentsline {table}{\numberline {6.19}{\ignorespaces NFR-TC-05: Environment Portability and Container Resilience}}{75}{table.6.19}%
+\contentsline {table}{\numberline {6.1}{\ignorespaces TC-01-1: Valid Superadmin Authentication (Positive)}}{60}{table.6.1}%
+\contentsline {table}{\numberline {6.2}{\ignorespaces TC-01-2: Invalid Credential Rejection (Negative)}}{61}{table.6.2}%
+\contentsline {table}{\numberline {6.3}{\ignorespaces TC-01-3: UI RBAC View Segregation (Positive)}}{62}{table.6.3}%
+\contentsline {table}{\numberline {6.4}{\ignorespaces TC-01-4: Unauthorized API Write Attempt (Negative)}}{63}{table.6.4}%
+\contentsline {table}{\numberline {6.5}{\ignorespaces TC-02-1: Wazuh API Handshake and Token Retrieval (Positive)}}{64}{table.6.5}%
+\contentsline {table}{\numberline {6.6}{\ignorespaces TC-02-2: Wazuh Connection Timeout Exception (Negative)}}{65}{table.6.6}%
+\contentsline {table}{\numberline {6.7}{\ignorespaces TC-02-3: Asynchronous Telemetry Polling via Celery Beat (Positive)}}{66}{table.6.7}%
+\contentsline {table}{\numberline {6.8}{\ignorespaces TC-02-4: Unstructured JSON Log Ingestion (Positive)}}{67}{table.6.8}%
+\contentsline {table}{\numberline {6.9}{\ignorespaces TC-03-1: Deterministic Framework Mapping (Positive)}}{68}{table.6.9}%
+\contentsline {table}{\numberline {6.10}{\ignorespaces TC-03-2: Duplicate Mapping Collision (Negative)}}{69}{table.6.10}%
+\contentsline {table}{\numberline {6.11}{\ignorespaces TC-04-1: Global Theme Toggling, Light/Dark Mode (Positive)}}{70}{table.6.11}%
+\contentsline {table}{\numberline {6.12}{\ignorespaces TC-04-2: Dynamic Compliance Score Recalculation (Positive)}}{71}{table.6.12}%
+\contentsline {table}{\numberline {6.13}{\ignorespaces TC-05-1: Asynchronous SMTP Alert Dispatch (Positive)}}{72}{table.6.13}%
+\contentsline {table}{\numberline {6.14}{\ignorespaces TC-06-1: Comprehensive PDF Audit Report Generation (Positive)}}{73}{table.6.14}%
+\contentsline {table}{\numberline {6.15}{\ignorespaces NFR-TC-01: System Load and Latency Benchmarking}}{74}{table.6.15}%
+\contentsline {table}{\numberline {6.16}{\ignorespaces NFR-TC-02: Asynchronous Processing \& High I/O Load}}{74}{table.6.16}%
+\contentsline {table}{\numberline {6.17}{\ignorespaces NFR-TC-03: Perimeter Defense and Vulnerability Prevention}}{75}{table.6.17}%
+\contentsline {table}{\numberline {6.18}{\ignorespaces NFR-TC-04: Cognitive Load and Interface Usability}}{75}{table.6.18}%
+\contentsline {table}{\numberline {6.19}{\ignorespaces NFR-TC-05: Environment Portability and Container Resilience}}{76}{table.6.19}%
 \addvspace {10\p@ }
 \addvspace {10\p@ }

@@ -386,6 +386,11 @@ INPUT C:\Users\malib\AppData\Local\Programs\MiKTeX\fonts\tfm\adobe\times\ptmb7t.
 INPUT C:\Users\malib\AppData\Local\Programs\MiKTeX\fonts\tfm\adobe\times\ptmri7t.tfm
 INPUT C:\Users\malib\AppData\Local\Programs\MiKTeX\fonts\tfm\adobe\times\ptmri7t.tfm
 INPUT C:\Users\malib\AppData\Local\Programs\MiKTeX\fonts\tfm\adobe\times\ptmb8t.tfm
+INPUT .\chapter3.tex
+INPUT .\chapter3.tex
+INPUT .\chapter3.tex
+INPUT .\chapter3.tex
+INPUT chapter3.tex
 INPUT C:\Users\malib\AppData\Local\Programs\MiKTeX\fonts\vf\adobe\times\ptmb8t.vf
 INPUT C:\Users\malib\AppData\Local\Programs\MiKTeX\fonts\tfm\adobe\times\ptmb8r.tfm
 INPUT C:\Users\malib\AppData\Local\Programs\MiKTeX\fonts\vf\adobe\times\ptmr8t.vf
@@ -395,11 +400,6 @@ INPUT C:\Users\malib\AppData\Local\Programs\MiKTeX\fonts\tfm\adobe\times\psyro.t
 INPUT C:\Users\malib\AppData\Local\Programs\MiKTeX\fonts\tfm\adobe\times\ptmri8r.tfm
 INPUT C:\Users\malib\AppData\Local\Programs\MiKTeX\fonts\vf\adobe\times\zptmcm7t.vf
 INPUT C:\Users\malib\AppData\Local\Programs\MiKTeX\fonts\tfm\adobe\symbol\psyr.tfm
-INPUT .\chapter3.tex
-INPUT .\chapter3.tex
-INPUT .\chapter3.tex
-INPUT .\chapter3.tex
-INPUT chapter3.tex
 INPUT C:\Users\malib\AppData\Local\Programs\MiKTeX\fonts\tfm\adobe\times\ptmri8t.tfm
 INPUT C:\Users\malib\AppData\Local\Programs\MiKTeX\fonts\tfm\adobe\times\ptmr8t.tfm
 INPUT C:\Users\malib\AppData\Local\Programs\MiKTeX\fonts\vf\adobe\times\zptmcm7y.vf
