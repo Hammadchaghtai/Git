@@ -132,7 +132,7 @@ Every HTTP request to the Django backend uses an Axios instance configured with 
 The UI is styled with Tailwind CSS v4 using a custom \texttt{@theme} token set. Recharts is used for data visualization, including the compliance score gauge and per-framework bar charts. Icon assets are provided by Lucide React. The routing table also enforces RBAC at the frontend level: the \texttt{/manage-admins} route requires the \texttt{super\_admin} role, ensuring the UI access matches the API permissions.
 
 \subsection{Middleware and API Gateway (Backend)}
-The backend is a Django 5.1 project with the installed application \texttt{compliance} that hold the models, views, serializers, and management commands. The configuration of the project is located in \texttt{core/settings.py} and the secrets are loaded through \texttt{python-decouple} from a \texttt{.env} file.
+The backend is a Django 5.1 project with the installed application \texttt{compliance} that holds the models, views, serializers, and management commands. The configuration of the project is located in \texttt{core/settings.py} and the secrets are loaded through \texttt{python-decouple} from a \texttt{.env} file.
 
 Authentication uses \url{django-restframework-simplejwt}. Access tokens are valid for 24 hours, Refresh tokens are valid for 7 days with rotation enabled. If the user has TOTP enabled (via \texttt{pyotp)}, the \texttt{Custom\allowbreak Token\allowbreak Obtain\allowbreak View} will return a \texttt{requires\_\allowbreak 2fa} flag, which means that the access to the tokens will require an additional step of verification.
 

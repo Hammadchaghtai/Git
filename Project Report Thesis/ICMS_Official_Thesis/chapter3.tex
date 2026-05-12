@@ -11,7 +11,7 @@ The ISCMS platform is a centralized system that addresses the limitations of man
 \subsection{Technology Stack Selection}
 The Django framework provides a backend environment with an integrated Object-Relational Mapper (ORM) and built-in security middleware. The Django ORM allows for performance optimizations like $O(1)$ set-based database aggregations. By using query projections and conditional filtering, the system keeps high-volume telemetry manageable. The Django REST Framework (DRF) adds serialization pipelines and supports authentication methods like stateless JSON Web Token (JWT) rotation.
 
-React 18 and Vite are used to build a Single Page Application (SPA) for data visualization. React's Virtual DOM allows the interface to update compliance states without blocking the browser thread. This makes the dashboard responsive in the event of looking at a lot of SIEM alerts. By leveraging native ES modules, Vite enhances the development process by minimizing build times whilst also supporting older tools.
+React 18 and Vite are used to build a Single Page Application (SPA) for data visualization. React's Virtual DOM allows the interface to update compliance states without blocking the browser thread. This keeps the dashboard responsive when rendering large volumes of SIEM alerts. By using native ES modules, Vite enhances the development process by minimizing build times while also supporting older tools.
 
 The key database is PostgreSQL, which is used to give ACID adherence to organizational records. Streaming data from SIEM and automated mapping are concurrently read/written to the database. PostgreSQL guarantees that metrics for compliance are kept right through the use of B-Tree indexing and relational constraints. This meets the criteria of ISO 27001 and SOC 2 audits in which the security controls timelines and history need to be verifiable.
 
@@ -314,10 +314,26 @@ Figure \ref{fig:use_case_diagram} shows the workflows for the System Administrat
     \draw[inherit] (sa_text.south) -- node[right, font=\scriptsize, text=black!70] {<<inherits>>} (adm_head.north);
     \draw[inherit] (adm_text.south) -- node[right, font=\scriptsize, text=black!70] {<<inherits>>} (aud_head.north);
 
-    % Secondary / External Actors (Right Side)
+    % Modified Actor Macro for Systems/Services (pic definition)
+    \tikzset{
+        server_rack/.pic={
+            \node[draw=black!80, thick, fill=gray!10, minimum width=0.7cm, minimum height=1cm, rounded corners=1pt] (-box) at (0,0) {};
+            \foreach \i in {0.25, 0, -0.25} {
+                \draw[black!60, thick] (-0.2, \i) -- (0.2, \i);
+                \fill[black!80] (0.28, \i) circle (0.5pt);
+            }
+        }
+    }
+
+    % Secondary / External Actors (Right Side - With System Icons)
     \actor{auth}{15.5}{4.5}{<<System>>\\Authenticator}
+    \pic at (16.8, 4.5) {server_rack};
+
     \actor{wazuh}{15.5}{-2.5}{<<SIEM>>\\Wazuh API}
+    \pic at (16.8, -2.5) {server_rack};
+
     \actor{smtp}{15.5}{-7.5}{<<Service>>\\SMTP Relay}
+    \pic at (16.8, -7.5) {server_rack};
 
     % Use Cases - Center Column
     \node[usecase] (uc_login) at (1.5, 4.5) {Authenticate Session};
@@ -453,7 +469,7 @@ This use case details the process of mapping regulatory framework controls to te
         \hline
         \textbf{Preconditions} & The Administrator is authenticated. $\langle\langle$include$\rangle\rangle$ User Authentication. Frameworks and controls exist in the system. \\
         \hline
-        \textbf{Main Flow} & 1. The Administrator selects a SIEM rule and links it to a specific compliance control.\newline 2. The system validates the relationship between the rule and the control.\newline 3. The system saves the mapping configuration.\newline 4. The system confirms the successful linkage to the Administrator. \\
+        \textbf{Main Flow} & 1. The Administrator selects a SIEM rule and links it to a specific compliance control.\newline 2. The system validates the relationship between the rule and the control.\newline 3. The system saves the mapping configuration.\newline 4. The system confirms the successful linkage to the Administrator.\newline 5. The Superadmin assigns the mapped policy to specific organizational Departments. \\
         \hline
         \textbf{Alternative Flows} & Invalid control selected \textrightarrow\ The system rejects the mapping and prompts the Administrator to select a valid control. \\
                 \hline
@@ -549,7 +565,7 @@ This use case describes the generation and export of formal compliance audit rep
         \hline
         \textbf{Preconditions} & The Auditor is authenticated. $\langle\langle$include$\rangle\rangle$ User Authentication. Compliance data exists. \\
         \hline
-        \textbf{Main Flow} & 1. The Auditor requests a formal compliance report for a specific framework.\newline 2. The system compiles the historical audit data.\newline 3. The system generates a formatted PDF document.\newline 4. The system prompts the Auditor to download the document. \\
+        \textbf{Main Flow} & 1. The Auditor selects a target Framework and an optional target Department to filter the scope of the report.\newline 2. The system compiles the historical audit data scoped to the selected filters.\newline 3. The system generates a formatted PDF document.\newline 4. The system prompts the Auditor to download the document. \\
         \hline
         \textbf{Alternative Flows} & Generation failure \textrightarrow\ The system displays a generation error message and logs the failure. \\
                 \hline

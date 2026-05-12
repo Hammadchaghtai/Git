@@ -14,6 +14,8 @@ The following fourteen test cases constitute the QA suite used to validate the I
 The test cases in this subsection validate the Identity and Access Management module against UC-01. They cover valid credential acceptance, invalid credential rejection, role-based view segregation, and unauthorized API access prevention.
 
 % ===================== TC-01-1 =====================
+The following test case, TC-01-1, validates the primary success path of the authentication module by confirming that a Superadmin user with valid credentials receives a JWT and is routed to the correct role-specific dashboard.
+
 \begin{table}[H]
     \centering
     \caption{TC-01-1: Valid Superadmin Authentication (Positive)}
@@ -42,6 +44,8 @@ The test cases in this subsection validate the Identity and Access Management mo
 \end{table}
 
 % ===================== TC-01-2 =====================
+The following test case, TC-01-2, verifies the system's exception handling by ensuring that invalid authentication attempts are explicitly rejected to prevent unauthorized access.
+
 \begin{table}[H]
     \centering
     \caption{TC-01-2: Invalid Credential Rejection (Negative)}
@@ -70,6 +74,8 @@ The test cases in this subsection validate the Identity and Access Management mo
 \end{table}
 
 % ===================== TC-01-3 =====================
+Test case TC-01-3 evaluates the frontend's role-based access control enforcement, confirming that privileged navigation items are conditionally omitted from the DOM for Auditor-level sessions.
+
 \begin{table}[H]
     \centering
     \caption{TC-01-3: UI RBAC View Segregation (Positive)}
@@ -98,6 +104,8 @@ The test cases in this subsection validate the Identity and Access Management mo
 \end{table}
 
 % ===================== TC-01-4 =====================
+Test case TC-01-4 confirms that the Django REST Framework permission layer blocks write operations from Auditor-level JWTs, even when requests are constructed manually to bypass the UI.
+
 \begin{table}[H]
     \centering
     \caption{TC-01-4: Unauthorized API Write Attempt (Negative)}
@@ -129,6 +137,8 @@ The test cases in this subsection validate the Identity and Access Management mo
 The test cases in this subsection validate the SIEM telemetry pipeline against UC-02. They cover API handshake verification, timeout exception handling, asynchronous Celery Beat execution, and raw JSON log ingestion integrity.
 
 % ===================== TC-02-1 =====================
+Test case TC-02-1 evaluates the successful API handshake between the ICMS backend and the Wazuh SIEM manager, verifying that a Bearer token is correctly retrieved and stored.
+
 \begin{table}[H]
     \centering
     \caption{TC-02-1: Wazuh API Handshake and Token Retrieval (Positive)}
@@ -157,6 +167,8 @@ The test cases in this subsection validate the SIEM telemetry pipeline against U
 \end{table}
 
 % ===================== TC-02-2 =====================
+The following test case, TC-02-2, simulates a complete network failure during SIEM synchronization to confirm that the Celery worker catches the timeout and retries with exponential backoff.
+
 \begin{table}[H]
     \centering
     \caption{TC-02-2: Wazuh Connection Timeout Exception (Negative)}
@@ -185,6 +197,8 @@ The test cases in this subsection validate the SIEM telemetry pipeline against U
 \end{table}
 
 % ===================== TC-02-3 =====================
+Test case TC-02-3 validates the full end-to-end execution of the Celery Beat periodic task, confirming that multi-agent polling completes without blocking the API gateway.
+
 \begin{table}[H]
     \centering
     \caption{TC-02-3: Asynchronous Telemetry Polling via Celery Beat (Positive)}
@@ -213,6 +227,8 @@ The test cases in this subsection validate the SIEM telemetry pipeline against U
 \end{table}
 
 % ===================== TC-02-4 =====================
+Test case TC-02-4 verifies the integrity of the raw log ingestion pipeline when saving a large, semi-structured Wazuh SCA JSON payload into the PostgreSQL \texttt{jsonb} field.
+
 \begin{table}[H]
     \centering
     \caption{TC-02-4: Unstructured JSON Log Ingestion (Positive)}
@@ -244,6 +260,8 @@ The test cases in this subsection validate the SIEM telemetry pipeline against U
 The test cases in this subsection validate the governance mapping engine against UC-03. They verify correct persistence of new rule-to-control mappings and rejection of duplicate entries.
 
 % ===================== TC-03-1 =====================
+Test case TC-03-1 verifies that a Superadmin can create a valid regulatory mapping linking a Wazuh SCA Rule ID to an ISO 27001 control, and that the record persists correctly in the database.
+
 \begin{table}[H]
     \centering
     \caption{TC-03-1: Deterministic Framework Mapping (Positive)}
@@ -272,6 +290,8 @@ The test cases in this subsection validate the governance mapping engine against
 \end{table}
 
 % ===================== TC-03-2 =====================
+The following test case, TC-03-2, confirms that the database unique constraint prevents the creation of duplicate rule-to-control mappings and returns a structured validation error to the UI.
+
 \begin{table}[H]
     \centering
     \caption{TC-03-2: Duplicate Mapping Collision (Negative)}
@@ -303,6 +323,8 @@ The test cases in this subsection validate the governance mapping engine against
 The test cases in this subsection validate the compliance monitoring dashboard against UC-04. They cover theme toggling persistence and dynamic compliance score recalculation.
 
 % ===================== TC-04-1 =====================
+Test case TC-04-1 verifies that the global ThemeContext provider correctly propagates a theme state change across all mounted React components, switching between Light and Dark palettes without a page reload.
+
 \begin{table}[H]
     \centering
     \caption{TC-04-1: Global Theme Toggling, Light/Dark Mode (Positive)}
@@ -331,6 +353,8 @@ The test cases in this subsection validate the compliance monitoring dashboard a
 \end{table}
 
 % ===================== TC-04-2 =====================
+Test case TC-04-2 validates the scoring aggregation logic by confirming that resolving a previously non-compliant control triggers an immediate recalculation of both the global and department-level compliance percentages.
+
 \begin{table}[H]
     \centering
     \caption{TC-04-2: Dynamic Compliance Score Recalculation (Positive)}
@@ -344,13 +368,13 @@ The test cases in this subsection validate the compliance monitoring dashboard a
         Test Case ID & TC-04-2 \\ \hline
         Use Case ID & UC-04 \\ \hline
         Tester Name(s) & Muhammad Ali Bukhari \\ \hline
-        Test Description & Validating the scoring aggregation logic by confirming that a new scan result resolving a previously non-compliant control triggers a recalculation of the global compliance percentage, reflected immediately in the frontend gauge. \\ \hline
+        Test Description & Validating the scoring aggregation logic by confirming that a new scan result resolving a previously non-compliant control triggers a recalculation of both the global and department-wise compliance percentages, reflected immediately in the frontend gauge and department breakdown panel. \\ \hline
         Pre-Requisites & 1. Agent \texttt{004} has a baseline score of 75.0\%. \newline 2. A failed SCA check for a mapped control exists in the database. \\ \hline
         Environment & Celery Worker (Docker Ubuntu), React SPA (Windows Client) \\ \hline
         Test Scenario & A manual synchronization resolves a previously failing control, incrementing the global score. \\ \hline
-        Test Steps & 1. Trigger \texttt{sync\_wazuh\_scans.delay(agent\_id=4)} manually. \newline 2. Query \texttt{DashboardSummaryView} for the updated compliance score. \newline 3. Refresh the dashboard and observe the \texttt{ComplianceGauge} animation. \\ \hline
+        Test Steps & 1. Trigger \texttt{sync\_wazuh\_scans.delay(agent\_id=4)} manually. \newline 2. Query \texttt{DashboardSummaryView} for the updated compliance score. \newline 3. Refresh the dashboard and observe the \texttt{ComplianceGauge} animation. \newline 4. Verify the department-level breakdown panel reflects the updated average for the agent's assigned department. \\ \hline
         Test Inputs & Agent ID: \texttt{004}, Control Weight: \texttt{+6.2\%}, Initial Score: \texttt{75.0\%} \\ \hline
-        Expected Results & Global score increments from 75.0\% to 81.2\%; the React dashboard re-renders the \texttt{ComplianceGauge} SVG with the new value. \\ \hline
+        Expected Results & Global score increments from 75.0\% to 81.2\%; the React dashboard re-renders the \texttt{ComplianceGauge} SVG with the new value; the department-specific average for "IT Operations" updates to match the recalculated aggregation. \\ \hline
         Actual Results & Score updated to 81.2\% in the database within 2.4s of task completion; gauge SVG re-animated to the new value in 40ms without a page reload. \\ \hline
         Status & \textcolor{green!60!black}{\textbf{PASS}} \\ \hline
         Comments & The real-time gauge update is achieved through the Axios polling mechanism in the \texttt{Dashboard} component, re-fetching data every 30 seconds. \\ \hline
@@ -362,6 +386,8 @@ The test cases in this subsection validate the compliance monitoring dashboard a
 The test case in this subsection validates the anomaly resolution workflow against UC-05. It confirms that the asynchronous SMTP alert dispatch fires correctly when a compliance threshold is breached.
 
 % ===================== TC-05-1 =====================
+Test case TC-05-1 validates the automated alert pipeline's ability to detect a compliance threshold breach and dispatch a structured HTML email notification via the SMTP relay without blocking the ingestion pipeline.
+
 \begin{table}[H]
     \centering
     \caption{TC-05-1: Asynchronous SMTP Alert Dispatch (Positive)}
@@ -393,6 +419,8 @@ The test case in this subsection validates the anomaly resolution workflow again
 The test case in this subsection validates the automated PDF report generation pipeline against UC-06. It confirms that multi-agent compliance data is correctly aggregated and rendered into a structurally valid PDF document.
 
 % ===================== TC-06-1 =====================
+The following test case, TC-06-1, evaluates the server-side PDF rendering pipeline's ability to aggregate multi-agent, department-scoped compliance data and produce a structurally sound binary PDF with correct page breaks and table alignment.
+
 \begin{table}[H]
     \centering
     \caption{TC-06-1: Comprehensive PDF Audit Report Generation (Positive)}
@@ -410,10 +438,10 @@ The test case in this subsection validates the automated PDF report generation p
         Pre-Requisites & 1. Database contains at least 50 historical \texttt{ScanResult} records across 5 agents. \newline 2. \texttt{xhtml2pdf} is installed and the report HTML template is configured. \\ \hline
         Environment & Django Backend (Docker Ubuntu), React SPA (Windows Client) \\ \hline
         Test Scenario & An Auditor clicks "Generate Full Report" for the ISO 27001 framework on the Reports page. \\ \hline
-        Test Steps & 1. Authenticate as Auditor and navigate to the Reports page. \newline 2. Select framework "ISO 27001" and click "Generate Report". \newline 3. Download the returned PDF binary and inspect page breaks and table layout. \\ \hline
-        Test Inputs & Framework: \texttt{ISO 27001}, Date Range: \texttt{Last 30 Days}, Agent Count: \texttt{5} \\ \hline
-        Expected Results & A multi-page PDF containing a framework summary, per-agent compliance tables, and a gap analysis section, with clean page breaks and no overlapping elements. \\ \hline
-        Actual Results & 15-page PDF document generated in 4.2s; all inter-section page breaks executed correctly without table overlap; all data values matched the live database query. \\ \hline
+        Test Steps & 1. Authenticate as Auditor and navigate to the Reports page. \newline 2. Select Department "IT Operations" from the filter dropdown. \newline 3. Select framework "ISO 27001" and click "Generate Report". \newline 4. Download the returned PDF binary and inspect page breaks and table layout. \\ \hline
+        Test Inputs & Framework: \texttt{ISO 27001}, Target Department: \texttt{IT Operations}, Date Range: \texttt{Last 30 Days}, Agent Count: \texttt{5} \\ \hline
+        Expected Results & A multi-page PDF scoped strictly to the selected department's endpoints and policies, containing a framework summary, per-agent compliance tables, and a gap analysis section, with clean page breaks and no overlapping elements. \\ \hline
+        Actual Results & 12-page PDF document generated in 3.8s scoped to the IT Operations department; all inter-section page breaks executed correctly without table overlap; only agents assigned to IT Operations appeared in the compliance tables. \\ \hline
         Status & \textcolor{green!60!black}{\textbf{PASS}} \\ \hline
         Comments & The 4.2s generation time for a 15-page dossier is acceptable; offloading to the worker tier ensured the auditor's browser session remained interactive throughout. \\ \hline
     \end{tabular}

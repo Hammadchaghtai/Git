@@ -24,30 +24,31 @@
 \contentsline {figure}{\numberline {4.15}{\ignorespaces SD-04-1: Monitor Endpoint Compliance Status}}{40}{figure.4.15}%
 \contentsline {figure}{\numberline {4.16}{\ignorespaces SD-05-1: Resolve Compliance Anomalies}}{41}{figure.4.16}%
 \contentsline {figure}{\numberline {4.17}{\ignorespaces SD-06-1: Report Generation}}{42}{figure.4.17}%
-\contentsline {figure}{\numberline {4.18}{\ignorespaces UML Class Diagram: Core Object-Relational Models}}{43}{figure.4.18}%
-\contentsline {figure}{\numberline {4.19}{\ignorespaces Physical Database Schema: Core Relational Data Model with Exact Data Types}}{43}{figure.4.19}%
-\contentsline {figure}{\numberline {4.20}{\ignorespaces Extended Entity Relationship Diagram (EERD) with Constraints and Attributes}}{44}{figure.4.20}%
-\contentsline {figure}{\numberline {4.21}{\ignorespaces GUI Design: Secure User Authentication Portal.}}{45}{figure.4.21}%
-\contentsline {figure}{\numberline {4.22}{\ignorespaces GUI Design: Time-based One-Time Password (TOTP) Verification.}}{45}{figure.4.22}%
-\contentsline {figure}{\numberline {4.23}{\ignorespaces GUI Design: Superadmin Global Compliance Dashboard (Dark Mode).}}{46}{figure.4.23}%
-\contentsline {figure}{\numberline {4.24}{\ignorespaces GUI Design: Superadmin Global Compliance Dashboard (Light Mode).}}{46}{figure.4.24}%
-\contentsline {figure}{\numberline {4.25}{\ignorespaces GUI Design: RBAC User and System Administrator Management Interface.}}{46}{figure.4.25}%
-\contentsline {figure}{\numberline {4.26}{\ignorespaces GUI Design: Security Auditor Read-Only Compliance View.}}{47}{figure.4.26}%
-\contentsline {figure}{\numberline {4.27}{\ignorespaces System Output: Automated PDF Audit Dossier Generation.}}{48}{figure.4.27}%
-\contentsline {figure}{\numberline {4.28}{\ignorespaces System Output: SMTP Alert for Rule Violation.}}{49}{figure.4.28}%
+\contentsline {figure}{\numberline {4.18}{\ignorespaces UML Class Diagram: Core Object-Relational Models with Department Governance}}{43}{figure.4.18}%
+\contentsline {figure}{\numberline {4.19}{\ignorespaces Physical Database Schema: Department-Governed Relational Data Model}}{44}{figure.4.19}%
+\contentsline {figure}{\numberline {4.20}{\ignorespaces Extended Entity Relationship Diagram (EERD) with Constraints and Attributes}}{45}{figure.4.20}%
+\contentsline {figure}{\numberline {4.21}{\ignorespaces GUI Design: Secure User Authentication Portal.}}{46}{figure.4.21}%
+\contentsline {figure}{\numberline {4.22}{\ignorespaces GUI Design: Time-based One-Time Password (TOTP) Verification.}}{46}{figure.4.22}%
+\contentsline {figure}{\numberline {4.23}{\ignorespaces GUI Design: Superadmin Global Compliance Dashboard (Dark Mode).}}{47}{figure.4.23}%
+\contentsline {figure}{\numberline {4.24}{\ignorespaces GUI Design: Superadmin Global Compliance Dashboard (Light Mode).}}{47}{figure.4.24}%
+\contentsline {figure}{\numberline {4.25}{\ignorespaces GUI Design: RBAC User and System Administrator Management Interface.}}{48}{figure.4.25}%
+\contentsline {figure}{\numberline {4.26}{\ignorespaces GUI Design: Security Auditor Read-Only Compliance View.}}{48}{figure.4.26}%
+\contentsline {figure}{\numberline {4.27}{\ignorespaces System Output: Automated PDF Audit Dossier Generation.}}{49}{figure.4.27}%
+\contentsline {figure}{\numberline {4.28}{\ignorespaces System Output: SMTP Alert for Rule Violation.}}{50}{figure.4.28}%
 \addvspace {10\p@ }
-\contentsline {figure}{\numberline {5.1}{\ignorespaces Implemented N-Tier System Architecture}}{52}{figure.5.1}%
-\contentsline {figure}{\numberline {5.2}{\ignorespaces Implemented Service Topology and Container Networking}}{52}{figure.5.2}%
+\contentsline {figure}{\numberline {5.1}{\ignorespaces Implemented N-Tier System Architecture}}{53}{figure.5.1}%
+\contentsline {figure}{\numberline {5.2}{\ignorespaces Implemented Service Topology and Container Networking}}{53}{figure.5.2}%
 \addvspace {10\p@ }
 \addvspace {10\p@ }
 \addvspace {10\p@ }
-\contentsline {figure}{\numberline {A.1}{\ignorespaces ISCMS authentication portal.}}{79}{figure.A.1}%
-\contentsline {figure}{\numberline {A.2}{\ignorespaces Two-factor authentication (2FA) verification interface.}}{79}{figure.A.2}%
-\contentsline {figure}{\numberline {A.3}{\ignorespaces Password recovery interface for credential resets.}}{80}{figure.A.3}%
-\contentsline {figure}{\numberline {A.4}{\ignorespaces The Regulatory Frameworks and Policy configuration interface.}}{80}{figure.A.4}%
-\contentsline {figure}{\numberline {A.5}{\ignorespaces Detailed view of the regulatory framework requirements mapping interface.}}{81}{figure.A.5}%
-\contentsline {figure}{\numberline {A.6}{\ignorespaces Interface for raw scan results and endpoint telemetry mapping.}}{82}{figure.A.6}%
-\contentsline {figure}{\numberline {A.7}{\ignorespaces Audit Report Generation interface for compliance dossiers.}}{82}{figure.A.7}%
-\contentsline {figure}{\numberline {A.8}{\ignorespaces Audit Trail PDF for log tracking.}}{83}{figure.A.8}%
-\contentsline {figure}{\numberline {A.9}{\ignorespaces System Settings interface for managing global configurations and thresholds.}}{84}{figure.A.9}%
-\contentsline {figure}{\numberline {A.10}{\ignorespaces Expanded user management interface for configuring strict RBAC hierarchies.}}{84}{figure.A.10}%
+\contentsline {figure}{\numberline {A.1}{\ignorespaces ISCMS authentication portal.}}{81}{figure.A.1}%
+\contentsline {figure}{\numberline {A.2}{\ignorespaces Two-factor authentication (2FA) verification interface.}}{81}{figure.A.2}%
+\contentsline {figure}{\numberline {A.3}{\ignorespaces Password recovery interface for credential resets.}}{82}{figure.A.3}%
+\contentsline {figure}{\numberline {A.4}{\ignorespaces Policy configuration interface with department-level governance assignment.}}{83}{figure.A.4}%
+\contentsline {figure}{\numberline {A.5}{\ignorespaces Detailed view of the regulatory framework requirements mapping interface.}}{83}{figure.A.5}%
+\contentsline {figure}{\numberline {A.6}{\ignorespaces Interface for raw scan results and endpoint telemetry mapping.}}{84}{figure.A.6}%
+\contentsline {figure}{\numberline {A.7}{\ignorespaces Report generation interface featuring Framework and Department filtering.}}{85}{figure.A.7}%
+\contentsline {figure}{\numberline {A.8}{\ignorespaces Generated PDF dossier highlighting department-specific compliance summaries.}}{86}{figure.A.8}%
+\contentsline {figure}{\numberline {A.9}{\ignorespaces Department-scoped compliance detail page from the generated PDF.}}{87}{figure.A.9}%
+\contentsline {figure}{\numberline {A.10}{\ignorespaces System Settings interface for managing global configurations and thresholds.}}{88}{figure.A.10}%
+\contentsline {figure}{\numberline {A.11}{\ignorespaces Expanded user management interface for configuring strict RBAC hierarchies.}}{88}{figure.A.11}%

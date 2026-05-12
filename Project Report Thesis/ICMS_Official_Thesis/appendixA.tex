@@ -64,8 +64,8 @@ The following requirements are for system operation:
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=1.0\textwidth]{"images/policy1.png"}
-    \caption{The Regulatory Frameworks and Policy configuration interface.}
+    \includegraphics[width=1.0\textwidth]{"images/policy2.png"}
+    \caption{Policy configuration interface with department-level governance assignment.}
     \label{fig:manual_policy}
 \end{figure}
 
@@ -98,7 +98,7 @@ The following requirements are for system operation:
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=1.0\textwidth]{"images/result.png"}
+    \includegraphics[width=1.0\textwidth]{"images/scan2.png"}
     \caption{Interface for raw scan results and endpoint telemetry mapping.}
     \label{fig:manual_scan_result}
 \end{figure}
@@ -106,22 +106,29 @@ The following requirements are for system operation:
 \textbf{Step 7 -- Automated Audit Report Generation}
 \begin{itemize}
     \item Use the "Reports" module to generate documentation.
-    \item Select the regulatory framework and date range.
+    \item Select the regulatory framework and, optionally, a target Department to scope the report.
     \item Click "Generate PDF" to download the audit report.
 \end{itemize}
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=1.0\textwidth]{"images/reports.png"}
-    \caption{Audit Report Generation interface for compliance dossiers.}
+    \includegraphics[width=1.0\textwidth]{"images/report1.png"}
+    \caption{Report generation interface featuring Framework and Department filtering.}
     \label{fig:manual_reports}
 \end{figure}
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=1.0\textwidth]{"images/audit trail pdf.png"}
-    \caption{Audit Trail PDF for log tracking.}
+    \makebox[\textwidth][c]{\includegraphics[width=0.95\textwidth]{images/pdf_compliance1_cropped.png}}
+    \caption{Generated PDF dossier highlighting department-specific compliance summaries.}
     \label{fig:manual_audit_trail_pdf}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \makebox[\textwidth][c]{\includegraphics[width=0.95\textwidth]{images/pdf_compliance2_cropped.png}}
+    \caption{Department-scoped compliance detail page from the generated PDF.}
+    \label{fig:manual_pdf_detail}
 \end{figure}
 
 \textbf{Step 8 -- System and User Management}
