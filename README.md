@@ -384,12 +384,12 @@ To enable email notifications (user invites, password reminders, account status)
 
 ## 👥 Authors
 
-- **Muhammad Ali bin Asim** — Full-Stack Development
-- **Hammad Chughtai** — Wazuh Integration & Security Architecture
-- **Ubaid ur Rehman** — Frontend Design & Implementation
+- **Muhammad Ali Bukhari** 
+- **Muhammad Hammad Chughtai**
+
 
 ---
 
 ## 📄 License
 
-This project was developed as a Final Year Project (FYP) at the National University of Computer and Emerging Sciences (FAST-NUCES), Islamabad.
+This project was developed as a Final Year Project (FYP) at the Bahria University E-8 Islamabad (BUIC).
