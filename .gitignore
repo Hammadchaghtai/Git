@@ -3,6 +3,9 @@
 __pycache__/
 *.py[cod]
 *$py.class
+*.egg-info/
+*.egg
+pip-log.txt
 env/
 venv/
 .venv/
@@ -14,6 +17,7 @@ build/
 
 # OS
 .DS_Store
+Thumbs.db
 
 # IDE
 .idea/
@@ -22,7 +26,19 @@ build/
 # Environment Variables
 .env
 .env.*
+!.env.example
 
 # Django Media
 backend/media/
 media/
+
+# Generated data & dumps
+backend/seed_data.json
+backend/filtered_seed_data.json
+backend/complete_seed_data.*
+backend/users_dump.json
+backend/qr_codes/
+backend/profile_pics/
+
+# Logs
+*.log
