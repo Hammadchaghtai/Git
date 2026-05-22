@@ -1,16 +1,28 @@
-# React + Vite
+# GRC Platform — Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+React 19 + Vite 8 + Tailwind CSS 4 single-page application for the GRC Compliance Management Platform.
 
-Currently, two official plugins are available:
+See the [main README](../README.md) at the project root for full documentation, setup instructions, and architecture details.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Development
 
-## React Compiler
+The frontend runs inside Docker via `docker compose up`. To run locally for development:
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+```bash
+npm install
+npm run dev
+```
 
-## Expanding the ESLint configuration
+The dev server starts on [http://localhost:5173](http://localhost:5173) and proxies API requests to the Django backend at `localhost:8000`.
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## Key Dependencies
+
+| Package | Purpose |
+|---------|---------|
+| `react` / `react-dom` | UI framework |
+| `react-router-dom` | Client-side routing |
+| `axios` | HTTP client with JWT interceptors |
+| `tailwindcss` | Utility-first CSS |
+| `recharts` | Dashboard charts and graphs |
+| `lucide-react` | Icon library |
+| `jspdf` / `jspdf-autotable` | Client-side PDF generation |
