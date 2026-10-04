@@ -121,7 +121,15 @@ class Command(BaseCommand):
                 continue
 
             if not checks:
-                self._warn("No SCA checks returned — skipping agent.")
+                self._warn("No SCA checks returned — creating baseline scan with 0%.")
+                # Still create a scan record so the agent is visible on the Scans page
+                ComplianceScan.objects.create(
+                    agent_id=agent_id,
+                    scan_date=timezone.now(),
+                    overall_score=0.0,
+                )
+                total_scans += 1
+                self._ok(f"Baseline scan created for Agent {agent_id} (0% — awaiting SCA evaluation).")
                 continue
 
             # Create a new ComplianceScan record

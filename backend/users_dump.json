@@ -1,35 +1,5 @@
 [
     {
-        "username": "auditor",
-        "email": "auditor@grc.com",
-        "role": "auditor"
-    },
-    {
-        "username": "hello",
-        "email": "hello@hello.com",
-        "role": "admin"
-    },
-    {
-        "username": "testadmin2",
-        "email": "testadmin2@grc.local",
-        "role": "auditor"
-    },
-    {
-        "username": "testabc",
-        "email": "testabc@abc.com",
-        "role": "admin"
-    },
-    {
-        "username": "superadmin",
-        "email": "muhammad.hammad.chughtai@gmail.com",
-        "role": "super_admin"
-    },
-    {
-        "username": "admin",
-        "email": "admin@grc.local",
-        "role": "admin"
-    },
-    {
-        "NOTICE": "Updated superadmin password to super123 and email."
+        "NOTICE": "Created new superadmin! Username: superadmin, Password: super123"
     }
 ]

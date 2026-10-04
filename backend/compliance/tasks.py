@@ -93,7 +93,14 @@ def run_scheduled_wazuh_sync(self):
             continue
 
         if not checks:
-            logger.warning("  ⚠️  No SCA checks — skipping agent.")
+            logger.warning("  ⚠️  No SCA checks — creating baseline scan with 0%.")
+            ComplianceScan.objects.create(
+                agent_id=agent_id,
+                scan_date=timezone.now(),
+                overall_score=0.0,
+            )
+            total_scans += 1
+            logger.info(f"  ✅ Baseline scan created for Agent {agent_id} (0% — awaiting SCA evaluation).")
             continue
 
         # Create scan record
